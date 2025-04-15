@@ -1,0 +1,23 @@
+{% extends 'layout.html.j2' %}
+{% block body %}
+<h1>{{title}}</h1>
+<hr>
+<p> If you have questions or you would like to be involved in contributing to the
+  volcano database please use the contact form below. Your email will be
+  required if you wish to recieve a reply (<i>email addresses submitted here will not be stored on this site</i>).  </p>
+{% from "includes/_formhelpers.html.j2" import render_field %}
+<form action="/contact" method="POST">
+{% for field in form %}
+  <div class="form-group">
+    {{render_field(field, class_="form-control")}}
+  </div>
+  {% endfor %}
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+<hr>
+
+<h1>Feedback Form</h1>
+<iframe id='this' src="https://forms.gle/oxy4GW3T1NbJbJtE9" title="Feedback Form" style="width:100%; height:100vh; position: relative;"></iframe>
+
+{% endblock %}
+</html>

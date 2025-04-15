@@ -1,0 +1,84 @@
+body {
+
+    font-family: Helvetica, Arial, sans-serif;
+
+}
+
+
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+}
+
+/* Additional CSS  */
+.column2 {
+  float: left;
+  width: 45%;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+ /* Responsive layout - when the screen is less than 600px wide, make the three columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 600px) {
+  .column {
+    width: 100%;
+  }
+}
+
+.collist3 {
+  -webkit-column-count: 3; /* Old Chrome, Safari and Opera */
+  -moz-column-count: 3; /* Old Firefox */
+  column-count: 3;
+}
+
+.collist4 {
+  -webkit-column-count: 4; /* Old Chrome, Safari and Opera */
+  -moz-column-count: 4; /* Old Firefox */
+  column-count: 4;
+}
+
+.collist2 {
+  -webkit-column-count: 2; /* Old Chrome, Safari and Opera */
+  -moz-column-count: 2; /* Old Firefox */
+  column-count: 2;
+  with: 20% ;
+}
+
+/* leaflet map legend styles: */
+.leaflet-legend {
+  position: absolute;
+  right: 5px;
+  bottom: 21px;
+  z-index: 800;
+  line-height: 18px;
+  color: #555;
+  padding: 6px 8px;
+  font: 14px/16px Arial, Helvetica, sans-serif;
+  background: white;
+  background: rgba(255,255,255,0.8);
+  box-shadow: 0 0 15px rgba(0,0,0,0.2);
+  border-radius: 5px;
+}
+
+.leaflet-legend-header {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.leaflet-legend i {
+  width: 18px;
+  height: 18px;
+  margin-right: 4px;
+  opacity: 0.7;
+  display: inline-block;
+  vertical-align: top;
+  zoom: 1;
+  *display: inline;
+}
