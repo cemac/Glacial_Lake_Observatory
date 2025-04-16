@@ -1,0 +1,75 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/">Home</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <!-- About Dropdown -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownAbout" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            About
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdownAbout">
+            <li><a class="dropdown-item" href="/about/project">Project</a></li>
+            <li><a class="dropdown-item" href="/about/team">Team</a></li>
+            <li><a class="dropdown-item" href="/about/feedback">Feedback</a></li>
+          </ul>
+        </li>
+
+        <!-- Database Dropdown -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownDatabase" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Database
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdownDatabase">
+            <li><a class="dropdown-item" href="/database">Main Database</a></li>
+            <li><a class="dropdown-item" href="/database/search">Advanced Search</a></li>
+            <li><a class="dropdown-item" href="/database/otherdata">Other data</a></li>
+          </ul>
+        </li>
+
+        <!-- Resources Dropdown -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownResources" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Resources
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdownResources">
+            <li><a class="dropdown-item" href="/resources/publications">Publications</a></li>
+            <li><a class="dropdown-item" href="/resources/training">Training</a></li>
+            <li><a class="dropdown-item" href="/resources/multimedia">Multimedia</a></li>
+          </ul>
+        </li>
+        <li class="nav-item"><a class="nav-link" href="/news">News</a></li>
+      </ul>
+
+      <ul class="navbar-nav ms-auto">
+        {% if session.username == "admin" or session.usertype == "Admins"%}
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownAdmin" role="button" data-bs-toggle="dropdown" aria-expanded="false">Admin Menu</a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdownAdmin">
+            <li><a class="dropdown-item" href="/admin/users">Users</a></li>
+            <li><a class="dropdown-item" href="/admin/information">Admin info</a></li>
+          </ul>
+        </li>
+        {% endif %}
+        {% if session.logged_in %}
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownAccount" role="button" data-bs-toggle="dropdown" aria-expanded="false">Account</a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdownAccount">
+            <li class="dropdown-header">Logged in as <b>{{session.username}}</b></li>
+            {% if session.username != "admin" %}
+            <li><a class="dropdown-item" href="/change-pwd">Change Password</a></li>
+            <li><a class="dropdown-item" href="/account/{{session.username}}">Account</a></li>
+            {% endif %}
+            <li><a class="dropdown-item" href="/logout">Logout</a></li>
+          </ul>
+        </li>
+        {% else %}
+        <li class="nav-item"><a class="nav-link" href="/login"><span class="bi bi-box-arrow-in-right"> Login</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
