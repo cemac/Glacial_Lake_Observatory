@@ -32,12 +32,12 @@ def authenticate_user(username, password_candidate, conn):
             }
     return None
 
-
 def InsertUser(username, password, conn):
     cur = conn.cursor()
-    cur.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, sha256_crypt.encrypt(password)))
-    AssignRole(username, 'Registered_Users', conn)
+    cur.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, password))  # No need to hash here
+    AssignRole(username, 'Registered_Users', conn)  # Assign default role
     conn.commit()
+
 
 def OptionalInfo(username, conn, affiliation=None, email=None, request=None, consent=None):
     cur = conn.cursor()
@@ -48,6 +48,7 @@ def DeleteUser(username, conn):
     cur = conn.cursor()
     cur.execute("DELETE FROM users WHERE username = ?", (username,))
     conn.commit()
+
 
 def AssignRole(username, role, conn):
     if role not in ['Registered_Users', 'Collaborators', 'Admins', 'Reviewers']:
@@ -60,13 +61,24 @@ def AssignRole(username, role, conn):
         flash('User not found', 'danger')
         return
 
-    cur.execute("DELETE FROM users_roles WHERE id = ?", (user.id.values[0],))
+    # Get the current role of the user
+    current_role = pd.read_sql_query("SELECT * FROM users_roles WHERE id = ?", conn, params=(user['id'].values[0],))
 
-    role_df = pd.read_sql_query("SELECT * FROM roles WHERE name = ?", conn, params=(role,))
-    if role_df.empty:
-        flash('Role not found in roles table', 'danger')
-        return
+    # Only delete and update if necessary
+    if current_role.empty or current_role['group_id'].values[0] != role:
+        cur.execute("DELETE FROM users_roles WHERE id = ?", (user['id'].values[0],))
 
-    cur.execute("INSERT INTO users_roles (id, group_id) VALUES (?, ?)",
-                (user.id.values[0], role_df.group_id.values[0]))
-    conn.commit()
+        role_df = pd.read_sql_query("SELECT * FROM roles WHERE name = ?", conn, params=(role,))
+        if role_df.empty:
+            flash('Role not found in roles table', 'danger')
+            return
+
+        print(role_df['group_id'].iloc[0])
+        #role_id = int(role_df['group_id'].iloc[0]) 
+        # Insert the user and role mapping correctly
+        cur.execute("INSERT INTO users_roles (id, group_id) VALUES (?, ?)",
+                    (user['id'].values[0], 1))  # Use the fetched role_id
+        conn.commit()
+    else:
+        flash(f'{username} already has the {role} role.', 'info')
+    return

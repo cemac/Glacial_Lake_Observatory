@@ -28,3 +28,12 @@ class ContactForm(FlaskForm):
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
+
+class Contact_Form(FlaskForm):
+    name = StringField(u'Name', [validators.InputRequired()],
+                       render_kw={"placeholder": "Name"})
+    email = StringField(u'Email',
+                        render_kw={"placeholder": "Required if reply needed"})
+    subject = SelectField(u'Subject', [validators.Optional()])
+    message = TextAreaField(u'Message', [validators.Optional()],
+                            render_kw={"placeholder": "Enter Message Here"})

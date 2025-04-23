@@ -11,6 +11,13 @@ def subject_list():
             ('general question', 'general question'), ('contributor query', 'contributor query'),
             ('other', 'other')]
 
+def table_list(tableClass, col, conn):
+    DF = pd.read_sql_query("SELECT * FROM roles ;", conn)
+    list = [('blank', '--Please select--')]
+    for element in DF[col]:
+        list.append((element, element))
+    return list
+
 def option_list(col_name, conn):
     list = [('blank', '--Please select--')]
     if col_name == 'country':
@@ -31,3 +38,12 @@ def option_list(col_name, conn):
 
     list.append(('other', 'other --Please Specify--'))
     return list
+
+def subject_list():
+    return [
+        ("blank", "--Please select--"),
+        ("request access", "request access"),
+        ("general question", "general question"),
+        ("contributor query", "contributor query"),
+        ("other", "other"),
+    ]

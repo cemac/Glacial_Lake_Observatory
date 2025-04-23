@@ -1,5 +1,5 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for
-from GloApp.forms.user_forms import ContactForm
+from flask import Blueprint, render_template, request, flash, redirect, url_for, abort
+from GloApp.forms.user_forms import Contact_Form
 from flask_mail import Message
 from GloApp.extensions import mail
 import os
@@ -9,22 +9,6 @@ main_bp = Blueprint('main', __name__, template_folder='../templates')
 @main_bp.route('/')
 def index():
     return render_template('home.html.j2')
-
-
-@main_bp.route('/about/project')
-def about():
-    return render_template('about-project.html.j2')
-
-
-@main_bp.route('/about/team')
-def about_team():
-    return render_template('about-team.html.j2')
-
-
-@main_bp.route('/about/feedback')
-def about_feedback():
-    return render_template('about-feedback.html.j2')
-
 
 @main_bp.route('/contact', methods=["GET", "POST"])
 def contact():
@@ -46,42 +30,35 @@ def contact():
         return redirect(url_for('main.contact'))
     return render_template('contact.html.j2', title='Contact Form', form=form)
 
+# Static pages mapping
+static_pages = {
+    'about/project': 'about-project.html.j2',
+    'about/team': 'about-team.html.j2',
+    'about/feedback': 'about-feedback.html.j2',
+    'contribute': 'contributor_guidelines.html.j2',
+    'resources/publications': 'publications.html.j2',
+    'resources/training': 'training.html.j2',
+    'resources/multimedia': 'multimedia.html.j2',
+    'news': 'news.html.j2',
+    'glossary': 'glossary.html.j2',
+    'copyright': 'copyright.html.j2',
+    'privacy': 'privacy.html.j2',
+}
 
-@main_bp.route('/contribute')
-def contribute():
-    return render_template('contributor_guidelines.html.j2')
+@main_bp.route('/<path:page>')
+def render_static_page(page):
+    if page in static_pages:
+        return render_template(static_pages[page])
+    abort(404)
 
+@main_bp.route('/database')
+def database():
+    return render_template('database.html.j2')
 
-@main_bp.route('/resources/publications')
-def publications():
-    return render_template('publications.html.j2')
+@main_bp.route('/database/search')
+def search():
+    return render_template('db-search.html.j2')
 
-
-@main_bp.route('/resources/training')
-def training():
-    return render_template('training.html.j2')
-
-
-@main_bp.route('/resources/multimedia')
-def multimedia():
-    return render_template('multimedia.html.j2')
-
-
-@main_bp.route('/news')
-def news():
-    return render_template('news.html.j2')
-
-
-@main_bp.route('/glossary')
-def glossary():
-    return render_template('glossary.html.j2')
-
-
-@main_bp.route('/copyright')
-def copyright():
-    return render_template('copyright.html.j2')
-
-
-@main_bp.route('/privacy')
-def privacy():
-    return render_template('privacy.html.j2')
+@main_bp.route('/database/otherdata')
+def otherdata():
+    return render_template('otherdata.html.j2')
