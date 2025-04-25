@@ -2,7 +2,7 @@
 from flask import Blueprint, render_template, flash, redirect, url_for, request, session, g
 from GloApp.helpers.db_helpers import get_db  # Make sure to import get_db
 from GloApp.forms.user_forms import LoginForm, ChangePwdForm, UsersForm, AccessForm
-from GloApp.helpers.auth_helpers import authenticate_user, InsertUser, DeleteUser, AssignRole
+from GloApp.helpers.auth_helpers import authenticate_user, InsertUser, DeleteUser, AssignRole, RegisterUser
 from GloApp.decorators.auth_decorators import is_logged_in, is_logged_in_as_admin
 from GloApp.helpers.form_utils import table_list
 from passlib.hash import sha256_crypt
@@ -33,7 +33,7 @@ def login():
 
             flash(f"Logged in as {user['username']}", 'success')
             if user['usertype'] == 'Admins':
-                flash("You have admin privileges", 'success')
+                flash("You have admin privileges 1", 'success')
             return redirect(url_for('main.index'))
         else:
             flash('Invalid username or password', 'danger')
@@ -112,6 +112,48 @@ def ViewOrAddUsers():
         data=usersandroles
     )
 
+@auth_bp.route('/register', methods=["GET", "POST"])
+def register():
+    connuser = get_db('users.db')
+    form = eval("UsersForm")(request.form)
+    if request.method == 'POST' and form.validate():
+        # Get form fields:
+        # Check
+        if len(str(form.password.data)) < 8:
+            return flash('password must be more than 8 characters',
+                         'danger')
+        form.password.data = sha256_crypt.hash(str(form.password.data))
+        formdata = []
+        for f, field in enumerate(form):
+            formdata.append(field.data)
+        
+        RegisterUser(formdata[0], formdata[1], connuser)
+        flash('User Added', 'success')
+        return redirect(url_for('auth.add', tableClass='Users'))
+    return render_template('register.html.j2', title='Register', tableClass='Users',
+                           form=form)
+
+# Add entry
+@auth_bp.route('/register/Users', methods=["GET", "POST"])
+def register_user():
+    connuser = get_db('users.db')
+    form = eval("UsersForm")(request.form)
+    if request.method == 'POST' and form.validate():
+        # Get form fields:
+        # Check
+        if len(str(form.password.data)) < 8:
+            return flash('password must be more than 8 characters',
+                         'danger')
+        form.password.data = sha256_crypt.hash(str(form.password.data))
+        formdata = []
+        for f, field in enumerate(form):
+            formdata.append(field.data)
+        print(formdata)
+        RegisterUser(formdata, connuser)
+        flash('Registration requested', 'success')
+        return redirect(url_for('auth.register_user', tableClass='Users'))
+    return render_template('register.html.j2', title='Registration', tableClass='Users',
+                           form=form)
 
 # Add entry
 @auth_bp.route('/add/Users', methods=["GET", "POST"])
@@ -132,7 +174,7 @@ def add():
         InsertUser(formdata[0], formdata[1], connuser)
         flash('User Added', 'success')
         return redirect(url_for('auth.add', tableClass='Users'))
-    return render_template('add.html.j2', title='Add Users', tableClass='Users',
+    return render_template('add.html.j2', title='Registration', tableClass='Users',
                            form=form)
 
 
@@ -147,7 +189,7 @@ def delete(tableClass, id):
     username = user.username
     DeleteUser(username[0], connuser)
     flash('User Deleted', 'success')
-    return redirect(url_for('ViewOrAddUsers'))
+    return redirect(url_for('auth.ViewOrAddUsers'))
 
 
 # Access settings for a given user

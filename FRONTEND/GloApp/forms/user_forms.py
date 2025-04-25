@@ -1,10 +1,23 @@
 from wtforms import Form, StringField, PasswordField, TextAreaField, SelectField, SelectMultipleField, validators, widgets
 from flask_wtf import FlaskForm
 from wtforms.validators import DataRequired, Email
+from GloApp.helpers.form_utils import job_list, yesno_list, role_list
 
 class UsersForm(FlaskForm):
-    username = StringField('Username', [validators.Length(min=4, max=25)])
-    password = PasswordField('Password', [validators.Regexp('^([a-zA-Z0-9]{8,})$', message="Password must be minimum 8 characters...")])
+    username = StringField('* Username', [validators.Length(min=4, max=25)])
+    password = PasswordField('* Password', [validators.Regexp('^([a-zA-Z0-9]{8,})$', message="Password must be minimum 8 characters...")])
+    role_request = SelectField('Access level Request', choices=[], validators=[validators.Optional()])
+    affiliation = StringField('Affiliation', [validators.Optional()])
+    email = StringField('* Email', [DataRequired(), Email(message='Invalid email')])   
+    consent = SelectField('* Consent', [DataRequired()], choices=[])
+    country = StringField('Country', [validators.Optional()])
+    job_type = SelectField('Job Type', choices=[], validators=[validators.Optional()])
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.job_type.choices = job_list()
+        self.consent.choices = yesno_list()
+        self.role_request.choices = role_list()
+
 
 class ChangePwdForm(FlaskForm):
     current = PasswordField('Current password', [validators.DataRequired()])

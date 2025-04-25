@@ -47,3 +47,30 @@ def subject_list():
         ("contributor query", "contributor query"),
         ("other", "other"),
     ]
+
+def job_list():
+    """generate job list for forms
+    """
+    list = []
+    list.append(('blank', '--Please select--'))
+    list.append(('Academic (undergraduate student)', 'Academic (undergraduate student)'))
+    list.append(('Academic (postgraduate student)', 'Academic (postgraduate student)'))
+    list.append(('Academic (early career researcher/ postdoctoral)', 'Academic (early career researcher/ postdoctoral)'))
+    list.append(('Academic (researcher/ tenured academic)', 'Academic (researcher/ tenured academic)'))
+    list.append(('Government/ Public Sector', 'Government/ Public Sector'))
+    list.append(('Business/ Private Sector', 'Business/ Private Sector'))
+    list.append(('Development Agency/Charity', 'Development Agency/Charity'))
+    list.append(('Geological/Geophysics Survey', 'Geological/Geophysics Survey'))
+    list.append(('other', 'other'))
+    return list
+
+
+def role_list():
+    """generate role list for forms
+    """
+    list = []
+    list.append(('blank', '--Please select--'))
+    list.append(('Registered_Users', 'Registered_Users'))
+    list.append(('Collaborators', 'Collaborators'))
+    list.append(('Reviewers', 'Reviewers'))
+    return list

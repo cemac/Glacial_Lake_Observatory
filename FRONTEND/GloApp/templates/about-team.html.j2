@@ -1,8 +1,83 @@
 {% extends 'layout.html.j2' %}
 {% block body %}
 <h1>About the team</h1>
-<h2> Core research team</h2>
-<h2> Software development team</h2>
-<h2> Project Partners</h2>
+
+<style>
+    .staff-photo {
+      width: 96px;
+      height: 96px;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+  </style>
+</head>
+<body class="bg-light py-5">
+
+<div class="container">
+  <h2 class="mb-4 text-center">Core Research Team</h2>
+  <div class="row g-4">
+    
+    <!-- Staff Card 1 -->
+    <div class="col-md-6">
+      <div class="d-flex align-items-center bg-white shadow-sm rounded p-3">
+        <img src="/static/Team_profile/scott.jpg" alt="Scott Watson" class="staff-photo me-3">
+        <div>
+          <h5 class="mb-1">Scott Watson</h5>
+          <p class="mb-0 text-muted">Description goes here.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Staff Card 2 -->
+    <div class="col-md-6">
+      <div class="d-flex align-items-center bg-white shadow-sm rounded p-3">
+        <img src="/static/Team_profile/lauren.jpg" alt="Lauren Rawlins" class="staff-photo me-3">
+        <div>
+          <h5 class="mb-1">Lauren Rawlins</h5>
+          <p class="mb-0 text-muted">Description goes here</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add more staff blocks as needed -->
+
+  </div>
+</div>
+<hr>
+<div class="container">
+  <h2 class="mb-4 text-center">Software Development Team</h2>
+  <div class="row g-4">
+    
+    <!-- Staff Card 1 -->
+    <div class="col-md-6">
+      <div class="d-flex align-items-center bg-white shadow-sm rounded p-3">
+        <img src="/static/Team_profile/richard.jpg" alt="Richard Rigby" class="staff-photo me-3">
+        <div>
+          <h5 class="mb-1">Richard Rigby</h5>
+          <p class="mb-0 text-muted">Description goes here.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Staff Card 2 -->
+    <div class="col-md-6">
+      <div class="d-flex align-items-center bg-white shadow-sm rounded p-3">
+        <img src="/static/Team_profile/helen.jpg" alt="Helen Burns" class="staff-photo me-3">
+        <div>
+          <h5 class="mb-1">Helen Burns</h5>
+          <p class="mb-0 text-muted">Description goes here</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add more staff blocks as needed -->
+
+  </div>
+</div>
+<hr>
+<div class="container">
+ <h2 class="mb-4 text-center">Project Partners</h2>
+ </div>
+
 {% endblock %}
 </html>

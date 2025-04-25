@@ -38,6 +38,34 @@ def InsertUser(username, password, conn):
     AssignRole(username, 'Registered_Users', conn)  # Assign default role
     conn.commit()
 
+def RegisterUser(formdata, conn):
+    cur = conn.cursor()
+    username = formdata[0]
+    password = formdata[1]  # password already hashed
+    email = formdata[4]
+    affiliation = formdata[3]
+    consent = formdata[5]
+    country = formdata[6]
+    job_type = formdata[7]
+    role_request = formdata[2]
+    role = 5 # awaiting approval
+    cur.execute("INSERT INTO users (username, password, email, affiliation, consent, country, job_type, role_request) VALUES (?, ?,?, ?, ?, ?, ?, ?)", 
+                (username, password, email, affiliation, consent, country, job_type, role_request))  # No need to hash here
+    conn.commit()   
+    # Get the user ID
+    print("Assigning role to user")
+    userid_df = pd.read_sql_query("SELECT id FROM users WHERE username = ?", conn, params=(username,))
+    if userid_df.empty:
+        flash("User not found", "danger")
+        return
+
+    userid = userid_df['id'].iloc[0] 
+    print('User ID:', userid)
+    cur.execute("INSERT INTO users_roles (id, group_id) VALUES (?, ?)", 
+                (userid, role)) 
+    print("Assigned role to user")
+    conn.commit() 
+
 
 def OptionalInfo(username, conn, affiliation=None, email=None, request=None, consent=None):
     cur = conn.cursor()
@@ -51,7 +79,7 @@ def DeleteUser(username, conn):
 
 
 def AssignRole(username, role, conn):
-    if role not in ['Registered_Users', 'Collaborators', 'Admins', 'Reviewers']:
+    if role not in ['Registered_Users', 'Collaborators', 'Admins', 'Reviewers', 'Awaiting approval']:
         flash('Role must be one of: Registered_Users, Reviewer, Collaborators, Admins', 'danger')
         return
 
@@ -76,8 +104,8 @@ def AssignRole(username, role, conn):
         print(role_df['group_id'].iloc[0])
         #role_id = int(role_df['group_id'].iloc[0]) 
         # Insert the user and role mapping correctly
-        cur.execute("INSERT INTO users_roles (id, group_id) VALUES (?, ?)",
-                    (user['id'].values[0], 1))  # Use the fetched role_id
+        role_id = int(role_df['group_id'].iloc[0])
+        cur.execute("INSERT INTO users_roles (id, group_id) VALUES (?, ?)", (user['id'].values[0], role_id))
         conn.commit()
     else:
         flash(f'{username} already has the {role} role.', 'info')
