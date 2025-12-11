@@ -34,6 +34,7 @@ def contact():
 static_pages = {
     'about/project': 'about-project.html.j2',
     'about/team': 'about-team.html.j2',
+    'about/whatwedo': 'about-whatwedo.html.j2',
     'about/feedback': 'about-feedback.html.j2',
     'contribute': 'contributor_guidelines.html.j2',
     'resources/publications': 'publications.html.j2',
