@@ -1,0 +1,18 @@
+{% extends 'layout.html.j2' %}
+{% block body %}
+<h1>{{title}}</h1>
+
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('main.lake', lake_id=lake_id) }}">Lake Overview</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link active" href="{{ url_for('main.lakedata', lake_id=lake_id) }}">Lake Data</a>
+    </li>
+</ul>
+<h1>LAKE {{lake_id}} Data</h1>
+
+<i> map and plots here </i>
+
+{% endblock %}
+</html>

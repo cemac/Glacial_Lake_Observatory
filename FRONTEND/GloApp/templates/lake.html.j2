@@ -1,0 +1,64 @@
+{% extends 'layout.html.j2' %}
+{% block body %}
+<h1>{{title}}</h1>
+
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link active" href="{{ url_for('main.lake', lake_id=lake_id) }}">Lake Overview</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('main.lakedata', lake_id=lake_id) }}">Lake Data</a>
+    </li>
+</ul>
+<h1>LAKE {{lake_id}} Overview</h1>
+
+<!-- If logged_in with correct access then allow edits-->
+{% if session.username == "admin" or session.usertype == "Admins"%}
+<button type="submit" class="btn btn-primary mt-3">Amend this entry</button>
+{% endif %}
+
+<!--- just a dummy table for now --->
+<table border="1" style="width: 100%; margin-top: 20px;">
+    <tr>
+        <th>Id</th>
+        <th>RGI glacier id</th>
+        <th>Type</th>
+        <th>Area (sq km)</th>
+        <th>Latitude/Longitude</th>
+        <th>Country</th>
+        <th>Elevation (m)</th>
+        <th>Dataset Tags</th>
+        <th>Max Depth (m)</th>
+        <th>GTN-G Glacier Region</th>
+        <th>Hazard and Risk Score</th>
+    </tr>
+    <tr>
+        <td>{{ lake_id }}</td>
+        <td>R123456</td>
+        <td>Glacial</td>
+        <td>15.5</td>
+        <td>45.1234, -120.5678</td>
+        <td>Nepal</td>
+        <td>3000</td>
+        <td>area,bathy, etc</td>
+        <td>50</td>
+        <td>Region A</td>
+        <td>2</td>
+    </tr>
+</table>
+
+<br>
+
+<div style="width: 70%; margin: auto;">
+<i> description from json file here </i>
+</div>
+
+<br>
+
+<h2>Photo Gallery</h2>
+<div style="width: 70%; margin: auto;">
+    <img src="/static/Photo_video_gallery/content/Gangapurna_lake_2017_moraine.JPG" alt="dummy lake photo" title="dummy photo" style="width: 100%;">
+    <br>
+</div>
+{% endblock %}
+</html>
