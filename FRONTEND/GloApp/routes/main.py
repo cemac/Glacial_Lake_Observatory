@@ -1,10 +1,12 @@
+import json
+import os
+
 from flask import Blueprint, render_template, request, flash, redirect, url_for, abort
 from GloApp.forms.user_forms import Contact_Form
 from flask_mail import Message
 from GloApp.extensions import mail
-import os
+import GloApp.globals
 main_bp = Blueprint('main', __name__, template_folder='../templates')
-
 
 @main_bp.route('/')
 def index():
@@ -54,19 +56,30 @@ def render_static_page(page):
 
 @main_bp.route('/database')
 def database():
-    return render_template('database.html.j2')
+    try:
+        lakes = GloApp.globals.LAKES
+    except:
+        lakes = []
+    return render_template('database.html.j2', lakes=lakes)
 
 @main_bp.route('/database/search')
 def search():
     return render_template('db-search.html.j2')
 
-@main_bp.route('/database/lake/<int:lake_id>')
+@main_bp.route('/database/lake/<string:lake_id>')
 def lake(lake_id):
-    return render_template('lake.html.j2',lake_id=lake_id)
+    if lake_id not in GloApp.globals.LAKES_BY_ID.keys():
+        return render_template('404.html.j2'), 404
+    try:
+        lakes = GloApp.globals.LAKES_BY_ID
+        lake_data = lakes[lake_id]
+    except:
+        lake_data = {}
+    return render_template('lake.html.j2', lake_id=lake_id, lake_data=lake_data)
 
-@main_bp.route('/database/lake-data/<int:lake_id>')
+@main_bp.route('/database/lake-data/<string:lake_id>')
 def lakedata(lake_id):
-    return render_template('lake-data.html.j2',lake_id=lake_id)
+    return render_template('lake-data.html.j2', lake_id=lake_id)
 
 @main_bp.route('/database/otherdata/')
 def otherdata():
