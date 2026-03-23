@@ -1,64 +1,118 @@
 {% extends 'layout.html.j2' %}
+{% block styles %}
+<!-- leaflet css: -->
+<link rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static', filename='styles/leaflet.css') }}"
+      media="all">
+<!-- local css: -->
+<link rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static', filename='styles/lake.css') }}"
+      media="all">
+<!-- leaflet js: -->
+<script src="{{ url_for('static', filename='scripts/leaflet.js') }}"
+        charset="utf-8">
+</script>
+<!-- plotly js: -->
+<script src="{{ url_for('static', filename='scripts/plotly.js') }}"
+        charset="utf-8">
+</script>
+<!-- local js: -->
+<script src="{{ url_for('static', filename='scripts/lake.js') }}"
+        charset="utf-8"
+        defer>
+</script>
+<!-- lake data: -->
+<script>
+var lake_data = {{ lake_data | replace('None', 'null' ) }};
+var lake_id = '{{ lake_id }}';
+var lake_x = {{ lake_data['X'] }};
+var lake_y = {{ lake_data['Y'] }};
+var data_lakes = '/data/lakes_by_id.json';
+var data_geometry = '/data/geometry/' + lake_x + '/' + lake_y + '/' +
+                    lake_id + '.json';
+var data_temperature = '/data/temperature/' + lake_x + '/' + lake_y + '/' +
+                       lake_id + '.json';
+var data_area = '/data/area/' + lake_x + '/' + lake_y + '/' +
+                lake_id + '.json';
+var data_volume = '/data/volume/' + lake_x + '/' + lake_y + '/' +
+                  lake_id + '.json';
+var data_depth = '/data/depth/' + lake_x + '/' + lake_y + '/' +
+                 lake_id + '.json';
+</script>
+{% endblock %}
 {% block body %}
-<h1>{{title}}</h1>
-
-<ul class="nav nav-tabs">
-    <li class="nav-item">
-        <a class="nav-link active" href="{{ url_for('main.lake', lake_id=lake_id) }}">Lake Overview</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('main.lakedata', lake_id=lake_id) }}">Lake Data</a>
-    </li>
-</ul>
-<h1>LAKE {{lake_id}} Overview</h1>
-
-<!-- If logged_in with correct access then allow edits-->
-{% if session.username == "admin" or session.usertype == "Admins"%}
-<button type="submit" class="btn btn-primary mt-3">Amend this entry</button>
-{% endif %}
-
-<!--- just a dummy table for now --->
-<table border="1" style="width: 100%; margin-top: 20px;">
-    <tr>
-        <th>Id</th>
-        <th>RGI glacier id</th>
-        <th>Type</th>
-        <th>Area (sq km)</th>
-        <th>Latitude/Longitude</th>
-        <th>Country</th>
-        <th>Elevation (m)</th>
-        <th>Dataset Tags</th>
-        <th>Max Depth (m)</th>
-        <th>GTN-G Glacier Region</th>
-        <th>Hazard and Risk Score</th>
-    </tr>
-    <tr>
-        <td>{{ lake_id }}</td>
-        <td>R123456</td>
-        <td>Glacial</td>
-        <td>15.5</td>
-        <td>45.1234, -120.5678</td>
-        <td>Nepal</td>
-        <td>3000</td>
-        <td>area,bathy, etc</td>
-        <td>50</td>
-        <td>Region A</td>
-        <td>2</td>
-    </tr>
-</table>
-
-<br>
-
-<div style="width: 70%; margin: auto;">
-<i> description from json file here </i>
-</div>
-
-<br>
-
-<h2>Photo Gallery</h2>
-<div style="width: 70%; margin: auto;">
-    <img src="/static/Photo_video_gallery/content/Gangapurna_lake_2017_moraine.JPG" alt="dummy lake photo" title="dummy photo" style="width: 100%;">
-    <br>
+<!-- container: _______________________________________________________ -->
+<div id="lake_container_col"
+     class="lake_container_col lake_column">
+  <!-- header text: ___________________________________________________ -->
+  <div id="header_header_row"
+       class="lake_container_row lake_row flex_start">
+    <h2 id="header_lake_id"
+        class="header_lake">{{ lake_id }}</h2>
+  </div>
+  <div id="header_text_row"
+       class="lake_container_row lake_row flex_start">
+    <div id="header_text"
+         class="page_text"></div>
+  </div>
+  <!-- geometry plot: ______________________________________________ -->
+  <div id="geometry_header_row"
+       class="lake_container_row lake_row flex_start">
+    <h3 class="header_lake">Geometry</h3>
+  </div>
+  <div id="geometry_plot_row"
+       class="lake_container_row lake_row flex_center">
+    <div id="geometry_plot_div"
+         class="lake_plot_div flex_grow">
+    </div>
+  </div>
+  <!-- temperature plot: ______________________________________________ -->
+  <div id="temperature_header_row"
+       class="lake_container_row lake_row flex_start">
+    <h3 class="header_lake">Temperature</h3>
+  </div>
+  <div id="temperature_plot_row"
+       class="lake_container_row lake_row flex_center">
+    <div id="temperature_plot_div"
+         class="lake_plot_div flex_grow">
+    </div>
+  </div>
+  <!-- area plot: ______________________________________________ -->
+  <div id="area_header_row"
+       class="lake_container_row lake_row flex_start">
+    <h3 class="header_lake">Area</h3>
+  </div>
+  <div id="area_plot_row"
+       class="lake_container_row lake_row flex_center">
+    <div id="area_plot_div"
+         class="lake_plot_div flex_grow">
+    </div>
+  </div>
+  <!-- volume plot: ______________________________________________ -->
+  <div id="volume_header_row"
+       class="lake_container_row lake_row flex_start">
+    <h3 class="header_lake">Volume</h3>
+  </div>
+  <div id="volume_plot_row"
+       class="lake_container_row lake_row flex_center">
+    <div id="volume_plot_div"
+         class="lake_plot_div flex_grow">
+    </div>
+  </div>
+  <!-- depth plot: ____________________________________________________ -->
+  <div id="depth_header_row"
+       class="lake_container_row lake_row flex_start">
+    <h3i class="header_lake">Depth</h3>
+  </div>
+  <div id="depth_plot_row"
+       class="lake_container_row lake_row flex_center">
+    <div id="depth_plot_div"
+         class="lake_plot_div flex_grow">
+    </div>
+  </div>
+<!-- end container: ___________________________________________________ -->
 </div>
 {% endblock %}
 </html>

@@ -1,0 +1,112 @@
+/*** site.css ***/
+
+/** flex classes: **/
+
+.lake_row,
+.lake_row_wrap,
+.lake_column,
+.lake_column_wrap {
+  display: flex;
+  flex: 1 1 auto;
+}
+
+.lake_row {
+  flex-flow: row nowrap;
+}
+
+.lake_row_wrap {
+  flex-flow: row wrap;
+}
+
+.lake_column {
+  flex-flow: column nowrap;
+}
+
+.lake_column_wrap {
+  flex-flow: column wrap;
+}
+
+.flex_center {
+  justify-content: center;
+}
+
+.flex_start {
+  justify-content: flex-start;
+}
+
+.flex_end {
+  justify-content: flex-end;
+}
+
+.flex_justify {
+  justify-content: space-around;
+}
+
+.flex_grow {
+  flex: 1 1 auto;
+}
+
+.flex_no_grow {
+  flex: 0 1 auto;
+}
+
+/** body: **/
+
+body {
+  background-color: #ffffff;
+  margin: 0;
+  padding: 0;
+}
+
+/** container: **/
+
+.lake_container_col {
+  min-height: 100vh;
+  max-width: 1800px;
+  margin: auto;
+  background-color: #f8f9fa;
+  padding: 1em;
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+}
+
+/** headers: **/
+
+.header_lake {
+  background-color: #ffffff;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  padding: 0.4em 0.6em 0.1em 0.6em;
+  border: 0.08em solid #484848;
+  position: relative;
+  left: -1.2em;
+}
+
+/** text: **/
+
+.page_text {
+  width: 100%;
+  background-color: #ffffff;
+  border: 0.8em solid #ffffff;
+  border-radius: 0.8em;
+}
+
+/** plots: **/
+
+.lake_plot_div {
+  width: 100%;
+  min-height: 90vh;
+  margin: 1em;
+  border: 0.8em solid #ffffff;
+  border-radius: 0.8em;
+}
+
+.leaflet-container .leaflet-control-mouseposition {
+  min-width: 11em;
+  background-color: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 0 5px #bbb;
+  padding: 0 5px;
+  margin:0;
+  color: #333;
+  font: 11px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif;
+}
