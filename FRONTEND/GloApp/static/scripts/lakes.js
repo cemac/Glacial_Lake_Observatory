@@ -1,4 +1,4 @@
-/*** lake.js ***/
+/*** site.css ***/
 
 'use strict';
 
@@ -38,6 +38,7 @@ var page_data = {
     "#140910ff", "#11070cff", "#0f0609ff", "#0b0405ff"
   ]
 };
+var plot_div = document.getElementById('plot_div');
 
 /** leaflet mouse position control: **/
 

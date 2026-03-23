@@ -1,19 +1,81 @@
 {% extends 'layout.html.j2' %}
-{% block body %}
-
-<script>
-var lakes = {{ lakes }};
+{% block styles %}
+<!-- datatables style: -->
+<link rel="stylesheet"
+      type="text/css"
+      href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css"
+      media="all">
+<!-- leaflet css: -->
+<link rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static', filename='styles/leaflet.css') }}"
+      media="all">
+<!-- local css: -->
+<link rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static', filename='styles/database.css') }}"
+      media="all">
+<!-- leaflet js: -->
+<script src="{{ url_for('static', filename='scripts/leaflet.js') }}"
+        charset="utf-8">
 </script>
-
-<h1>Database</h1>
-
-<i> Map to go here </i>
-
-<br>
-<!-- Example of passing in the button for now -->
-<a href="{{ url_for('main.lake', lake_id=1) }}"
-class="btn btn-primary mt-3">
-View Lake
-</a>
-
+<!-- jquery js: -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"
+        charset="utf-8">
+</script>
+<!-- datatables js: -->
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"
+        charset="utf-8">
+</script>
+<script src="https://cdn.datatables.net/plug-ins/1.11.5/filtering/type-based/accent-neutralise.js"
+        charset="utf-8">
+</script>
+<!-- local js: -->
+<script src="{{ url_for('static', filename='scripts/database.js') }}"
+        charset="utf-8"
+        defer>
+</script>
+{% endblock %}
+{% block body %}
+<!-- container: _______________________________________________________ -->
+<div id="db_container_col"
+     class="db_container_col db_column">
+  <!-- header text: ___________________________________________________ -->
+  <div id="header_header_row"
+       class="db_container_row db_row flex_start">
+    <h2 id="header_db_id"
+        class="header_db">Database</h2>
+  </div>
+  <div id="header_text_row"
+       class="db_container_row db_row flex_start">
+    <div id="header_text"
+         class="page_text">
+      <table id="lakes_table"
+             class="display">
+        <thead>
+          <tr>
+            <th class="dt-left">ID</th>
+            <th class="dt-left th_country">Country</th>
+            <th class="dt-left th_basin">Basin</th>
+            <th class="dt-left th_alt_name">Common Name</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for lake in lakes -%}
+          <tr class="lakes_table_tr"
+              onclick="window.location.href='/database/lake/{{ lake['GLO_ID'] }}'">
+            <td>{{ lake['GLO_ID'] }}</td>
+            <td class="td_country">{{ lake['COUNTRY']  }}</td>
+            <td class="td_basin">{{ lake['BASIN']  }}</td>
+            <td class="td_common_name">{{ lake['COMMON_NAME'] | replace('None', '') }}</td>
+            <td><a href="/database/lake/{{ lake['GLO_ID'] }}">View</a></td>
+          </tr>
+          {% endfor -%}
+        </tbody>
+     </table>
+    </div>
+  </div>
+<!-- end container: ___________________________________________________ -->
+</div>
 {% endblock %}

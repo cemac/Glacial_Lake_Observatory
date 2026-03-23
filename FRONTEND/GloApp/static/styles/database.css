@@ -1,28 +1,28 @@
-/*** lake.css ***/
+/*** database.css ***/
 
 /** flex classes: **/
 
-.lake_row,
-.lake_row_wrap,
-.lake_column,
-.lake_column_wrap {
+.db_row,
+.db_row_wrap,
+.db_column,
+.db_column_wrap {
   display: flex;
   flex: 1 1 auto;
 }
 
-.lake_row {
+.db_row {
   flex-flow: row nowrap;
 }
 
-.lake_row_wrap {
+.db_row_wrap {
   flex-flow: row wrap;
 }
 
-.lake_column {
+.db_column {
   flex-flow: column nowrap;
 }
 
-.lake_column_wrap {
+.db_column_wrap {
   flex-flow: column wrap;
 }
 
@@ -60,7 +60,7 @@ body {
 
 /** container: **/
 
-.lake_container_col {
+.db_container_col {
   min-height: 100vh;
   max-width: 1800px;
   margin: auto;
@@ -72,7 +72,7 @@ body {
 
 /** headers: **/
 
-.header_lake {
+.header_db {
   background-color: #ffffff;
   margin-top: 1em;
   margin-bottom: 1em;
@@ -95,15 +95,6 @@ body {
 
 /** plots: **/
 
-.lake_plot_div {
-  width: 100%;
-  min-height: 90vh;
-  margin: 1em 0.2em 1em 0.2em;
-  border: 0.8em solid #ffffff;
-  border-radius: 0.8em;
-  overflow: hidden;
-}
-
 .leaflet-container .leaflet-control-mouseposition {
   min-width: 11em;
   background-color: rgba(255, 255, 255, 0.7);
@@ -112,4 +103,63 @@ body {
   margin:0;
   color: #333;
   font: 11px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif;
+}
+
+/** tables: **/
+
+table {
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+  max-width: 98%;
+}
+
+.dataTables_wrapper {
+  margin-top: 1em;
+}
+
+.dataTables_length {
+  margin-bottom: 1em;
+}
+
+.dataTables_filter {
+  margin-bottom: 1em;
+}
+
+.dataTables_info {
+  margin-top: 1em;
+}
+
+.dataTables_paginate {
+  margin-top: 1em;
+}
+
+.lakes_table_tr:hover {
+  cursor: pointer;
+}
+
+@media only screen and (max-width: 400px) {
+  .th_common_name {
+    display: none;
+  }
+  .td_common_name {
+    display: none;
+  }
+}
+
+@media only screen and (max-width: 425px) {
+  .th_basin {
+    display: none;
+  }
+  .td_basin {
+    display: none;
+  }
+}
+
+@media only screen and (max-width: 450px) {
+  .th_country {
+    display: none;
+  }
+  .td_country {
+    display: none;
+  }
 }
