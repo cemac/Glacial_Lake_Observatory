@@ -77,11 +77,6 @@ def lake(lake_id):
         lake_data = {}
     return render_template('lake.html.j2', lake_id=lake_id, lake_data=lake_data)
 
-@main_bp.route('/database/lake-data/<string:lake_id>')
-def lakedata(lake_id):
-    return render_template('lake-data.html.j2', lake_id=lake_id)
-
 @main_bp.route('/database/otherdata/')
 def otherdata():
-    
     return render_template('otherdata.html.j2')
