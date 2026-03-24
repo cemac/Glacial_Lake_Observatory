@@ -178,7 +178,7 @@ function geometry_plot(data) {
       'attribution': '&copy; <a href="https://osm.org/copyright" target="_blank">OpenStreetMap</a> contributors'
     }
   );
-  /* define its_live glacial velocit layer: */
+  /* define its_live glacial velocity layer: */
   var gv_layer = L.tileLayer(
     'https://its-live-data.s3-us-west-2.amazonaws.com/velocity_mosaic/v2/static/v_tiles_global/{z}/{x}/{y}.png', {
       'attribution': 'ITS_LIVE'
@@ -245,8 +245,8 @@ function geometry_plot(data) {
     ],
     /* define bounds: */
     maxBounds: [
-      [min_lat - 0.1, max_lat + 0.1],
-      [min_lon - 0.1, max_lon + 0.1],
+      [min_lat - 0.1, min_lon - 0.1],
+      [max_lat + 0.1, max_lon + 0.1],
     ],
     maxBoundsViscosity: 1.0,
     /*  zoom levels: */

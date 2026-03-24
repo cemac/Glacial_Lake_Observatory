@@ -35,6 +35,10 @@
         charset="utf-8"
         defer>
 </script>
+<!-- local js: -->
+<script>
+var lakes_data = {{ lakes | replace('None', 'null') }};
+</script>
 {% endblock %}
 {% block body %}
 <!-- container: _______________________________________________________ -->
