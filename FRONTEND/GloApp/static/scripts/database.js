@@ -119,8 +119,8 @@ function load_map() {
     ],
     /* map center: */
     center: [
-      35,
-      80
+      28.5,
+      84.5
     ],
     /* define bounds: */
     maxBounds: [
@@ -129,7 +129,7 @@ function load_map() {
     ],
     maxBoundsViscosity: 1.0,
     /*  zoom levels: */
-    zoom:    3,
+    zoom:    5,
     minZoom: 2,
     maxZoom: 12
   });
@@ -144,6 +144,34 @@ function load_map() {
   L.control.layers(
     tile_layers, {}, {collapsed: true, sortLayers: false}
   ).addTo(map);
+
+  /* draw lake markers: */
+  for (var i = 0; i < lakes_data.length; i++) {
+    var lake = lakes_data[i];
+    var lake_lat = lake['LATITUDE'];
+    var lake_lon = lake['LONGITUDE'];
+    var lake_name = lake['GLO_ID'];
+    var lake_alt_name = lake['COMMON_NAME'];
+    var lake_url = window.location.href + '/lake/' + lake_name;
+    var lake_text = '<b>' + lake_name + '</b>';
+    if (lake_alt_name != null) {
+      lake_text += '<br>' + lake_alt_name;
+    };
+    var lake_marker = new L.circleMarker([lake_lat, lake_lon],{
+      radius: 8,
+      stroke: true,
+      weight: 1,
+      opacity: 0.9,
+      color: '#cc0033',
+      fill: true,
+      fillOpacity: 0.8,
+      fillColor: '#ff3333'
+    });
+    lake_marker.url = lake_url;
+    lake_marker.bindTooltip(lake_text, {interactive: true});
+    lake_marker.on('click', function(e) { window.location.href = e.sourceTarget.url; });
+    lake_marker.addTo(map);
+  };
 };
 
 /* function to load temperature data: */
