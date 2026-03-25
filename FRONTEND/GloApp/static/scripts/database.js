@@ -58,11 +58,6 @@ L.control.mousePosition = function (options) {
 
 /** functions: **/
 
-
-
-
-
-
 /* function to laod map: */
 function load_map() {
   /* gep map element: */
@@ -152,10 +147,14 @@ function load_map() {
     var lake_lon = lake['LONGITUDE'];
     var lake_name = lake['GLO_ID'];
     var lake_alt_name = lake['COMMON_NAME'];
+    var lake_connectivity = lake['CONNECTIVITY'];
     var lake_url = window.location.href + '/lake/' + lake_name;
     var lake_text = '<b>' + lake_name + '</b>';
     if (lake_alt_name != null) {
       lake_text += '<br>' + lake_alt_name;
+    };
+    if (lake_connectivity != null) {
+      lake_text += '<br>' + lake_connectivity;
     };
     var lake_marker = new L.circleMarker([lake_lat, lake_lon],{
       radius: 8,
