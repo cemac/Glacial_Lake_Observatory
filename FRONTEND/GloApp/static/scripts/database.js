@@ -168,7 +168,7 @@ function load_map() {
     });
     lake_marker.url = lake_url;
     lake_marker.bindTooltip(lake_text, {interactive: true});
-    lake_marker.on('click', function(e) { window.location.href = e.sourceTarget.url; });
+    lake_marker.on('click', function(e) { window.open(e.sourceTarget.url); });
     lake_marker.addTo(map);
   };
 };

@@ -201,8 +201,10 @@ function geometry_plot(data) {
   /* get geometry color map: */
   var geometry_colors = page_data['geometry_colors'];
   var color_count = geometry_colors.length;
+  /* init variable for storing default ploygon: */
+  var default_poly = null;
   /* loop through yars and load polygons: */
-  for (var i = (data['years'].length -1); i > -1; i--) {
+  for (var i = (data['years'].length - 1); i > -1; i--) {
     /* get color for this polygon: */
     if (data['years'].length == 1) {
       var poly_color_index = Math.round(
@@ -228,6 +230,10 @@ function geometry_plot(data) {
     max_lat = Math.max(max_lat, poly_bounds.getNorth())
     min_lon = Math.min(min_lon, poly_bounds.getWest())
     max_lon = Math.max(max_lon, poly_bounds.getEast())
+    /* store first polygon for adding to map: */
+    if (i == (data['years'].length - 1)) {
+      default_poly = poly_layer;
+    };
   };
   /* center coords: */
   var center_lat = (max_lat + min_lat) / 2;
@@ -261,6 +267,10 @@ function geometry_plot(data) {
   L.control.mousePosition().addTo(map);
   /* add scale: */
   L.control.scale().addTo(map);
+  /* add default polygon: */
+  if (default_poly != null) {
+    default_poly.addTo(map);
+  };
   /* add layer control: */
   L.control.layers(
     tile_layers, poly_layers, {collapsed: true, sortLayers: false}
