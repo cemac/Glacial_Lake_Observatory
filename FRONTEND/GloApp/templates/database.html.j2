@@ -46,24 +46,27 @@ var lakes_data = {{ lakes | replace('None', 'null') }};
      class="db_container_col db_column">
   <!-- header text: ___________________________________________________ -->
   <div id="header_header_row"
-       class="db_container_row db_row flex_start">
+       class="db_content_row db_row flex_start">
   </div>
   <!-- lakes map: __________________________________________________ -->
   <div id="map_header_row"
-       class="db_container_row db_row flex_start">
+       class="db_content_col db_column flex_start">
+    <h2 id="header_db_id"
+        class="header_db">Database</h2>
+    <p class="db_content_text">Navigate to glacial lakes in the database using the interactive filters and map below, or by searching the datatable.</p>
   </div>
   <div id="map_row"
-       class="db_container_row db_row flex_center">
+       class="db_content_row db_row flex_center">
     <div id="lakes_map"
          class="db_plot_div flex_grow">
     </div>
   </div>
   <!-- lakes table: ________________________________________________ -->
   <div id="table_header_row"
-       class="db_container_row db_row flex_start">
+       class="db_content_row db_row flex_start">
   </div>
   <div id="table_table_row"
-       class="db_container_row db_row flex_start">
+       class="db_content_row db_row flex_start">
     <div id="table_table"
          class="page_text">
       <table id="lakes_table"

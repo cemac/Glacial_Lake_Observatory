@@ -71,15 +71,14 @@ body {
 
 /** headers: **/
 
+.db_content_col {
+  margin-top: 0em;
+}
+
 .header_db {
-  background-color: #ffffff;
-  margin-top: 1em;
-  margin-bottom: 1em;
+  margin-top: 0em;
+  margin-bottom: 0.5em;
   max-height: 2em;
-  padding: 0.4em 0.6em 0.1em 0.6em;
-  border: 0.08em solid #484848;
-  position: relative;
-  left: -1.2em;
 }
 
 /** text: **/
@@ -90,6 +89,10 @@ body {
   border: 0.8em solid #ffff;
   border-radius: 0.8em;
   padding: 1em;
+}
+
+.db_content_text {
+  margin-left: 0.5em;
 }
 
 /** plots: **/
