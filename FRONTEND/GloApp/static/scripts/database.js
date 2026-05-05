@@ -282,7 +282,7 @@ $(document).ready(function(){
       'orderable': false
     }],
     'order': [[0, "asc"]],
-    'pageLength': 50,
+    'pageLength': 10,
     'stateSave': true
   });
 });
