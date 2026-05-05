@@ -73,6 +73,12 @@ function load_map() {
       'attribution': '<a href="https://s2maps.eu/" target="_blank">Sentinel-2 cloudless</a>'
     }
   );
+  /* define esri layer: */
+  var esri_layer = L.tileLayer(
+    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      'attribution': '<a href="https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer" target="_blank">ESRI World Imagery</a>'
+    }
+  );
   /* define cartodb layer: */
   var carto_layer = L.tileLayer(
     'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png', {
@@ -89,12 +95,14 @@ function load_map() {
   /* define its_live glacial velocity layer: */
   var gv_layer = L.tileLayer(
     'https://its-live-data.s3-us-west-2.amazonaws.com/velocity_mosaic/v2/static/v_tiles_global/{z}/{x}/{y}.png', {
-      'attribution': 'ITS_LIVE'
+      'attribution': 'ITS_LIVE',
+      'maxNativeZoom': 11
     }
   );
   /* all tile layers: */
   var tile_layers = {
     'Sentinel-2': s2_layer,
+    'ESRI World Imagery': esri_layer,
     'Carto': carto_layer,
     'Open Street Map': osm_layer,
     'Glacial Velocity': gv_layer
@@ -114,8 +122,8 @@ function load_map() {
     ],
     /* map center: */
     center: [
-      28.5,
-      84.5
+      29.05,
+      84.62
     ],
     /* define bounds: */
     maxBounds: [
@@ -124,9 +132,9 @@ function load_map() {
     ],
     maxBoundsViscosity: 1.0,
     /*  zoom levels: */
-    zoom:    5,
+    zoom:    7,
     minZoom: 2,
-    maxZoom: 12
+    maxZoom: 16
   });
   /* remove prefix from attribution control: */
   var map_atrr_control = map.attributionControl;
@@ -157,7 +165,7 @@ function load_map() {
       lake_text += '<br>' + lake_connectivity;
     };
     var lake_marker = new L.circleMarker([lake_lat, lake_lon],{
-      radius: 8,
+      radius: 5,
       stroke: true,
       weight: 1,
       opacity: 0.9,

@@ -165,6 +165,12 @@ function geometry_plot(data) {
       'attribution': '<a href="https://s2maps.eu/" target="_blank">Sentinel-2 cloudless</a>'
     }
   );
+  /* define esri layer: */
+  var esri_layer = L.tileLayer(
+    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      'attribution': '<a href="https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer" target="_blank">ESRI World Imagery</a>'
+    }
+  );
   /* define cartodb layer: */
   var carto_layer = L.tileLayer(
     'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png', {
@@ -181,12 +187,14 @@ function geometry_plot(data) {
   /* define its_live glacial velocity layer: */
   var gv_layer = L.tileLayer(
     'https://its-live-data.s3-us-west-2.amazonaws.com/velocity_mosaic/v2/static/v_tiles_global/{z}/{x}/{y}.png', {
-      'attribution': 'ITS_LIVE'
+      'attribution': 'ITS_LIVE',
+      'maxNativeZoom': 11
     }
   );
   /* all tile layers: */
   var tile_layers = {
     'Sentinel-2': s2_layer,
+    'ESRI World Imagery': esri_layer,
     'Carto': carto_layer,
     'Open Street Map': osm_layer,
     'Glacial Velocity': gv_layer
