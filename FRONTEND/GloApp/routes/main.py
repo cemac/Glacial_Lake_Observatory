@@ -1,7 +1,10 @@
 import json
 import os
 
-from flask import Blueprint, render_template, request, flash, redirect, url_for, abort
+from flask import (
+    Blueprint, render_template, request, flash, redirect, url_for, abort,
+    send_from_directory
+)
 from GloApp.forms.user_forms import Contact_Form
 from flask_mail import Message
 from GloApp.extensions import mail
@@ -80,3 +83,8 @@ def lake(lake_id):
 @main_bp.route('/database/otherdata/')
 def otherdata():
     return render_template('otherdata.html.j2')
+
+@main_bp.route('/data/<path:file_path>')
+def static_data(file_path):
+    data_dir = GloApp.globals.DATA_DIR
+    return send_from_directory(data_dir, file_path)

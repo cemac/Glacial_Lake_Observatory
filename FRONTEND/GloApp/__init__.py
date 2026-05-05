@@ -20,6 +20,7 @@ def create_app():
 
     # --- global variables
     site_root = os.path.realpath(app.root_path)
+    data_dir = os.sep.join([site_root, '..', 'data'])
     lakes_json = os.sep.join([site_root, '..', 'data', 'lakes.json'])
     lakes_by_id_json = os.sep.join([site_root, '..', 'data', 'lakes_by_id.json'])
     try:
@@ -32,13 +33,14 @@ def create_app():
             GloApp.globals.LAKES_BY_ID = json.load(json_data)
     except:
         pass
+    GloApp.globals.SITE_ROOT = site_root
+    GloApp.globals.DATA_DIR = data_dir
     # ---
 
     mail.init_app(app)
 
     app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp)
-    
 
     app.teardown_appcontext(close_db)
 
