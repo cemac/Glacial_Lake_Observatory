@@ -176,3 +176,6 @@ cython_debug/
 # Project notes 
 *.pptx  
 *.docx
+
+# vim
+*.swp
