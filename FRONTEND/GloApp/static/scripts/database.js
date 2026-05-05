@@ -155,14 +155,28 @@ function load_map() {
     var lake_lon = lake['LONGITUDE'];
     var lake_name = lake['GLO_ID'];
     var lake_alt_name = lake['COMMON_NAME'];
+    var lake_country = lake['COUNTRY'];
     var lake_connectivity = lake['CONNECTIVITY'];
+    var lake_area = lake['AREA'];
+    var lake_expansion_rate = lake['EXPANSION_RATE'];
+    var lake_expansion_uncertainty = lake['EXPANSION_RATE_UNCERTAINTY'];
+    var lake_depth_max = lake['DEPTH_MAX'];
+    var lake_volume = lake['VOLUME'];
+    var lake_volume_year = lake['VOLUME_YEAR'];
     var lake_url = window.location.href + '/lake/' + lake_name;
     var lake_text = '<b>' + lake_name + '</b>';
-    if (lake_alt_name != null) {
-      lake_text += '<br>' + lake_alt_name;
+    if (lake_alt_name != null) { lake_text += '<br>• Common name: ' + lake_alt_name; };
+    if (lake_country != null) { lake_text += '<br>• Country: ' + lake_country; };
+    if (lake_connectivity != null) { lake_text += '<br>• Connectivity: ' + lake_connectivity; };
+    if (lake_area != null) { lake_text += '<br>• Area: ' + lake_area.toFixed(3) + ' km²'; };
+    if ((lake_expansion_rate != null) && (lake_expansion_uncertainty != null)) {
+      lake_text += '<br>• Expansion rate: ' + lake_expansion_rate + ' km²/year (+/-' +
+                   lake_expansion_uncertainty + ')';
     };
-    if (lake_connectivity != null) {
-      lake_text += '<br>' + lake_connectivity;
+    if (lake_depth_max != null) { lake_text += '<br>• Maximum depth: ' + lake_depth_max.toFixed(0) + ' m'; };
+    if ((lake_volume != null) && (lake_volume_year != null)) {
+      lake_text += '<br>• Volume: ' + lake_volume.toFixed(0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") +
+                   ' m³ (' + lake_volume_year + ')';
     };
     var lake_marker = new L.circleMarker([lake_lat, lake_lon],{
       radius: 5,
