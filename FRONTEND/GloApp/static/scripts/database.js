@@ -69,8 +69,8 @@ function load_map() {
   };
   /* define sentinel-2 layer: */
   var s2_layer = L.tileLayer(
-    'https://tiles.maps.eox.at/wmts/1.0.0/s2cloudless-2023_3857/default/g/{z}/{y}/{x}.jpg', {
-      'attribution': '<a href="https://s2maps.eu/" target="_blank">Sentinel-2 cloudless</a>'
+    'https://tiles.maps.eox.at/wmts/1.0.0/s2cloudless-2024_3857/default/g/{z}/{y}/{x}.jpg', {
+      'attribution': '<a href="https://s2maps.eu/" target="_blank">Sentinel-2 cloudless (2024)</a>'
     }
   );
   /* define esri layer: */

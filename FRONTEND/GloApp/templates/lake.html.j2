@@ -50,7 +50,7 @@ var data_depth = '/data/depth/' + lake_x + '/' + lake_y + '/' +
   <div id="header_header_row"
        class="lake_container_row lake_row flex_start">
     <h2 id="header_lake_id"
-        class="header_lake">{{ lake_id }}</h2>
+        class="headeR_lake_id header_lake">{{ lake_id }}</h2>
   </div>
   <div id="header_text_row"
        class="lake_container_row lake_row flex_start">
@@ -60,29 +60,18 @@ var data_depth = '/data/depth/' + lake_x + '/' + lake_y + '/' +
   <!-- geometry plot: ______________________________________________ -->
   <div id="geometry_header_row"
        class="lake_container_row lake_row flex_start">
-    <h3 class="header_lake">Geometry</h3>
+    <h3 class="header_lake_plot header_lake">Geometry</h3>
   </div>
   <div id="geometry_plot_row"
        class="lake_container_row lake_row flex_center">
     <div id="geometry_plot_div"
-         class="lake_plot_div flex_grow">
-    </div>
-  </div>
-  <!-- temperature plot: ______________________________________________ -->
-  <div id="temperature_header_row"
-       class="lake_container_row lake_row flex_start">
-    <h3 class="header_lake">Temperature</h3>
-  </div>
-  <div id="temperature_plot_row"
-       class="lake_container_row lake_row flex_center">
-    <div id="temperature_plot_div"
-         class="lake_plot_div flex_grow">
+         class="lake_map_div flex_grow">
     </div>
   </div>
   <!-- area plot: ______________________________________________ -->
   <div id="area_header_row"
        class="lake_container_row lake_row flex_start">
-    <h3 class="header_lake">Area</h3>
+    <h3 class="header_lake_plot header_lake">Area</h3>
   </div>
   <div id="area_plot_row"
        class="lake_container_row lake_row flex_center">
@@ -90,10 +79,21 @@ var data_depth = '/data/depth/' + lake_x + '/' + lake_y + '/' +
          class="lake_plot_div flex_grow">
     </div>
   </div>
+  <!-- temperature plot: ______________________________________________ -->
+  <div id="temperature_header_row"
+       class="lake_container_row lake_row flex_start">
+    <h3 class="header_lake_plot header_lake">Temperature</h3>
+  </div>
+  <div id="temperature_plot_row"
+       class="lake_container_row lake_row flex_center">
+    <div id="temperature_plot_div"
+         class="lake_plot_div flex_grow">
+    </div>
+  </div>
   <!-- volume plot: ______________________________________________ -->
   <div id="volume_header_row"
        class="lake_container_row lake_row flex_start">
-    <h3 class="header_lake">Volume</h3>
+    <h3 class="header_lake_plot header_lake">Volume</h3>
   </div>
   <div id="volume_plot_row"
        class="lake_container_row lake_row flex_center">
@@ -104,7 +104,7 @@ var data_depth = '/data/depth/' + lake_x + '/' + lake_y + '/' +
   <!-- depth plot: ____________________________________________________ -->
   <div id="depth_header_row"
        class="lake_container_row lake_row flex_start">
-    <h3 class="header_lake">Depth</h3>
+    <h3 class="header_lake_plot header_lake">Bathymetry</h3>
   </div>
   <div id="depth_plot_row"
        class="lake_container_row lake_row flex_center">
