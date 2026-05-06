@@ -121,6 +121,7 @@ body {
   border: 0.8em solid #ffffff;
   border-radius: 0.8em;
   overflow: hidden;
+  margin-bottom: 1em;
 }
 
 .leaflet-container .leaflet-control-mouseposition {

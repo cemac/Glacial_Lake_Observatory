@@ -36,6 +36,31 @@ var page_data = {
     "#31213fff", "#2e1e3bff", "#2c1c37ff", "#2a1b33ff", "#28192fff", "#26172aff",
     "#231526ff", "#211423ff", "#1e111fff", "#1b0f1bff", "#190e18ff", "#160b14ff",
     "#140910ff", "#11070cff", "#0f0609ff", "#0b0405ff"
+  ],
+  /* geometry plot elements: */
+  'geometry_plot_els': [
+    document.getElementById('geometry_header_row'),
+    document.getElementById('geometry_plot_row')
+  ],
+  /* area plot elements: */
+  'area_plot_els': [
+    document.getElementById('area_header_row'),
+    document.getElementById('area_plot_row')
+  ],
+  /* temperature plot elements: */
+  'temperature_plot_els': [
+    document.getElementById('temperature_header_row'),
+    document.getElementById('temperature_plot_row')
+  ],
+  /* volume plot elements: */
+  'volume_plot_els': [
+    document.getElementById('volume_header_row'),
+    document.getElementById('volume_plot_row')
+  ],
+  /* depth plot elements: */
+  'depth_plot_els': [
+    document.getElementById('depth_header_row'),
+    document.getElementById('depth_plot_row')
   ]
 };
 
@@ -159,17 +184,26 @@ function load_text() {
 
 /* function to load geometry data: */
 async function load_geometry_data() {
-  /* get data: */
-  await fetch(
-    data_geometry,
-    {'cache': 'no-cache'}
-  ).then(async function(data_req) {
-    page_data['geometry'] = await data_req.json();
-  });
-  /* get data: */
-  var data = page_data['geometry'];
-  /* draw the geometry plot: */
-  geometry_plot(data);
+  try {
+    /* get data: */
+    await fetch(
+      data_geometry,
+      {'cache': 'no-cache'}
+    ).then(async function(data_req) {
+      page_data['geometry'] = await data_req.json();
+    });
+    /* get data: */
+    var data = page_data['geometry'];
+    /* draw the geometry plot: */
+    geometry_plot(data);
+  } catch(e) {
+    /* no data, hide temeprature plot elements: */
+    var geometry_plot_els = page_data['geometry_plot_els'];
+    for (var i = 0 ; i < geometry_plot_els.length; i++) {
+      var geometry_plot_el = geometry_plot_els[i];
+      geometry_plot_el.style.display = 'none';
+    };
+  };
 };
 
 /* function to draw geometry plot: */
@@ -319,17 +353,26 @@ function geometry_plot(data) {
 
 /* function to load temperature data: */
 async function load_temperature_data() {
-  /* get data: */
-  await fetch(
-    data_temperature,
-    {'cache': 'no-cache'}
-  ).then(async function(data_req) {
-    page_data['temperature'] = await data_req.json();
-  });
-  /* get data: */
-  var data = page_data['temperature'];
-  /* draw the temperature plot: */
-  temperature_plot(data);
+  try {
+    /* get data: */
+    await fetch(
+      data_temperature,
+      {'cache': 'no-cache'}
+    ).then(async function(data_req) {
+      page_data['temperature'] = await data_req.json();
+    });
+    /* get data: */
+    var data = page_data['temperature'];
+    /* draw the temperature plot: */
+    temperature_plot(data);
+  } catch(e) {
+    /* no data, hide temeprature plot elements: */
+    var temperature_plot_els = page_data['temperature_plot_els'];
+    for (var i = 0 ; i < temperature_plot_els.length; i++) {
+      var temperature_plot_el = temperature_plot_els[i];
+      temperature_plot_el.style.display = 'none';
+    };
+  };
 };
 
 /* function to draw temperature plot: */
@@ -392,17 +435,26 @@ function temperature_plot(data) {
 
 /* function to load area data: */
 async function load_area_data() {
-  /* get data: */
-  await fetch(
-    data_area,
-    {'cache': 'no-cache'}
-  ).then(async function(data_req) {
-    page_data['area'] = await data_req.json();
-  });
-  /* get data: */
-  var data = page_data['area'];
-  /* draw the area plot: */
-  area_plot(data);
+  try {
+    /* get data: */
+    await fetch(
+      data_area,
+      {'cache': 'no-cache'}
+    ).then(async function(data_req) {
+      page_data['area'] = await data_req.json();
+    });
+    /* get data: */
+    var data = page_data['area'];
+    /* draw the area plot: */
+    area_plot(data);
+  } catch(e) {
+    /* no data, hide temeprature plot elements: */
+    var area_plot_els = page_data['area_plot_els'];
+    for (var i = 0 ; i < area_plot_els.length; i++) {
+      var area_plot_el = area_plot_els[i];
+      area_plot_el.style.display = 'none';
+    };
+  };
 };
 
 /* function to draw area plot: */
@@ -462,17 +514,26 @@ function area_plot(data) {
 
 /* function to load volume data: */
 async function load_volume_data() {
-  /* get data: */
-  await fetch(
-    data_volume,
-    {'cache': 'no-cache'}
-  ).then(async function(data_req) {
-    page_data['volume'] = await data_req.json();
-  });
-  /* get data: */
-  var data = page_data['volume'];
-  /* draw the volume plot: */
-  volume_plot(data);
+  try {
+    /* get data: */
+    await fetch(
+      data_volume,
+      {'cache': 'no-cache'}
+    ).then(async function(data_req) {
+      page_data['volume'] = await data_req.json();
+    });
+    /* get data: */
+    var data = page_data['volume'];
+    /* draw the volume plot: */
+    volume_plot(data);
+  } catch(e) {
+    /* no data, hide temeprature plot elements: */
+    var volume_plot_els = page_data['volume_plot_els'];
+    for (var i = 0 ; i < volume_plot_els.length; i++) {
+      var volume_plot_el = volume_plot_els[i];
+      volume_plot_el.style.display = 'none';
+    };
+  };
 };
 
 /* function to draw volume plot: */
@@ -537,22 +598,31 @@ function volume_plot(data) {
 
 /* function to load depth data: */
 async function load_depth_data() {
-  /* get data: */
-  await fetch(
-    data_depth,
-    {'cache': 'no-cache'}
-  ).then(async function(data_req) {
-    page_data['depth'] = await data_req.json();
-  });
-  /* get data for first data id: */
-  var data_id = page_data['depth']['data_ids'][0];
-  var data = page_data['depth']['data'][data_id];
-  /* get x, y, and z data: */
-  var x = data['grid_lon'];
-  var y = data['grid_lat'];
-  var z = data['grid_depth'];
-  /* draw the depth plot: */
-  depth_plot(x, y, z);
+  try {
+    /* get data: */
+    await fetch(
+      data_depth,
+      {'cache': 'no-cache'}
+    ).then(async function(data_req) {
+      page_data['depth'] = await data_req.json();
+    });
+    /* get data for first data id: */
+    var data_id = page_data['depth']['data_ids'][0];
+    var data = page_data['depth']['data'][data_id];
+    /* get x, y, and z data: */
+    var x = data['grid_lon'];
+    var y = data['grid_lat'];
+    var z = data['grid_depth'];
+    /* draw the depth plot: */
+    depth_plot(x, y, z);
+  } catch(e) {
+    /* no data, hide temeprature plot elements: */
+    var depth_plot_els = page_data['depth_plot_els'];
+    for (var i = 0 ; i < depth_plot_els.length; i++) {
+      var depth_plot_el = depth_plot_els[i];
+      depth_plot_el.style.display = 'none';
+    };
+  };
 };
 
 /* function to draw depth plot: */
