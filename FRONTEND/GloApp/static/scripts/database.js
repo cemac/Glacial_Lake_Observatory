@@ -2,6 +2,31 @@
 
 'use strict';
 
+/** global variables: **/
+
+var page_data = {
+  /* map color map (R viridis mako): */
+  'map_colors': [
+    "#def5e5ff", "#d9f2e0ff", "#d4f1dcff", "#cfeed7ff", "#c9edd3ff", "#c4eacfff",
+    "#bfe9cbff", "#b9e6c7ff", "#b3e4c3ff", "#ade3c0ff", "#a7e1bcff", "#a0dfb9ff",
+    "#99ddb6ff", "#93dbb5ff", "#8bdab2ff", "#83d8b0ff", "#7bd6afff", "#74d4adff",
+    "#6cd3adff", "#65d0adff", "#5fcdadff", "#59ccadff", "#54c9adff", "#50c6adff",
+    "#4cc3adff", "#48c1adff", "#46beadff", "#43bbadff", "#41b8adff", "#3fb5adff",
+    "#3db3adff", "#3bafadff", "#3aadacff", "#38aaacff", "#37a7acff", "#36a4abff",
+    "#35a1abff", "#359fabff", "#359baaff", "#3499aaff", "#3496a9ff", "#3492a8ff",
+    "#3490a8ff", "#348da7ff", "#348aa6ff", "#3487a6ff", "#3485a5ff", "#3482a4ff",
+    "#357ea4ff", "#357ca3ff", "#3579a2ff", "#3576a2ff", "#3573a1ff", "#3670a0ff",
+    "#366da0ff", "#366a9fff", "#37689fff", "#37649eff", "#38629dff", "#395e9cff",
+    "#3a5c9bff", "#3b589aff", "#3c5598ff", "#3d5296ff", "#3e4f94ff", "#3f4c91ff",
+    "#40498eff", "#40478aff", "#414387ff", "#414083ff", "#413e7eff", "#403c79ff",
+    "#403a75ff", "#3f3770ff", "#3e356cff", "#3e3367ff", "#3c3162ff", "#3b2f5eff",
+    "#3a2c59ff", "#382a55ff", "#372851ff", "#35264cff", "#342548ff", "#322243ff",
+    "#31213fff", "#2e1e3bff", "#2c1c37ff", "#2a1b33ff", "#28192fff", "#26172aff",
+    "#231526ff", "#211423ff", "#1e111fff", "#1b0f1bff", "#190e18ff", "#160b14ff",
+    "#140910ff", "#11070cff", "#0f0609ff", "#0b0405ff"
+  ]
+};
+
 /** leaflet mouse position control: **/
 
 L.Control.MousePosition = L.Control.extend({
@@ -148,6 +173,21 @@ function load_map() {
     tile_layers, {}, {collapsed: true, sortLayers: false}
   ).addTo(map);
 
+  /* get min / max expansion rates: */
+  var expansion_rates = [];
+  for (var i = 0; i < lakes_data.length; i++) {
+    expansion_rates.push(lakes_data[i]['EXPANSION_RATE']);
+  };
+  expansion_rates = expansion_rates.sort();
+  var min_expansion_index = Math.round(0.1 * (expansion_rates.length -1));
+  var min_expansion = expansion_rates[min_expansion_index];
+  var max_expansion_index = Math.round(0.9 * (expansion_rates.length -1));
+  var max_expansion = expansion_rates[max_expansion_index];
+  var expansion_range = max_expansion - min_expansion;
+  /* get color map: */
+  var map_colors = page_data['map_colors'];
+  var color_count = map_colors.length;
+
   /* draw lake markers: */
   for (var i = 0; i < lakes_data.length; i++) {
     var lake = lakes_data[i];
@@ -178,15 +218,23 @@ function load_map() {
       lake_text += '<br>• Volume: ' + lake_volume.toFixed(0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") +
                    ' m³ (' + lake_volume_year + ')';
     };
+    /* get color for this polygon: */
+    var poly_color_index = Math.round(
+      ((lake_expansion_rate - min_expansion) / expansion_range) * (color_count - 1)
+    );
+    if (poly_color_index < 0) { poly_color_index = 0; };
+    poly_color_index = Math.min(poly_color_index, color_count - 1);
+    var poly_color = map_colors[poly_color_index];
+    /* draw polygon: */
     var lake_marker = new L.circleMarker([lake_lat, lake_lon],{
       radius: 5,
       stroke: true,
       weight: 1,
-      opacity: 0.9,
-      color: '#cc0033',
+      opacity: 0.6,
+      color: '#39ffff',
       fill: true,
       fillOpacity: 0.8,
-      fillColor: '#ff3333'
+      fillColor: poly_color
     });
     lake_marker.url = lake_url;
     lake_marker.bindTooltip(lake_text, {interactive: true});
@@ -194,94 +242,6 @@ function load_map() {
     lake_marker.addTo(map);
   };
 };
-
-/* function to load temperature data: */
-async function load_temperature_data() {
-  /* get data: */
-  await fetch(
-    data_temperature,
-    {'cache': 'no-cache'}
-  ).then(async function(data_req) {
-    page_data['temperature'] = await data_req.json();
-  });
-  /* get data: */
-  var data = page_data['temperature'];
-  /* draw the temperature plot: */
-  temperature_plot(data);
-};
-
-/* function to draw temperature plot: */
-function temperature_plot(data) {
-  /* init scatter plot data: */
-  var scatter_data = [];
-  /* loop through data ids: */
-  var data_ids = data['data_ids'];
-  for (var i = 0; i < data_ids.length; i++) {
-    /* get data for this id: */
-    var data_id = data_ids[i];
-    var id_data = data['data'][data_id];
-    /* get x values: */
-    var x = id_data['times'];
-    if (x[0] == '') {
-      var x = id_data['start_dates'];
-    };
-    var y = id_data['temperatures'];
-    /* temperature plot: */
-    var scatter_temperature = {
-      'name': data_id,
-      'type': 'scatter',
-      'mode': 'markers',
-      'x': x,
-      'y': y
-    };
-    /* plot data, in order of plotting: */
-    scatter_data.push(scatter_temperature);
-  };
-  /* scatter plot layout: */
-  var scatter_layout = {
-    'xaxis': {
-      'title': 'Date',
-      'type': 'date',
-      'hoverformat': '%Y-%m-%d'
-    },
-    'yaxis': {
-      'title': 'Temperature (°C)'
-    }
-  };
-  /* scatter plot config: */
-  var scatter_conf = {
-    'showLink': false,
-    'linkText': '',
-    'displaylogo': false,
-    'modeBarButtonsToRemove': [
-      'autoScale2d',
-      'lasso2d',
-      'hoverClosestCartesian',
-      'hoverCompareCartesian',
-      'toggleSpikelines'
-    ],
-    'responsive': true
-  };
-  /* create the scatter plot: */
-  var scatter_plot = Plotly.newPlot(
-    temperature_plot_div, scatter_data, scatter_layout, scatter_conf
-  );
-};
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /* set up the page: */
 function load_page() {
