@@ -120,8 +120,12 @@ function load_text() {
   var info_el = document.getElementById('header_text');
   var info_text = '';
   var info_keys = [
-    'GLO_ID', 'COMMON_NAME', 'COUNTRY', 'BASIN', 'CONNECTIVITY', 'LONGITUDE',
-    'LATITUDE', 'GTNG_REGION_O2', 'RGI_ID'
+    'GLO_ID', 'COMMON_NAME', 'COUNTRY', 'CONNECTIVITY', 'AREA',
+    'EXPANSION_RATE', 'DEPTH_MAX', 'VOLUME'
+  ];
+  var info_labels = [
+    'GLO ID', 'Common name', 'Country', 'Connectivity', 'Area',
+    'Expansion rate', 'Maximum depth', 'Volume'
   ];
   for (var i = 0; i < info_keys.length; i++) {
     var info_key = info_keys[i];
@@ -129,8 +133,26 @@ function load_text() {
     if (info_data == null) {
       continue;
     };
-    info_text += '<p>' + info_keys[i].toLowerCase() + ': ' +
-                 info_data + '</p>';
+    if (info_key == 'AREA') {
+      var info_extra = page_data['lake']['AREA_YEAR'];
+      info_text += '<span><label>' + info_labels[i] + ':</label> ' +
+                   info_data.toFixed(3) + ' km² (' + info_extra + ')</span>';
+    } else if (info_key == 'EXPANSION_RATE') {
+      var info_extra = page_data['lake']['EXPANSION_RATE_UNCERTAINTY'];
+      info_text += '<span><label>' + info_labels[i] + ':</label> ' +
+                   info_data + ' km²/year (+/-' + info_extra + ')</span>';
+    } else if (info_key == 'DEPTH_MAX') {
+      info_text += '<span><label>' + info_labels[i] + ':</label> ' +
+                   info_data + ' m</span>';
+    } else if (info_key == 'VOLUME') {
+      var info_extra = page_data['lake']['VOLUME_YEAR'];
+      info_text += '<span><label>' + info_labels[i] + ':</label> ' +
+                   info_data.toFixed(0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") +
+                   ' m³ (' + info_extra + ')</span>';
+    } else {
+      info_text += '<span><label>' + info_labels[i] + ':</label> ' +
+                   info_data + '</span>';
+    };
   };
   info_el.innerHTML = info_text;
 };
