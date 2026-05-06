@@ -293,7 +293,7 @@ function geometry_plot(data) {
     /*  zoom levels: */
     zoom:    12,
     minZoom: 12,
-    maxZoom: 17
+    maxZoom: 18
   });
   /* remove prefix from attribution control: */
   var map_atrr_control = map.attributionControl;

@@ -108,7 +108,7 @@ body {
 .page_text {
   width: 100%;
   background-color: #ffffff;
-  border: 0.8em solid #ffff;
+  border: 0.8em solid #ffffff;
   border-radius: 0.8em;
   padding: 1em;
 }
@@ -139,6 +139,7 @@ body {
   width: 0.8em;
   height: 0.8em;
   border-radius: 0.8em;
+  border: 1px solid #000000;
 }
 
 /** plots: **/
