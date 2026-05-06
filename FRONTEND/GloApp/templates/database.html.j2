@@ -73,10 +73,11 @@ var lakes_data = {{ lakes | replace('None', 'null') }};
              class="display">
         <thead>
           <tr>
-            <th class="dt-left">ID</th>
+            <th class="dt-left">GLO ID</th>
+            <th class="dt-left th_common_name">Common Name</th>
             <th class="dt-left th_country">Country</th>
-            <th class="dt-left th_basin">Basin</th>
-            <th class="dt-left th_alt_name">Common Name</th>
+            <th class="dt-left th_connectivity">Connectivity</th>
+            <th class="dt-left th_area">Area (km²)</th>
             <th></th>
           </tr>
         </thead>
@@ -85,9 +86,14 @@ var lakes_data = {{ lakes | replace('None', 'null') }};
           <tr class="lakes_table_tr"
               onclick="window.open('/database/lake/{{ lake['GLO_ID'] }}')">
             <td>{{ lake['GLO_ID'] }}</td>
-            <td class="td_country">{{ lake['COUNTRY']  }}</td>
-            <td class="td_basin">{{ lake['BASIN']  }}</td>
             <td class="td_common_name">{{ lake['COMMON_NAME'] | replace('None', '') }}</td>
+            <td class="td_country">{{ lake['COUNTRY']  }}</td>
+            <td class="td_connectivity">{{ lake['CONNECTIVITY']  }}</td>
+            {% if lake['AREA'] -%}
+              <td class="td_area">{{ lake['AREA'] | round(3) }}</td>
+            {% else -%}
+              <td class="td_area"></td>
+            {% endif -%}
             <td><a class="lakes_table_a" href="/database/lake/{{ lake['GLO_ID'] }}" target="_blank">View</a></td>
           </tr>
           {% endfor -%}
