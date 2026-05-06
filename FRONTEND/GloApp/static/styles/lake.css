@@ -63,7 +63,7 @@ body {
 .lake_container_col {
   max-width: 1800px;
   margin: auto;
-  background-color: #f8f9fa;
+  background-color: #ffffff;
   padding: 1em;
   margin-top: 0.8em;
   margin-bottom: 0.8em;
@@ -131,6 +131,14 @@ body {
   margin:0;
   color: #333;
   font: 11px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif;
+}
+
+.map_key_color {
+  display: inline-block;
+  margin-left: 0.3em;
+  width: 0.8em;
+  height: 0.8em;
+  border-radius: 0.8em;
 }
 
 /** plots: **/

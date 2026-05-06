@@ -256,7 +256,9 @@ function geometry_plot(data) {
     poly_layer.area = poly_area;
     poly_layer.bindTooltip('<b>' + parseInt(data['years'][i]) + '</b>' +
                            '<br>• Area: ' + poly_area.toFixed(3) + ' km²');
-    var poly_key = ' ' + parseInt(data['years'][i]);
+    var poly_key = ' ' + parseInt(data['years'][i]) +
+                   '<span class="map_key_color" style="background-color: ' +
+                   poly_color + ';"></span>';
     poly_layers[poly_key] = poly_layer;
     var poly_bounds = poly_layer.getBounds();
     min_lat = Math.min(min_lat, poly_bounds.getSouth())
