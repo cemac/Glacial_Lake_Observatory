@@ -87,9 +87,10 @@ body {
   margin-right: 0.5em;
 }
 
-@media only screen and (max-width: 450px) {
+@media only screen and (max-width: 500px) {
   .header_text_row label {
-    flex-basis: 99%;
+    display: inline-block;
+    width: 99%;
   }
 }
 
@@ -150,4 +151,35 @@ body {
   height: 28em;
   border-radius: 0.8em;
   overflow: hidden;
+}
+
+.plot_text_div {
+  flex-basis: 95%;
+  margin-bottom: 3em;
+}
+
+.plot_text_div label {
+  margin-left: 1em;
+  width: 95%;
+  margin-bottom: 1em;
+}
+
+.plot_text_link {
+  display: inline-block;
+  margin-left: 2em;
+  width: 45%;
+}
+
+@media only screen and (max-width: 450px) {
+  .plot_text_link {
+    width: 95%;
+  }
+  .plot_text_type {
+    display: none;
+  }
+}
+
+.plot_text_div a {
+  color: #000000;
+  text-decoration: underline;
 }

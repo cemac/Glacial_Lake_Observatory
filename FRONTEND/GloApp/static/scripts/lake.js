@@ -47,6 +47,7 @@ var page_data = {
     document.getElementById('area_header_row'),
     document.getElementById('area_plot_row')
   ],
+  'area_text_div': document.getElementById('area_text_div'),
   /* temperature plot elements: */
   'temperature_plot_els': [
     document.getElementById('temperature_header_row'),
@@ -194,8 +195,6 @@ async function load_geometry_data() {
     });
     /* get data: */
     var data = page_data['geometry'];
-    /* draw the geometry plot: */
-    geometry_plot(data);
   } catch(e) {
     /* no data, hide temeprature plot elements: */
     var geometry_plot_els = page_data['geometry_plot_els'];
@@ -203,7 +202,10 @@ async function load_geometry_data() {
       var geometry_plot_el = geometry_plot_els[i];
       geometry_plot_el.style.display = 'none';
     };
+    return;
   };
+  /* draw the geometry plot: */
+  geometry_plot(data);
 };
 
 /* function to draw geometry plot: */
@@ -351,6 +353,100 @@ function geometry_plot(data) {
   ]);
 };
 
+/* function to load area data: */
+async function load_area_data() {
+  try {
+    /* get data: */
+    await fetch(
+      data_area,
+      {'cache': 'no-cache'}
+    ).then(async function(data_req) {
+      page_data['area'] = await data_req.json();
+    });
+    /* get data: */
+    var data = page_data['area'];
+  } catch(e) {
+    /* no data, hide temeprature plot elements: */
+    var area_plot_els = page_data['area_plot_els'];
+    for (var i = 0 ; i < area_plot_els.length; i++) {
+      var area_plot_el = area_plot_els[i];
+      area_plot_el.style.display = 'none';
+    };
+    return;
+  };
+  /* draw the area plot: */
+  area_plot(data);
+};
+
+/* function to draw area plot: */
+function area_plot(data) {
+  /* init scatter plot data: */
+  var scatter_data = [];
+  /* plot text element: */
+  var area_text_div = page_data['area_text_div'];
+  var area_text = '<label>Area data sources</label>';
+  /* loop through data ids: */
+  var data_ids = data['data_ids'];
+  for (var i = 0; i < data_ids.length; i++) {
+    /* get data for this id: */
+    var data_id = data_ids[i];
+    var data_url_type = data_id.split(':::');
+    var data_url = data_url_type[0];
+    var data_type = data_url_type[1];
+    var data_label = data_url.split('/').slice(-1)[0];
+    var id_data = data['data'][data_id];
+    /* update plot text: */
+    area_text += '<span class="plot_text_link">• <a href="' + data_url +
+                 '" target="_blank">' + data_label +
+                 '</a><span class="plot_text_type"> (' + data_type +
+                 ')</span></span>';
+    /* get x values: */
+    var x = id_data['area_years'];
+    var y = id_data['areas'];
+    /* area plot: */
+    var scatter_area = {
+      'name': data_label,
+      'type': 'scatter',
+      'mode': 'lines+markers',
+      'x': x,
+      'y': y
+    };
+    /* plot data, in order of plotting: */
+    scatter_data.push(scatter_area);
+  };
+  /* scatter plot layout: */
+  var scatter_layout = {
+    'xaxis': {
+      'title': 'Date',
+      'type': 'date',
+      'hoverformat': '%Y'
+    },
+    'yaxis': {
+      'title': 'Area (km²)'
+    }
+  };
+  /* scatter plot config: */
+  var scatter_conf = {
+    'showLink': false,
+    'linkText': '',
+    'displaylogo': false,
+    'modeBarButtonsToRemove': [
+      'autoScale2d',
+      'lasso2d',
+      'hoverClosestCartesian',
+      'hoverCompareCartesian',
+      'toggleSpikelines'
+    ],
+    'responsive': true
+  };
+  /* create the scatter plot: */
+  var scatter_plot = Plotly.newPlot(
+    area_plot_div, scatter_data, scatter_layout, scatter_conf
+  );
+  /* update text: */
+  area_text_div.innerHTML = area_text;
+};
+
 /* function to load temperature data: */
 async function load_temperature_data() {
   try {
@@ -363,8 +459,6 @@ async function load_temperature_data() {
     });
     /* get data: */
     var data = page_data['temperature'];
-    /* draw the temperature plot: */
-    temperature_plot(data);
   } catch(e) {
     /* no data, hide temeprature plot elements: */
     var temperature_plot_els = page_data['temperature_plot_els'];
@@ -372,7 +466,10 @@ async function load_temperature_data() {
       var temperature_plot_el = temperature_plot_els[i];
       temperature_plot_el.style.display = 'none';
     };
+    return;
   };
+  /* draw the temperature plot: */
+  temperature_plot(data);
 };
 
 /* function to draw temperature plot: */
@@ -384,6 +481,8 @@ function temperature_plot(data) {
   for (var i = 0; i < data_ids.length; i++) {
     /* get data for this id: */
     var data_id = data_ids[i];
+    var data_url = data_id.split(':::')[0];
+    var data_label = data_url.split('/').slice(-1)[0];
     var id_data = data['data'][data_id];
     /* get x values: */
     var x = id_data['times'];
@@ -393,7 +492,7 @@ function temperature_plot(data) {
     var y = id_data['temperatures'];
     /* temperature plot: */
     var scatter_temperature = {
-      'name': data_id,
+      'name': data_label,
       'type': 'scatter',
       'mode': 'markers',
       'x': x,
@@ -433,85 +532,6 @@ function temperature_plot(data) {
   );
 };
 
-/* function to load area data: */
-async function load_area_data() {
-  try {
-    /* get data: */
-    await fetch(
-      data_area,
-      {'cache': 'no-cache'}
-    ).then(async function(data_req) {
-      page_data['area'] = await data_req.json();
-    });
-    /* get data: */
-    var data = page_data['area'];
-    /* draw the area plot: */
-    area_plot(data);
-  } catch(e) {
-    /* no data, hide temeprature plot elements: */
-    var area_plot_els = page_data['area_plot_els'];
-    for (var i = 0 ; i < area_plot_els.length; i++) {
-      var area_plot_el = area_plot_els[i];
-      area_plot_el.style.display = 'none';
-    };
-  };
-};
-
-/* function to draw area plot: */
-function area_plot(data) {
-  /* init scatter plot data: */
-  var scatter_data = [];
-  /* loop through data ids: */
-  var data_ids = data['data_ids'];
-  for (var i = 0; i < data_ids.length; i++) {
-    /* get data for this id: */
-    var data_id = data_ids[i];
-    var id_data = data['data'][data_id];
-    /* get x values: */
-    var x = id_data['area_years'];
-    var y = id_data['areas'];
-    /* area plot: */
-    var scatter_area = {
-      'name': data_id,
-      'type': 'scatter',
-      'mode': 'lines+markers',
-      'x': x,
-      'y': y
-    };
-    /* plot data, in order of plotting: */
-    scatter_data.push(scatter_area);
-  };
-  /* scatter plot layout: */
-  var scatter_layout = {
-    'xaxis': {
-      'title': 'Date',
-      'type': 'date',
-      'hoverformat': '%Y'
-    },
-    'yaxis': {
-      'title': 'Area (km²)'
-    }
-  };
-  /* scatter plot config: */
-  var scatter_conf = {
-    'showLink': false,
-    'linkText': '',
-    'displaylogo': false,
-    'modeBarButtonsToRemove': [
-      'autoScale2d',
-      'lasso2d',
-      'hoverClosestCartesian',
-      'hoverCompareCartesian',
-      'toggleSpikelines'
-    ],
-    'responsive': true
-  };
-  /* create the scatter plot: */
-  var scatter_plot = Plotly.newPlot(
-    area_plot_div, scatter_data, scatter_layout, scatter_conf
-  );
-};
-
 /* function to load volume data: */
 async function load_volume_data() {
   try {
@@ -524,8 +544,6 @@ async function load_volume_data() {
     });
     /* get data: */
     var data = page_data['volume'];
-    /* draw the volume plot: */
-    volume_plot(data);
   } catch(e) {
     /* no data, hide temeprature plot elements: */
     var volume_plot_els = page_data['volume_plot_els'];
@@ -533,7 +551,10 @@ async function load_volume_data() {
       var volume_plot_el = volume_plot_els[i];
       volume_plot_el.style.display = 'none';
     };
+    return;
   };
+  /* draw the volume plot: */
+  volume_plot(data);
 };
 
 /* function to draw volume plot: */
@@ -613,8 +634,6 @@ async function load_depth_data() {
     var x = data['grid_lon'];
     var y = data['grid_lat'];
     var z = data['grid_depth'];
-    /* draw the depth plot: */
-    depth_plot(x, y, z);
   } catch(e) {
     /* no data, hide temeprature plot elements: */
     var depth_plot_els = page_data['depth_plot_els'];
@@ -622,7 +641,10 @@ async function load_depth_data() {
       var depth_plot_el = depth_plot_els[i];
       depth_plot_el.style.display = 'none';
     };
+    return;
   };
+  /* draw the depth plot: */
+  depth_plot(x, y, z);
 };
 
 /* function to draw depth plot: */
