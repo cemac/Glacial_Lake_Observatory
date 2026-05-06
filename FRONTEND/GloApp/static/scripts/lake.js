@@ -289,9 +289,9 @@ function geometry_plot(data) {
     ],
     maxBoundsViscosity: 1.0,
     /*  zoom levels: */
-    zoom:    14,
+    zoom:    12,
     minZoom: 12,
-    maxZoom: 16
+    maxZoom: 17
   });
   /* remove prefix from attribution control: */
   var map_atrr_control = map.attributionControl;
@@ -308,6 +308,11 @@ function geometry_plot(data) {
   L.control.layers(
     tile_layers, poly_layers, {collapsed: true, sortLayers: false}
   ).addTo(map);
+  /* head to lake area: */
+  map.flyToBounds([
+      [min_lat, min_lon],
+      [max_lat, max_lon]
+  ]);
 };
 
 /* function to load temperature data: */
