@@ -163,38 +163,44 @@ table {
   color: #000000;
 }
 
-@media only screen and (max-width: 825px) {
-  .th_area {
-    display: none;
-  }
-  .td_area {
+@media only screen and (max-width: 1100px) {
+  .th_volume, .td_volume {
     display: none;
   }
 }
 
-@media only screen and (max-width: 800px) {
-  .th_connectivity {
-    display: none;
-  }
-  .td_connectivity {
+@media only screen and (max-width: 975px) {
+  .th_depth, .td_depth {
     display: none;
   }
 }
 
-@media only screen and (max-width: 575px) {
-  .th_country {
-    display: none;
-  }
-  .td_country {
+@media only screen and (max-width: 950px) {
+  .th_expansion, .td_expansion {
     display: none;
   }
 }
 
-@media only screen and (max-width: 475px) {
-  .th_common_name {
+@media only screen and (max-width: 850px) {
+  .th_area, .td_area {
     display: none;
   }
-  .td_common_name {
+}
+
+@media only screen and (max-width: 775px) {
+  .th_connectivity, .td_connectivity {
+    display: none;
+  }
+}
+
+@media only screen and (max-width: 550px) {
+  .th_country, .td_country {
+    display: none;
+  }
+}
+
+@media only screen and (max-width: 450px) {
+  .th_common_name, .td_common_name {
     display: none;
   }
 }

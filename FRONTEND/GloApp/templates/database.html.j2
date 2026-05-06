@@ -78,6 +78,9 @@ var lakes_data = {{ lakes | replace('None', 'null') }};
             <th class="dt-left th_country">Country</th>
             <th class="dt-left th_connectivity">Connectivity</th>
             <th class="dt-left th_area">Area (km²)</th>
+            <th class="dt-left th_expansion">Expansion Rate (km²/year)</th>
+            <th class="dt-left th_depth">Maximum depth (m)</th>
+            <th class="dt-left th_volume">Volume</th>
             <th></th>
           </tr>
         </thead>
@@ -94,7 +97,22 @@ var lakes_data = {{ lakes | replace('None', 'null') }};
             {% else -%}
               <td class="td_area"></td>
             {% endif -%}
-            <td><a class="lakes_table_a" href="/database/lake/{{ lake['GLO_ID'] }}" target="_blank">View</a></td>
+            {% if lake['EXPANSION_RATE'] -%}
+              <td class="td_expansion">{{ lake['EXPANSION_RATE'] }}</td>
+            {% else -%}
+              <td class="td_expansion"></td>
+            {% endif -%}
+            {% if lake['DEPTH_MAX'] -%}
+              <td class="td_depth">{{ lake['DEPTH_MAX'] | round(0) | int() }}</td>
+            {% else -%}
+              <td class="td_depth"></td>
+            {% endif -%}
+            {% if lake['VOLUME'] -%}
+              <td class="td_volume">{{  "{:0,.0f}".format(lake['VOLUME']) }} ({{ lake['VOLUME_YEAR'] | int() }})</td>
+            {% else -%}
+              <td class="td_volume"></td>
+            {% endif -%}
+            <td><a class="lakes_table_a" href="/database/lake/{{ lake['GLO_ID'] }}" target="_blank"></a></td>
           </tr>
           {% endfor -%}
         </tbody>
