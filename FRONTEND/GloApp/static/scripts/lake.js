@@ -42,7 +42,7 @@ var page_data = {
     document.getElementById('geometry_header_row'),
     document.getElementById('geometry_plot_row')
   ],
-  /* area color map (R viridis mako): */
+  /* area color map: */
   'area_colors': [
     "#4cc3adff", "#48c1adff", "#46beadff", "#43bbadff", "#41b8adff", "#3fb5adff",
     "#3db3adff", "#3bafadff", "#3aadacff", "#38aaacff", "#37a7acff", "#36a4abff",
@@ -64,11 +64,28 @@ var page_data = {
     document.getElementById('area_plot_row')
   ],
   'area_text_div': document.getElementById('area_text_div'),
+  /* temperature color map: */
+  'temperature_colors': [
+    "#4cc3adff", "#48c1adff", "#46beadff", "#43bbadff", "#41b8adff", "#3fb5adff",
+    "#3db3adff", "#3bafadff", "#3aadacff", "#38aaacff", "#37a7acff", "#36a4abff",
+    "#35a1abff", "#359fabff", "#359baaff", "#3499aaff", "#3496a9ff", "#3492a8ff",
+    "#3490a8ff", "#348da7ff", "#348aa6ff", "#3487a6ff", "#3485a5ff", "#3482a4ff",
+    "#357ea4ff", "#357ca3ff", "#3579a2ff", "#3576a2ff", "#3573a1ff", "#3670a0ff",
+    "#366da0ff", "#366a9fff", "#37689fff", "#37649eff", "#38629dff", "#395e9cff",
+    "#3a5c9bff", "#3b589aff", "#3c5598ff", "#3d5296ff", "#3e4f94ff", "#3f4c91ff",
+    "#40498eff", "#40478aff", "#414387ff", "#414083ff", "#413e7eff", "#403c79ff",
+    "#403a75ff", "#3f3770ff", "#3e356cff", "#3e3367ff", "#3c3162ff", "#3b2f5eff",
+    "#3a2c59ff", "#382a55ff", "#372851ff", "#35264cff", "#342548ff", "#322243ff",
+    "#31213fff", "#2e1e3bff", "#2c1c37ff", "#2a1b33ff", "#28192fff", "#26172aff",
+    "#231526ff", "#211423ff", "#1e111fff", "#1b0f1bff", "#190e18ff", "#160b14ff",
+    "#140910ff", "#11070cff", "#0f0609ff", "#0b0405ff"
+  ],
   /* temperature plot elements: */
   'temperature_plot_els': [
     document.getElementById('temperature_header_row'),
     document.getElementById('temperature_plot_row')
   ],
+  'temperature_text_div': document.getElementById('temperature_text_div'),
   /* volume plot elements: */
   'volume_plot_els': [
     document.getElementById('volume_header_row'),
@@ -509,14 +526,38 @@ async function load_temperature_data() {
 function temperature_plot(data) {
   /* init scatter plot data: */
   var scatter_data = [];
+  /* plot text element: */
+  var temperature_text_div = page_data['temperature_text_div'];
+  var temperature_text = '<label>Temperature data sources</label>';
+  /* get color map: */
+  var temperature_colors = page_data['temperature_colors'];
+  var color_count = temperature_colors.length;
   /* loop through data ids: */
   var data_ids = data['data_ids'];
   for (var i = 0; i < data_ids.length; i++) {
     /* get data for this id: */
     var data_id = data_ids[i];
-    var data_url = data_id.split(':::')[0];
+    var data_url_type = data_id.split(':::');
+    var data_url = data_url_type[0];
+    var data_type = data_url_type[1];
     var data_label = data_url.split('/').slice(-1)[0];
     var id_data = data['data'][data_id];
+    /* get color for this data source: */
+    if (data_ids.length == 1) {
+      var temperature_color_index = Math.round(
+        0.5 * (color_count - 1)
+      );
+    } else {
+      var temperature_color_index = Math.round(
+        (i / (data_ids.length - 1)) * (color_count - 1)
+      );
+    }
+    var temperature_color = temperature_colors[temperature_color_index];
+    /* update plot text: */
+    temperature_text += '<span class="plot_text_link">• <a href="' + data_url +
+                        '" target="_blank" style="color: ' + temperature_color +';">' +
+                        data_label + '</a><span class="plot_text_type"> (' +
+                        data_type + ')</span></span>';
     /* get x values: */
     var x = id_data['times'];
     if (x[0] == '') {
@@ -529,7 +570,10 @@ function temperature_plot(data) {
       'type': 'scatter',
       'mode': 'markers',
       'x': x,
-      'y': y
+      'y': y,
+      'marker': {
+        'color': temperature_color
+      }
     };
     /* plot data, in order of plotting: */
     scatter_data.push(scatter_temperature);
@@ -563,6 +607,8 @@ function temperature_plot(data) {
   var scatter_plot = Plotly.newPlot(
     temperature_plot_div, scatter_data, scatter_layout, scatter_conf
   );
+  /* update text: */
+  temperature_text_div.innerHTML = temperature_text;
 };
 
 /* function to load volume data: */
