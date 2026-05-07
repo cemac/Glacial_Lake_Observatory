@@ -28,7 +28,7 @@ footer {
 }
 
 div#container {
-  max-width: 990px;
+  max-width: 1200px;
 }
 
 div.acf-map img{
@@ -292,3 +292,12 @@ footer {
 {
     text-align:center;
 }
+
+.fb-page {
+    width: 100% !important;
+  }
+  
+  .fb-page span,
+  .fb-page iframe {
+    width: 100% !important;
+  }
