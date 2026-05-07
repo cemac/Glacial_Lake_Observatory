@@ -6,25 +6,15 @@
 
 var page_data = {
   /* map color map (R viridis mako): */
-  'map_colors': [
-    "#def5e5ff", "#d9f2e0ff", "#d4f1dcff", "#cfeed7ff", "#c9edd3ff", "#c4eacfff",
-    "#bfe9cbff", "#b9e6c7ff", "#b3e4c3ff", "#ade3c0ff", "#a7e1bcff", "#a0dfb9ff",
-    "#99ddb6ff", "#93dbb5ff", "#8bdab2ff", "#83d8b0ff", "#7bd6afff", "#74d4adff",
-    "#6cd3adff", "#65d0adff", "#5fcdadff", "#59ccadff", "#54c9adff", "#50c6adff",
-    "#4cc3adff", "#48c1adff", "#46beadff", "#43bbadff", "#41b8adff", "#3fb5adff",
-    "#3db3adff", "#3bafadff", "#3aadacff", "#38aaacff", "#37a7acff", "#36a4abff",
-    "#35a1abff", "#359fabff", "#359baaff", "#3499aaff", "#3496a9ff", "#3492a8ff",
-    "#3490a8ff", "#348da7ff", "#348aa6ff", "#3487a6ff", "#3485a5ff", "#3482a4ff",
-    "#357ea4ff", "#357ca3ff", "#3579a2ff", "#3576a2ff", "#3573a1ff", "#3670a0ff",
-    "#366da0ff", "#366a9fff", "#37689fff", "#37649eff", "#38629dff", "#395e9cff",
-    "#3a5c9bff", "#3b589aff", "#3c5598ff", "#3d5296ff", "#3e4f94ff", "#3f4c91ff",
-    "#40498eff", "#40478aff", "#414387ff", "#414083ff", "#413e7eff", "#403c79ff",
-    "#403a75ff", "#3f3770ff", "#3e356cff", "#3e3367ff", "#3c3162ff", "#3b2f5eff",
-    "#3a2c59ff", "#382a55ff", "#372851ff", "#35264cff", "#342548ff", "#322243ff",
-    "#31213fff", "#2e1e3bff", "#2c1c37ff", "#2a1b33ff", "#28192fff", "#26172aff",
-    "#231526ff", "#211423ff", "#1e111fff", "#1b0f1bff", "#190e18ff", "#160b14ff",
-    "#140910ff", "#11070cff", "#0f0609ff", "#0b0405ff"
-  ]
+  'map_colormap': {
+    'min': -0.0006,
+    'max': 0.0006,
+    'decimals': 4,
+    'colors': [
+      "#def5e5ff", "#a0dfb9ff", "#54c9adff", "#38aaacff", "#348aa6ff", "#366a9fff",
+      "#40498eff", "#3b2f5eff", "#28192fff", "#0b0405ff"
+    ]
+  }
 };
 
 /** leaflet mouse position control: **/
@@ -82,6 +72,70 @@ L.control.mousePosition = function (options) {
 };
 
 /** functions: **/
+
+/* function to convert value to color: */
+function value_to_color(value) {
+  /* get colormap: */
+  var colormap = page_data['map_colormap'];
+  /* get the colours and bounds for variable: */
+  var data_min = colormap['min'];
+  var data_max = colormap['max'];
+  var data_colors = colormap['colors'];
+  /* number of colours: */
+  var color_count = data_colors.length;
+  /* max index value: */
+  var max_index = color_count - 1;
+  /* work out increment for color values: */
+  var color_inc = (data_max - data_min) / color_count;
+  /* work out colour index for value: */
+  var color_index = Math.floor((value - data_min) / color_inc);
+  if (color_index < 0) {
+    color_index = 0;
+  };
+  if (color_index > max_index) {
+    color_index = max_index;
+  };
+  /* return the colour: */
+  return data_colors[color_index];
+};
+
+
+/* function to draw color map data: */
+function draw_colormap() {
+  /* get colormap: */
+  var colormap = page_data['map_colormap'];
+  /* get the colours and bounds for variable: */
+  var data_min = colormap['min'];
+  var data_max = colormap['max'];
+  var data_colors = colormap['colors'];
+  var data_decimals = colormap['decimals'];
+  /* number of colours: */
+  var color_count = data_colors.length;
+  /* work out increment for color values: */
+  var color_inc = (data_max - data_min) / color_count;
+  /* create html: */
+  var colormap_html = '';
+  for (var i = (color_count - 1); i > -1; i--) {
+    var my_html = '<p>';
+    my_html += '<span class="map_colormap_color" style="background: ' + data_colors[i] + ';"></span>';
+    my_html += '<span class="map_colormap_value">';
+    if (i == (color_count - 1)) {
+      my_html += '&gt;= ' + (data_min + (i * color_inc)).toFixed(data_decimals);
+    } else {
+      if (i == 0) {
+        my_html += '&lt; ';
+      } else {
+        my_html += (data_min + (i * color_inc)).toFixed(data_decimals) + ' &lt; ';
+      };
+      my_html += (data_min + ((i + 1) * color_inc)).toFixed(data_decimals);
+    };
+    my_html += '</span>';
+    my_html += '</p>';
+    colormap_html += my_html;
+  };
+  /* return the html: */
+  return colormap_html;
+};
 
 /* function to laod map: */
 function load_map() {
@@ -173,21 +227,6 @@ function load_map() {
     tile_layers, {}, {collapsed: true, sortLayers: false}
   ).addTo(map);
 
-  /* get min / max expansion rates: */
-  var expansion_rates = [];
-  for (var i = 0; i < lakes_data.length; i++) {
-    expansion_rates.push(lakes_data[i]['EXPANSION_RATE']);
-  };
-  expansion_rates = expansion_rates.sort();
-  var min_expansion_index = Math.round(0.1 * (expansion_rates.length -1));
-  var min_expansion = expansion_rates[min_expansion_index];
-  var max_expansion_index = Math.round(0.9 * (expansion_rates.length -1));
-  var max_expansion = expansion_rates[max_expansion_index];
-  var expansion_range = max_expansion - min_expansion;
-  /* get color map: */
-  var map_colors = page_data['map_colors'];
-  var color_count = map_colors.length;
-
   /* draw lake markers: */
   for (var i = 0; i < lakes_data.length; i++) {
     var lake = lakes_data[i];
@@ -219,12 +258,7 @@ function load_map() {
                    ' m³ (' + lake_volume_year + ')';
     };
     /* get color for this polygon: */
-    var poly_color_index = Math.round(
-      ((lake_expansion_rate - min_expansion) / expansion_range) * (color_count - 1)
-    );
-    if (poly_color_index < 0) { poly_color_index = 0; };
-    poly_color_index = Math.min(poly_color_index, color_count - 1);
-    var poly_color = map_colors[poly_color_index];
+    var poly_color = value_to_color(lake_expansion_rate);
     /* draw polygon: */
     var lake_marker = new L.circleMarker([lake_lat, lake_lon],{
       radius: 5,
@@ -241,6 +275,36 @@ function load_map() {
     lake_marker.on('click', function(e) { window.open(e.sourceTarget.url); });
     lake_marker.addTo(map);
   };
+
+  /* add map title: */
+  var map_title = L.control();
+  map_title.onAdd = function(map) {
+     this._div = L.DomUtil.create('div', 'map_ctl map_title');
+     this.update();
+     return this._div;
+  };
+  map_title.update = function(title) {
+    if (title != undefined) {
+      this._div.innerHTML = title;
+    };
+  };
+  map_title.addTo(map);
+  /* update map title: */
+  var my_title = 'Expansion rate (km²/year)';
+  map_title.update(my_title);
+
+  /* add colormap: */
+  var colormap_src = draw_colormap();
+  var map_colormap = L.control({position: 'bottomright'});
+  map_colormap.onAdd = function(map) {
+    this._div = L.DomUtil.create('div', 'map_ctl map_colormap');
+      this.update(colormap_src);
+      return this._div;
+  };
+  map_colormap.update = function(colormap_html) {
+    this._div.innerHTML = colormap_html;
+  };
+  map_colormap.addTo(map);
 };
 
 /* set up the page: */
