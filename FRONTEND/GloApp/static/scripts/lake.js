@@ -589,6 +589,20 @@ function temperature_plot(data) {
       var x = id_data['start_dates'];
     };
     var y = id_data['temperatures'];
+    /* for thermistor data, filter values to where depth is 0: */
+    if (data_type.toLowerCase() == 'thermistor') {
+      var depths = id_data['depths'];
+      var x_filtered = [];
+      var y_filtered = [];
+      for (var j = 0; j < depths.length; j++) {
+        if (depths[j] == 0) {
+          x_filtered.push(x[j]);
+          y_filtered.push(y[j]);
+        };
+      };
+      x = x_filtered;
+      y = y_filtered;
+    };
     /* temperature plot: */
     var scatter_temperature = {
       'name': data_label,
