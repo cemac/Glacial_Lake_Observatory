@@ -152,6 +152,22 @@ L.control.mousePosition = function (options) {
     return new L.Control.MousePosition(options);
 };
 
+/** leaflet measure fixings: **/
+
+L.Control.Measure.include({
+  /* set icon on the capture marker: */
+  _setCaptureMarkerIcon: function () {
+    /* disable autopan: */
+    this._captureMarker.options.autoPanOnFocus = false;
+    /* default function: */
+    this._captureMarker.setIcon(
+      L.divIcon({
+        iconSize: this._map.getSize().multiplyBy(2)
+      })
+    );
+  },
+});
+
 /** functions: **/
 
 /* function to load lake data: */
@@ -379,6 +395,15 @@ function geometry_plot(data) {
   L.control.layers(
     tile_layers, poly_layers, {collapsed: true, sortLayers: false}
   ).addTo(map);
+  /* add measurererer: */
+  L.control.measure({
+    'position': 'topright',
+    'primaryLengthUnit': 'kilometers',
+    'secondaryLengthUnit': 'miles',
+    'primaryAreaUnit': 'sqmeters',
+    'secondaryAreaUnit': 'sqmiles',
+    'captureZIndex': 999999
+  }).addTo(map);
   /* head to lake area: */
   map.flyToBounds([
       [min_lat, min_lon],
