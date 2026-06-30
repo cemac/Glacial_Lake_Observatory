@@ -356,6 +356,42 @@ function load_map() {
   update_map();
 };
 
+/* function to open tooltip for lake id: */
+function open_lake_tt(lake_id) {
+  /* get active lake markers: */
+  let lake_markers = page_data['lake_markers'];
+  /* loop through markers: */
+  for (let i = 0; i < lake_markers.length; i++) {
+    /* get marker: */
+    let lake_marker = lake_markers[i];
+    /* get lake id from marker: */
+    let marker_id = lake_marker.lake_id;
+    /* if this is the required lake ... : */
+    if (marker_id == lake_id) {
+        lake_marker.openTooltip();
+        break;
+    };
+  };
+};
+
+/* function to close tooltip for lake id: */
+function close_lake_tt(lake_id) {
+  /* get active lake markers: */
+  let lake_markers = page_data['lake_markers'];
+  /* loop through markers: */
+  for (let i = 0; i < lake_markers.length; i++) {
+    /* get marker: */
+    let lake_marker = lake_markers[i];
+    /* get lake id from marker: */
+    let marker_id = lake_marker.lake_id;
+    /* if this is the required lake ... : */
+    if (marker_id == lake_id) {
+        lake_marker.closeTooltip();
+        break;
+    };
+  };
+};
+
 /* update active lake ids from data table: */
 function update_lake_ids_dt() {
   /* get table: */
@@ -396,40 +432,13 @@ function load_data_table() {
   });
 };
 
-/* function to open tooltip for lake id: */
-function open_lake_tt(lake_id) {
-  /* get active lake markers: */
-  let lake_markers = page_data['lake_markers'];
-  /* loop through markers: */
-  for (let i = 0; i < lake_markers.length; i++) {
-    /* get marker: */
-    let lake_marker = lake_markers[i];
-    /* get lake id from marker: */
-    let marker_id = lake_marker.lake_id;
-    /* if this is the required lake ... : */
-    if (marker_id == lake_id) {
-        lake_marker.openTooltip();
-        break;
-    };
-  };
-};
-
-/* function to close tooltip for lake id: */
-function close_lake_tt(lake_id) {
-  /* get active lake markers: */
-  let lake_markers = page_data['lake_markers'];
-  /* loop through markers: */
-  for (let i = 0; i < lake_markers.length; i++) {
-    /* get marker: */
-    let lake_marker = lake_markers[i];
-    /* get lake id from marker: */
-    let marker_id = lake_marker.lake_id;
-    /* if this is the required lake ... : */
-    if (marker_id == lake_id) {
-        lake_marker.closeTooltip();
-        break;
-    };
-  };
+/* update data table fro mactive lake ids: */
+function update_lakes_table() {
+  /* get active lake ids and lake table: */
+  let lake_ids = page_data['lake_ids'];
+  let lakes_table = page_data['lakes_table'];
+  /* filter table based on ids and re-draw: */
+  lakes_table.search(lake_ids.join('|'), true).draw();
 };
 
 /* set up the page: */
