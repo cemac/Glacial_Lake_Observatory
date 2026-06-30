@@ -5,6 +5,10 @@
 /** global variables: **/
 
 var page_data = {
+  /* leaflet map: */
+  'map': null,
+  /* store map lake markers here: */
+  'lake_markers': [],
   /* map color map (R viridis mako): */
   'map_colormap': {
     'min': -0.0006,
@@ -14,7 +18,11 @@ var page_data = {
       "#def5e5ff", "#a0dfb9ff", "#54c9adff", "#38aaacff", "#348aa6ff", "#366a9fff",
       "#40498eff", "#3b2f5eff", "#28192fff", "#0b0405ff"
     ]
-  }
+  },
+  /* filtered lake_ids get stored here: */
+  'lake_ids': [],
+  /* lakes data table object: */
+  'lakes_table': null,
 };
 
 /** leaflet mouse position control: **/
@@ -99,7 +107,6 @@ function value_to_color(value) {
   return data_colors[color_index];
 };
 
-
 /* function to draw color map data: */
 function draw_colormap() {
   /* get colormap: */
@@ -137,7 +144,97 @@ function draw_colormap() {
   return colormap_html;
 };
 
-/* function to laod map: */
+/* function to update map: */
+function update_map() {
+  /* get active lake ids, map and lake markers: */
+  let lake_ids = page_data['lake_ids'];
+  let map = page_data['map'];
+  let lake_markers = page_data['lake_markers'];
+  /* store new active lake markers and ids here: */
+  let active_ids = [];
+  let active_markers = [];
+  /* remove inactive markers first: */
+  for (let i = 0; i < lake_markers.length; i++) {
+    /* get marker: */
+    let lake_marker = lake_markers[i];
+    /* get lake id from marker: */
+    let lake_id = lake_marker.lake_id;
+    /* if this lake is not in the active set, remove from map: */
+    if (lake_ids.indexOf(lake_id) < 0) {
+      lake_marker.remove();
+    /* else, store id: */
+    } else {
+      active_ids.push(lake_id);
+      active_markers.push(lake_marker);
+    };
+  };
+  /* draw any new lake markers: */
+  for (let i = 0; i < lakes_data.length; i++) {
+    /* get lake id: */
+    var lake = lakes_data[i];
+    var lake_id = lake['GLO_ID'];
+    /* if this is not in the current active set, move on: */
+    if (lake_ids.indexOf(lake_id) < 0) {
+      continue;
+    };
+    /* if this is already on the map, move on: */
+    if (active_ids.indexOf(lake_id) > -1) {
+      continue;
+    };
+    /* get lake information: */
+    var lake_lat = lake['LATITUDE'];
+    var lake_lon = lake['LONGITUDE'];
+    var lake_name = lake['GLO_ID'];
+    var lake_alt_name = lake['COMMON_NAME'];
+    var lake_country = lake['COUNTRY'];
+    var lake_connectivity = lake['CONNECTIVITY'];
+    var lake_area = lake['AREA'];
+    var lake_expansion_rate = lake['EXPANSION_RATE'];
+    var lake_expansion_uncertainty = lake['EXPANSION_RATE_UNCERTAINTY'];
+    var lake_depth_max = lake['DEPTH_MAX'];
+    var lake_volume = lake['VOLUME'];
+    var lake_volume_year = lake['VOLUME_YEAR'];
+    var lake_url = window.location.href + '/lake/' + lake_name;
+    var lake_text = '<b>' + lake_name + '</b>';
+    if (lake_alt_name != null) { lake_text += '<br>• Common name: ' + lake_alt_name; };
+    if (lake_country != null) { lake_text += '<br>• Country: ' + lake_country; };
+    if (lake_connectivity != null) { lake_text += '<br>• Connectivity: ' + lake_connectivity; };
+    if (lake_area != null) { lake_text += '<br>• Area: ' + lake_area.toFixed(3) + ' km²'; };
+    if ((lake_expansion_rate != null) && (lake_expansion_uncertainty != null)) {
+      lake_text += '<br>• Expansion rate: ' + lake_expansion_rate + ' km²/year (+/-' +
+                   lake_expansion_uncertainty + ')';
+    };
+    if (lake_depth_max != null) { lake_text += '<br>• Maximum depth: ' + lake_depth_max.toFixed(0) + ' m'; };
+    if ((lake_volume != null) && (lake_volume_year != null)) {
+      lake_text += '<br>• Volume: ' + lake_volume.toFixed(0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") +
+                   ' m³ (' + lake_volume_year + ')';
+    };
+    /* get color for this polygon: */
+    var poly_color = value_to_color(lake_expansion_rate);
+    /* draw polygon: */
+    var lake_marker = new L.circleMarker([lake_lat, lake_lon],{
+      radius: 5,
+      stroke: true,
+      weight: 1,
+      opacity: 0.6,
+      color: '#39ffff',
+      fill: true,
+      fillOpacity: 0.8,
+      fillColor: poly_color
+    });
+    lake_marker.url = lake_url;
+    lake_marker.bindTooltip(lake_text, {interactive: true});
+    lake_marker.on('click', function(e) { window.open(e.sourceTarget.url); });
+    lake_marker.addTo(map);
+    /* store marker and id: */
+    active_ids.push(lake_id);
+    active_markers.push(lake_marker);
+  };
+  /* store lake markers: */
+  page_data['lake_markers'] = active_markers;
+};
+
+/* function to load map: */
 function load_map() {
   /* gep map element: */
   var map_div = document.getElementById('lakes_map');
@@ -186,13 +283,11 @@ function load_map() {
     'Open Street Map': osm_layer,
     'Glacial Velocity': gv_layer
   };
-
   /* init min / max lat / lon: */
   var min_lat = -90;
   var max_lat = 90;
   var min_lon = -180;
   var max_lon = 180;
-
   /* define map: */
   var map = L.map(map_div, {
     /* map layers: */
@@ -226,56 +321,6 @@ function load_map() {
   L.control.layers(
     tile_layers, {}, {collapsed: true, sortLayers: false}
   ).addTo(map);
-
-  /* draw lake markers: */
-  for (var i = 0; i < lakes_data.length; i++) {
-    var lake = lakes_data[i];
-    var lake_lat = lake['LATITUDE'];
-    var lake_lon = lake['LONGITUDE'];
-    var lake_name = lake['GLO_ID'];
-    var lake_alt_name = lake['COMMON_NAME'];
-    var lake_country = lake['COUNTRY'];
-    var lake_connectivity = lake['CONNECTIVITY'];
-    var lake_area = lake['AREA'];
-    var lake_expansion_rate = lake['EXPANSION_RATE'];
-    var lake_expansion_uncertainty = lake['EXPANSION_RATE_UNCERTAINTY'];
-    var lake_depth_max = lake['DEPTH_MAX'];
-    var lake_volume = lake['VOLUME'];
-    var lake_volume_year = lake['VOLUME_YEAR'];
-    var lake_url = window.location.href + '/lake/' + lake_name;
-    var lake_text = '<b>' + lake_name + '</b>';
-    if (lake_alt_name != null) { lake_text += '<br>• Common name: ' + lake_alt_name; };
-    if (lake_country != null) { lake_text += '<br>• Country: ' + lake_country; };
-    if (lake_connectivity != null) { lake_text += '<br>• Connectivity: ' + lake_connectivity; };
-    if (lake_area != null) { lake_text += '<br>• Area: ' + lake_area.toFixed(3) + ' km²'; };
-    if ((lake_expansion_rate != null) && (lake_expansion_uncertainty != null)) {
-      lake_text += '<br>• Expansion rate: ' + lake_expansion_rate + ' km²/year (+/-' +
-                   lake_expansion_uncertainty + ')';
-    };
-    if (lake_depth_max != null) { lake_text += '<br>• Maximum depth: ' + lake_depth_max.toFixed(0) + ' m'; };
-    if ((lake_volume != null) && (lake_volume_year != null)) {
-      lake_text += '<br>• Volume: ' + lake_volume.toFixed(0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") +
-                   ' m³ (' + lake_volume_year + ')';
-    };
-    /* get color for this polygon: */
-    var poly_color = value_to_color(lake_expansion_rate);
-    /* draw polygon: */
-    var lake_marker = new L.circleMarker([lake_lat, lake_lon],{
-      radius: 5,
-      stroke: true,
-      weight: 1,
-      opacity: 0.6,
-      color: '#39ffff',
-      fill: true,
-      fillOpacity: 0.8,
-      fillColor: poly_color
-    });
-    lake_marker.url = lake_url;
-    lake_marker.bindTooltip(lake_text, {interactive: true});
-    lake_marker.on('click', function(e) { window.open(e.sourceTarget.url); });
-    lake_marker.addTo(map);
-  };
-
   /* add map title: */
   var map_title = L.control();
   map_title.onAdd = function(map) {
@@ -292,7 +337,6 @@ function load_map() {
   /* update map title: */
   var my_title = 'Expansion rate (km²/year)';
   map_title.update(my_title);
-
   /* add colormap: */
   var colormap_src = draw_colormap();
   var map_colormap = L.control({position: 'bottomright'});
@@ -305,11 +349,56 @@ function load_map() {
     this._div.innerHTML = colormap_html;
   };
   map_colormap.addTo(map);
+  /* store map: */
+  page_data['map'] = map;
+  /* add markers: */
+  update_map();
+};
+
+/* update active lake ids from data table: */
+function update_lake_ids_dt() {
+  /* get table: */
+  let lakes_table = page_data['lakes_table'];
+  /* init filtered lake ids from table: */
+  let lake_ids = [];
+  lakes_table.rows({'search': 'applied'}).data().each(function(lake) {
+    lake_ids.push(lake[0]);
+  });
+  /* store lake ids information: */
+  page_data['lake_ids'] = lake_ids;
+};
+
+/* set up lakes data table: */
+function load_data_table() {
+  /* init lakes table: */
+  $(document).ready(function(){
+    let lakes_table = $('#lakes_table').DataTable({
+      columnDefs: [{
+        'targets': [-1],
+        'orderable': false
+      }],
+      'order': [[0, "asc"]],
+      'pageLength': 10,
+      'stateSave': true
+    });
+    /* store table: */
+    page_data['lakes_table'] = lakes_table;
+    /* update lake ids: */
+    update_lake_ids_dt();
+    /* load the map: */
+    load_map();
+    /* update map when table is updated: */
+    lakes_table.on('draw', function() {
+      update_lake_ids_dt();
+      update_map();
+    });
+  });
 };
 
 /* set up the page: */
 function load_page() {
-  load_map();
+  /* set up data table: */
+  load_data_table();
 }
 
 /** add listeners: **/
@@ -318,17 +407,4 @@ function load_page() {
 window.addEventListener('load', function() {
   /* set up the page ... : */
   load_page();
-});
-
-/** lakes table: **/
-$(document).ready(function(){
-  $('#lakes_table').DataTable({
-    columnDefs: [{
-      'targets': [-1],
-      'orderable': false
-    }],
-    'order': [[0, "asc"]],
-    'pageLength': 10,
-    'stateSave': true
-  });
 });
