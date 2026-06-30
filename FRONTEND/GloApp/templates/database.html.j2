@@ -10,6 +10,10 @@
       type="text/css"
       href="{{ url_for('static', filename='styles/leaflet.css') }}"
       media="all">
+<link rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static', filename='styles/leaflet-locationfilter.css') }}"
+      media="all">
 <!-- local css: -->
 <link rel="stylesheet"
       type="text/css"
@@ -17,6 +21,9 @@
       media="all">
 <!-- leaflet js: -->
 <script src="{{ url_for('static', filename='scripts/leaflet.js') }}"
+        charset="utf-8">
+</script>
+<script src="{{ url_for('static', filename='scripts/leaflet-locationfilter.js') }}"
         charset="utf-8">
 </script>
 <!-- jquery js: -->
@@ -37,6 +44,7 @@
 </script>
 <!-- local js: -->
 <script>
+var images_url = '{{ url_for('static', filename='images') }}';
 var lakes_data = {{ lakes | replace('None', 'null') }};
 </script>
 {% endblock %}

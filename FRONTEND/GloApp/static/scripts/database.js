@@ -19,10 +19,14 @@ var page_data = {
       "#40498eff", "#3b2f5eff", "#28192fff", "#0b0405ff"
     ]
   },
+  /* area selector goes here: */
+  'area_select': null,
   /* filtered lake_ids get stored here: */
   'lake_ids': [],
+  'map_lake_ids': [],
   /* lakes data table object: */
   'lakes_table': null,
+  'lakes_table_search': null
 };
 
 /** leaflet mouse position control: **/
@@ -146,6 +150,12 @@ function draw_colormap() {
 
 /* function to update map: */
 function update_map() {
+  /* get area select: */
+  let area_select = page_data['area_select'];
+  /* don't update map if area select is active: */
+  if ((area_select != null) && (area_select.isEnabled())) {
+    return;
+  };
   /* get active lake ids, map and lake markers: */
   let lake_ids = page_data['lake_ids'];
   let map = page_data['map'];
@@ -350,9 +360,31 @@ function load_map() {
     this._div.innerHTML = colormap_html;
   };
   map_colormap.addTo(map);
+  /* create area select: */
+  let area_select = new L.LocationFilter2({});
+  page_data['area_select'] = area_select;
+  /* add area selection to map: */
+  area_select.addTo(map);
+  /* add area select control: */
+  let map_area_select = L.control({position: 'topleft'});
+  map_area_select.onAdd = function(map) {
+    this._div = L.DomUtil.create('div', 'map_area_select_container');
+    this.update();
+    return this._div;
+  };
+  map_area_select.update = function(props) {
+    this._div.innerHTML = '<img class="map_area_select_img" ' +
+                          'src="' + images_url + '/map/area_select.png" title="Select an area">';
+  };
+  map_area_select.addTo(map);
+  /* add listener for map text open button ... get the element: */
+  let map_area_select_el = document.getElementsByClassName('map_area_select_container')[0];
+  /* add the listener: */
+  map_area_select_el.addEventListener('click', area_select_toggle);
   /* store map: */
   page_data['map'] = map;
   /* add markers: */
+  area_select.disable();
   update_map();
 };
 
@@ -392,6 +424,76 @@ function close_lake_tt(lake_id) {
   };
 };
 
+/* update things based on selected area: */
+function update_from_area() {
+  /* get area select: */
+  let area_select = page_data['area_select'];
+  /* give up if not enabled: */
+  if ((area_select != null) && (! area_select.isEnabled())) {
+    return;
+  };
+  /* get area bounds: */
+  let area_bounds = area_select.getBounds();
+  let area_bb = L.latLngBounds(area_bounds);
+  /* get lake markers: */
+  let lake_markers = page_data['lake_markers'];
+  /* new lake ids set will go here: */
+  let lake_ids = [];
+  /* loop through markers: */
+  for (let i = 0; i < lake_markers.length; i++) {
+    /* get marker: */
+    let lake_marker = lake_markers[i];
+    /* check if selected area contains this marker: */
+    let marker_ll = lake_marker.getLatLng();
+    if (area_bb.contains(marker_ll)) {
+      /* get lake id from marker and store: */
+      let lake_id = lake_marker.lake_id;
+      lake_ids.push(lake_id);
+    };
+  };
+  /* store lake ids: */
+  page_data['lake_ids'] = lake_ids;
+  /* update data table: */
+  update_lakes_table();
+};
+
+/* function to toggle ara selection: */
+function area_select_toggle() {
+  /* get area select: */
+  var area_select = page_data['area_select'];
+  /* select button element: */
+  let map_area_select_el = document.getElementsByClassName('map_area_select_container')[0];
+  /* if select already enabled: */
+  if ((area_select != null) && (area_select.isEnabled())) {
+    /* disable it: */
+    area_select.disable();
+    /* update lake ids and data table: */
+    page_data['lake_ids'] = page_data['map_lake_ids'];
+    update_lakes_table();
+    /* update area select control html: */
+    map_area_select_el.innerHTML = '<img class="map_area_select_img" ' +
+                                   'src="' + images_url + '/map/area_select.png"' +
+                                   'title="Select an area">';
+    /* enable search box: */
+    page_data['lakes_table_search'].disabled = false;
+    return;
+  };
+  /* disable search box: */
+  page_data['lakes_table_search'].disabled = true;
+  /* store all current active lake ids: */
+  page_data['map_lake_ids'] = page_data['lake_ids'];
+  /* enable the area select: */
+  area_select.enable();
+  /* update things based on selected area: */
+  update_from_area();
+  /* add on change functionality: */
+  area_select.on('change', update_from_area);
+  /* update area select control html: */
+  map_area_select_el.innerHTML = '<img class="map_area_select_img" ' +
+                                 'src="' + images_url + '/map/close.png"' +
+                                 'title="Clear area selection">';
+};
+
 /* update active lake ids from data table: */
 function update_lake_ids_dt() {
   /* get table: */
@@ -420,6 +522,10 @@ function load_data_table() {
     });
     /* store table: */
     page_data['lakes_table'] = lakes_table;
+    /* store table search box: */
+    page_data['lakes_table_search'] = document.getElementById(
+      'lakes_table_filter'
+    ).children[0].children[0];
     /* update lake ids: */
     update_lake_ids_dt();
     /* load the map: */
@@ -437,8 +543,15 @@ function update_lakes_table() {
   /* get active lake ids and lake table: */
   let lake_ids = page_data['lake_ids'];
   let lakes_table = page_data['lakes_table'];
-  /* filter table based on ids and re-draw: */
-  lakes_table.search(lake_ids.join('|'), true).draw();
+  /* if no lake ids ... : */
+  if (lake_ids.length < 1) {
+    /* filter table based on nonsens: */
+    lakes_table.column(0).search('NULL|VOID', true).draw();
+
+  } else {
+    /* filter table based on ids and re-draw: */
+    lakes_table.column(0).search(lake_ids.join('|'), true).draw();
+  };
 };
 
 /* set up the page: */

@@ -148,6 +148,23 @@ body {
   text-align: left;
 }
 
+.map_area_select_container {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  border: 2px solid rgba(128, 128, 128, 0.2) !important;;
+  padding: 0.55em 0.5em 0.2em 0.5em;
+  text-align: right;
+  cursor: pointer;
+}
+
+.map_area_select_container:hover {
+  background-color: rgba(232, 232, 232, 0.9) !important;
+}
+
+.map_area_select_img {
+  margin: 0;
+  width: 1.8em;
+}
+
 /** plots: **/
 
 .db_plot_div {
