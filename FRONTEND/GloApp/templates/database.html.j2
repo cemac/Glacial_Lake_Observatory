@@ -87,7 +87,9 @@ var lakes_data = {{ lakes | replace('None', 'null') }};
         <tbody>
           {% for lake in lakes -%}
           <tr class="lakes_table_tr"
-              onclick="window.open('/database/lake/{{ lake['GLO_ID'] }}')">
+              onclick="window.open('/database/lake/{{ lake['GLO_ID'] }}')"
+              onmouseenter="open_lake_tt('{{ lake['GLO_ID'] }}')"
+              onmouseleave="close_lake_tt('{{ lake['GLO_ID'] }}')">
             <td>{{ lake['GLO_ID'] }}</td>
             <td class="td_common_name">{{ lake['COMMON_NAME'] | replace('None', '') }}</td>
             <td class="td_country">{{ lake['COUNTRY']  }}</td>

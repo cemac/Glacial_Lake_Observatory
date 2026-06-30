@@ -222,6 +222,7 @@ function update_map() {
       fillOpacity: 0.8,
       fillColor: poly_color
     });
+    lake_marker.lake_id = lake_id;
     lake_marker.url = lake_url;
     lake_marker.bindTooltip(lake_text, {interactive: true});
     lake_marker.on('click', function(e) { window.open(e.sourceTarget.url); });
@@ -393,6 +394,42 @@ function load_data_table() {
       update_map();
     });
   });
+};
+
+/* function to open tooltip for lake id: */
+function open_lake_tt(lake_id) {
+  /* get active lake markers: */
+  let lake_markers = page_data['lake_markers'];
+  /* loop through markers: */
+  for (let i = 0; i < lake_markers.length; i++) {
+    /* get marker: */
+    let lake_marker = lake_markers[i];
+    /* get lake id from marker: */
+    let marker_id = lake_marker.lake_id;
+    /* if this is the required lake ... : */
+    if (marker_id == lake_id) {
+        lake_marker.openTooltip();
+        break;
+    };
+  };
+};
+
+/* function to close tooltip for lake id: */
+function close_lake_tt(lake_id) {
+  /* get active lake markers: */
+  let lake_markers = page_data['lake_markers'];
+  /* loop through markers: */
+  for (let i = 0; i < lake_markers.length; i++) {
+    /* get marker: */
+    let lake_marker = lake_markers[i];
+    /* get lake id from marker: */
+    let marker_id = lake_marker.lake_id;
+    /* if this is the required lake ... : */
+    if (marker_id == lake_id) {
+        lake_marker.closeTooltip();
+        break;
+    };
+  };
 };
 
 /* set up the page: */
