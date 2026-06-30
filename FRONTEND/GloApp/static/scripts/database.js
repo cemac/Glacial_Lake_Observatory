@@ -526,6 +526,8 @@ function load_data_table() {
     page_data['lakes_table_search'] = document.getElementById(
       'lakes_table_filter'
     ).children[0].children[0];
+    /* clear any id based searches ... : */
+    lakes_table.column(0).search('').draw();
     /* update lake ids: */
     update_lake_ids_dt();
     /* load the map: */
