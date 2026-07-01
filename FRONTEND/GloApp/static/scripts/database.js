@@ -26,8 +26,26 @@ var page_data = {
   'map_lake_ids': [],
   /* lakes data table object: */
   'lakes_table': null,
-  'lakes_table_search': null,
-  'lakes_table_updating': false
+  'lakes_table_updating': false,
+  /* filter elements, values, etc.: */
+  'filters': {
+    'area': {
+      'el': document.getElementById('slider_area'),
+      'value_el': document.getElementById('slider_area_value'),
+      'min': 0,
+      'max': 10,
+      'lo': 0,
+      'hi': 10
+    },
+    'volume': {
+      'el': document.getElementById('slider_volume'),
+      'value_el': document.getElementById('slider_volume_value'),
+      'min': 0,
+      'max': 10,
+      'lo': 0,
+      'hi': 10
+    }
+  }
 };
 
 /** leaflet mouse position control: **/
@@ -361,6 +379,83 @@ function area_select_toggle() {
                                  'title="Clear area selection">';
 };
 
+/* set up filters: */
+function load_filters() {
+  /* loop through lake data to get required values. init these: */
+  let areas = [];
+  let volumes = [];
+  /* loop through lakes: */
+  for (let i = 0; i < lakes_data.length; i++) {
+    /* get lake id: */
+    var lake = lakes_data[i];
+    /* get lake information: */
+    var lake_area = lake['AREA'];
+    var lake_volume = lake['VOLUME'];
+    /* store numeric values: */
+    if (isFinite(lake_area)) {
+      areas.push(lake_area);
+    };
+    if (isFinite(lake_volume)) {
+      volumes.push(lake_volume);
+    };
+  };
+  /* store mins and maxs: */
+  page_data['filters']['area']['min'] = parseFloat((Math.min.apply(null, areas)).toFixed(2));
+  page_data['filters']['area']['max'] = parseFloat((Math.max.apply(null, areas)).toFixed(2));
+  page_data['filters']['area']['lo'] = page_data['filters']['area']['min'];
+  page_data['filters']['area']['hi'] = page_data['filters']['area']['max'];
+  page_data['filters']['volume']['min'] = parseFloat((Math.min.apply(null, volumes)).toFixed(0));
+  page_data['filters']['volume']['max'] = parseFloat((Math.max.apply(null, volumes)).toFixed(0));
+  page_data['filters']['volume']['lo'] = page_data['filters']['volume']['min'];
+  page_data['filters']['volume']['hi'] = page_data['filters']['volume']['max'];
+  /* add area filter. get html element: */
+  let area_el = page_data['filters']['area']['el'];
+  let area_value_el = page_data['filters']['area']['value_el'];
+  if (area_el.noUiSlider == undefined){
+    /* create slider: */
+    let slider_lo = page_data['filters']['area']['lo'];
+    let slider_hi = page_data['filters']['area']['hi'];
+    let slider_step = parseFloat(((slider_hi - slider_lo) / 30).toFixed(2));
+    noUiSlider.create(area_el, {
+      'start': [slider_lo, slider_hi],
+      'range': {
+        'min': slider_lo,
+        'max': slider_hi
+      },
+      'connect': true,
+      'step': slider_step,
+      'margin': slider_step,
+      'tooltips': false
+    });
+    /* set value: */
+    area_value_el.innerHTML = (slider_lo) + ' km² - ' + slider_hi + ' km²';
+    /* add change listener: */
+    area_el.noUiSlider.on('change', function() {
+      /* get values: */
+      let value_lo = parseFloat(area_el.noUiSlider.get()[0]);
+      let value_hi = parseFloat(area_el.noUiSlider.get()[1]);
+      /* store the values: */
+      page_data['filters']['area']['lo'] = value_lo;
+      page_data['filters']['area']['hi'] = value_hi;
+      /* update data: */
+      update_data();
+      /* display the value: */
+      area_value_el.innerHTML = (value_lo) + ' km² - ' + value_hi + ' km²';
+    });
+    /* add slide listener: */
+    area_el.noUiSlider.on('slide', function() {
+      /* get values: */
+      let value_lo = parseFloat(area_el.noUiSlider.get()[0]);
+      let value_hi = parseFloat(area_el.noUiSlider.get()[1]);
+      /* display the value: */
+      area_value_el.innerHTML = (value_lo) + ' km² - ' + value_hi + ' km²';
+    });
+  };
+
+  /* load the map: */
+  load_map();
+};
+
 /* function to update data on lakes tale update: */
 function lakes_table_draw() {
   /* get the table: */
@@ -395,16 +490,12 @@ function load_data_table() {
     });
     /* store table: */
     page_data['lakes_table'] = lakes_table;
-    /* store table search box: */
-    page_data['lakes_table_search'] = document.getElementById(
-      'lakes_table_filter'
-    ).children[0].children[0];
     /* clear any id based searches ... : */
     lakes_table.column(0).search('').draw();
     /* update data when table is updated: */
     lakes_table.on('draw', lakes_table_draw);
-    /* load the map: */
-    load_map();
+    /* load filters: */
+    load_filters();
   });
 };
 
@@ -526,6 +617,39 @@ function update_data() {
     lake_ids.push(lake[0]);
   });
 
+  /* get lake ids from filters ... area: */
+  let area_slider = page_data['filters']['area']['el'];
+  let area_min = page_data['filters']['area']['min'];
+  let area_max = page_data['filters']['area']['max'];
+  let [area_lo, area_hi] = area_slider.noUiSlider.get();
+  /* only filter by area if slider has been set ... : */
+  if ((area_lo != area_min) || (area_hi != area_max)) {
+    /* store new lake ids here: */
+    let lake_ids_area = [];
+    /* loop through lakes: */
+    for (let i = 0; i < lakes_data.length; i++) {
+      /* get lake info: */
+      let lake = lakes_data[i];
+      /* check id first: */
+      let lake_id = lake['GLO_ID'];
+      if (lake_ids.indexOf(lake_id) < 0) {
+        continue;
+      };
+      /* check for lake area: */
+      let lake_area = lake['AREA'];
+      if (lake_area == null) {
+        continue;
+      };
+      /* check if lake area is wihtin required bounds: */
+      if ((area_lo <= lake_area) && (lake_area <= area_hi)) {
+        /* store lake id: */
+        lake_ids_area.push(lake_id);
+      };
+    };
+    /* update lake ids: */
+    lake_ids = lake_ids_area;
+  };
+
   /* get lake id from map, if an area is selected: */
   let area_select = page_data['area_select'];
   if ((area_select != null) && (area_select.isEnabled())) {
@@ -550,7 +674,7 @@ function update_data() {
       };
       /* check if selected area and table contains this lake: */
       if (area_bb.contains(lake_ll)) {
-        /* get lake id from marker and store: */
+        /* store lake id: */
         lake_ids_map.push(lake_id);
       };
     };

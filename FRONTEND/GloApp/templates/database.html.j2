@@ -14,6 +14,11 @@
       type="text/css"
       href="{{ url_for('static', filename='styles/leaflet-locationfilter.css') }}"
       media="all">
+<!-- nouislider css: -->
+<link rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static', filename='styles/nouislider.min.css') }}"
+      media="all">
 <!-- local css: -->
 <link rel="stylesheet"
       type="text/css"
@@ -35,6 +40,10 @@
         charset="utf-8">
 </script>
 <script src="https://cdn.datatables.net/plug-ins/1.11.5/filtering/type-based/accent-neutralise.js"
+        charset="utf-8">
+</script>
+<!-- nouislider: -->
+<script src="{{ url_for('static', filename='scripts/nouislider.min.js') }}"
         charset="utf-8">
 </script>
 <!-- local js: -->
@@ -67,6 +76,26 @@ var lakes_data = {{ lakes | replace('None', 'null') }};
        class="db_content_row db_row flex_center">
     <div id="lakes_map"
          class="db_map_div flex_grow">
+    </div>
+  </div>
+  <!-- lakes filters:: _____________________________________________ -->
+  <div id="filter_row"
+       class="db_content_row db_row flex_center">
+    <div id="filter_area"
+         class="db_filter_div db_slider_div flex_grow">
+      <div id="slider_area_text"
+           class="db_slider_text">
+        <span id="slider_area_title"
+              class="db_slider_title">Area:</span>
+        <span id="slider_area_value"
+              class="db_slider_value"></span>
+      </div>
+      <div id="slider_area"
+           class="db_slider">
+      </div>
+    </div>
+    <div id="filter_volume"
+         class="db_filter_div db_slider_div flex_grow">
     </div>
   </div>
   <!-- lakes table: ________________________________________________ -->

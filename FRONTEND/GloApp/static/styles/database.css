@@ -263,3 +263,54 @@ table {
     display: none;
   }
 }
+
+/** filters: **/
+
+.db_filter_div {
+  width: 45%;
+}
+
+.db_slider_div {
+  max-height: 3em;
+  margin: 0.4em;
+  margin-top: 0.5em;
+  padding: 0.3em;
+  padding-top: 0.2em;
+  padding-bottom: 0.2em;
+}
+
+.db_slider_title {
+  font-weight: bold;
+  mrgin-right: 1em;
+}
+
+.db_slider_value {
+  color: #484848;
+}
+
+.db_slider {
+  width: 90%;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  margin-left: 1.5em;
+}
+
+.noUi-target {
+  background: #cccccc;
+  border: 1px solid #cccccc;
+  box-shadow: none;
+}
+
+.noUi-connect {
+  background: #94d3e8;
+}
+
+.noUi-handle {
+  border: 1px solid #80c41c;
+  box-shadow: none;
+}
+
+.noUi-handle::after,
+.noUi-handle::before {
+  display: none;
+}
