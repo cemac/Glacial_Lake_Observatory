@@ -26,7 +26,8 @@ var page_data = {
   'map_lake_ids': [],
   /* lakes data table object: */
   'lakes_table': null,
-  'lakes_table_search': null
+  'lakes_table_search': null,
+  'lakes_table_updating': false
 };
 
 /** leaflet mouse position control: **/
@@ -146,103 +147,6 @@ function draw_colormap() {
   };
   /* return the html: */
   return colormap_html;
-};
-
-/* function to update map: */
-function update_map() {
-  /* get area select: */
-  let area_select = page_data['area_select'];
-  /* don't update map if area select is active: */
-  if ((area_select != null) && (area_select.isEnabled())) {
-    return;
-  };
-  /* get active lake ids, map and lake markers: */
-  let lake_ids = page_data['lake_ids'];
-  let map = page_data['map'];
-  let lake_markers = page_data['lake_markers'];
-  /* store new active lake markers and ids here: */
-  let active_ids = [];
-  let active_markers = [];
-  /* remove inactive markers first: */
-  for (let i = 0; i < lake_markers.length; i++) {
-    /* get marker: */
-    let lake_marker = lake_markers[i];
-    /* get lake id from marker: */
-    let lake_id = lake_marker.lake_id;
-    /* if this lake is not in the active set, remove from map: */
-    if (lake_ids.indexOf(lake_id) < 0) {
-      lake_marker.remove();
-    /* else, store id: */
-    } else {
-      active_ids.push(lake_id);
-      active_markers.push(lake_marker);
-    };
-  };
-  /* draw any new lake markers: */
-  for (let i = 0; i < lakes_data.length; i++) {
-    /* get lake id: */
-    var lake = lakes_data[i];
-    var lake_id = lake['GLO_ID'];
-    /* if this is not in the current active set, move on: */
-    if (lake_ids.indexOf(lake_id) < 0) {
-      continue;
-    };
-    /* if this is already on the map, move on: */
-    if (active_ids.indexOf(lake_id) > -1) {
-      continue;
-    };
-    /* get lake information: */
-    var lake_lat = lake['LATITUDE'];
-    var lake_lon = lake['LONGITUDE'];
-    var lake_name = lake['GLO_ID'];
-    var lake_alt_name = lake['COMMON_NAME'];
-    var lake_country = lake['COUNTRY'];
-    var lake_connectivity = lake['CONNECTIVITY'];
-    var lake_area = lake['AREA'];
-    var lake_expansion_rate = lake['EXPANSION_RATE'];
-    var lake_expansion_uncertainty = lake['EXPANSION_RATE_UNCERTAINTY'];
-    var lake_depth_max = lake['DEPTH_MAX'];
-    var lake_volume = lake['VOLUME'];
-    var lake_volume_year = lake['VOLUME_YEAR'];
-    var lake_url = window.location.href + '/lake/' + lake_name;
-    var lake_text = '<b>' + lake_name + '</b>';
-    if (lake_alt_name != null) { lake_text += '<br>• Common name: ' + lake_alt_name; };
-    if (lake_country != null) { lake_text += '<br>• Country: ' + lake_country; };
-    if (lake_connectivity != null) { lake_text += '<br>• Connectivity: ' + lake_connectivity; };
-    if (lake_area != null) { lake_text += '<br>• Area: ' + lake_area.toFixed(3) + ' km²'; };
-    if ((lake_expansion_rate != null) && (lake_expansion_uncertainty != null)) {
-      lake_text += '<br>• Expansion rate: ' + lake_expansion_rate + ' km²/year (+/-' +
-                   lake_expansion_uncertainty + ')';
-    };
-    if (lake_depth_max != null) { lake_text += '<br>• Maximum depth: ' + lake_depth_max.toFixed(0) + ' m'; };
-    if ((lake_volume != null) && (lake_volume_year != null)) {
-      lake_text += '<br>• Volume: ' + lake_volume.toFixed(0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") +
-                   ' m³ (' + lake_volume_year + ')';
-    };
-    /* get color for this polygon: */
-    var poly_color = value_to_color(lake_expansion_rate);
-    /* draw polygon: */
-    var lake_marker = new L.circleMarker([lake_lat, lake_lon],{
-      radius: 5,
-      stroke: true,
-      weight: 1,
-      opacity: 0.6,
-      color: '#39ffff',
-      fill: true,
-      fillOpacity: 0.8,
-      fillColor: poly_color
-    });
-    lake_marker.lake_id = lake_id;
-    lake_marker.url = lake_url;
-    lake_marker.bindTooltip(lake_text, {interactive: true});
-    lake_marker.on('click', function(e) { window.open(e.sourceTarget.url); });
-    lake_marker.addTo(map);
-    /* store marker and id: */
-    active_ids.push(lake_id);
-    active_markers.push(lake_marker);
-  };
-  /* store lake markers: */
-  page_data['lake_markers'] = active_markers;
 };
 
 /* function to load map: */
@@ -381,11 +285,12 @@ function load_map() {
   let map_area_select_el = document.getElementsByClassName('map_area_select_container')[0];
   /* add the listener: */
   map_area_select_el.addEventListener('click', area_select_toggle);
+  /* make sure selection is initially disabled: */
+  area_select.disable();
   /* store map: */
   page_data['map'] = map;
-  /* add markers: */
-  area_select.disable();
-  update_map();
+  /* update the page data: */
+  update_data();
 };
 
 /* function to open tooltip for lake id: */
@@ -424,39 +329,6 @@ function close_lake_tt(lake_id) {
   };
 };
 
-/* update things based on selected area: */
-function update_from_area() {
-  /* get area select: */
-  let area_select = page_data['area_select'];
-  /* give up if not enabled: */
-  if ((area_select != null) && (! area_select.isEnabled())) {
-    return;
-  };
-  /* get area bounds: */
-  let area_bounds = area_select.getBounds();
-  let area_bb = L.latLngBounds(area_bounds);
-  /* get lake markers: */
-  let lake_markers = page_data['lake_markers'];
-  /* new lake ids set will go here: */
-  let lake_ids = [];
-  /* loop through markers: */
-  for (let i = 0; i < lake_markers.length; i++) {
-    /* get marker: */
-    let lake_marker = lake_markers[i];
-    /* check if selected area contains this marker: */
-    let marker_ll = lake_marker.getLatLng();
-    if (area_bb.contains(marker_ll)) {
-      /* get lake id from marker and store: */
-      let lake_id = lake_marker.lake_id;
-      lake_ids.push(lake_id);
-    };
-  };
-  /* store lake ids: */
-  page_data['lake_ids'] = lake_ids;
-  /* update data table: */
-  update_lakes_table();
-};
-
 /* function to toggle ara selection: */
 function area_select_toggle() {
   /* get area select: */
@@ -467,44 +339,45 @@ function area_select_toggle() {
   if ((area_select != null) && (area_select.isEnabled())) {
     /* disable it: */
     area_select.disable();
-    /* update lake ids and data table: */
-    page_data['lake_ids'] = page_data['map_lake_ids'];
-    update_lakes_table();
+    /* update data: */
+    update_data();
     /* update area select control html: */
     map_area_select_el.innerHTML = '<img class="map_area_select_img" ' +
                                    'src="' + images_url + '/map/area_select.png"' +
                                    'title="Select an area">';
-    /* enable search box: */
-    page_data['lakes_table_search'].disabled = false;
     return;
   };
-  /* disable search box: */
-  page_data['lakes_table_search'].disabled = true;
   /* store all current active lake ids: */
   page_data['map_lake_ids'] = page_data['lake_ids'];
   /* enable the area select: */
   area_select.enable();
   /* update things based on selected area: */
-  update_from_area();
+  update_data();
   /* add on change functionality: */
-  area_select.on('change', update_from_area);
+  area_select.on('change', update_data);
   /* update area select control html: */
   map_area_select_el.innerHTML = '<img class="map_area_select_img" ' +
                                  'src="' + images_url + '/map/close.png"' +
                                  'title="Clear area selection">';
 };
 
-/* update active lake ids from data table: */
-function update_lake_ids_dt() {
-  /* get table: */
+/* function to update data on lakes tale update: */
+function lakes_table_draw() {
+  /* get the table: */
   let lakes_table = page_data['lakes_table'];
-  /* init filtered lake ids from table: */
-  let lake_ids = [];
-  lakes_table.rows({'search': 'applied'}).data().each(function(lake) {
-    lake_ids.push(lake[0]);
-  });
-  /* store lake ids information: */
-  page_data['lake_ids'] = lake_ids;
+  /* don't update if already updating ... : */
+  if (page_data['lakes_table_updating'] == false) {
+    /* start update: */
+    page_data['lakes_table_updating'] = true;
+    /* clear lake id search: */
+    lakes_table.column(0).search('');
+    /* redraw table: */
+    lakes_table.draw();
+    /* update data: */
+    update_data();
+    /* end update: */
+    page_data['lakes_table_updating'] = false;
+  };
 };
 
 /* set up lakes data table: */
@@ -516,9 +389,9 @@ function load_data_table() {
         'targets': [-1],
         'orderable': false
       }],
-      'order': [[0, "asc"]],
+      'order': [[0, 'asc']],
       'pageLength': 10,
-      'stateSave': true
+      'stateSave': false
     });
     /* store table: */
     page_data['lakes_table'] = lakes_table;
@@ -528,19 +401,105 @@ function load_data_table() {
     ).children[0].children[0];
     /* clear any id based searches ... : */
     lakes_table.column(0).search('').draw();
-    /* update lake ids: */
-    update_lake_ids_dt();
+    /* update data when table is updated: */
+    lakes_table.on('draw', lakes_table_draw);
     /* load the map: */
     load_map();
-    /* update map when table is updated: */
-    lakes_table.on('draw', function() {
-      update_lake_ids_dt();
-      update_map();
-    });
   });
 };
 
-/* update data table fro mactive lake ids: */
+/* function to update map: */
+function update_map() {
+  /* get active lake ids, map and lake markers: */
+  let lake_ids = page_data['lake_ids'];
+  let map = page_data['map'];
+  let lake_markers = page_data['lake_markers'];
+  /* store new active lake markers and ids here: */
+  let active_ids = [];
+  let active_markers = [];
+  /* remove inactive markers first: */
+  for (let i = 0; i < lake_markers.length; i++) {
+    /* get marker: */
+    let lake_marker = lake_markers[i];
+    /* get lake id from marker: */
+    let lake_id = lake_marker.lake_id;
+    /* if this lake is not in the active set, remove from map: */
+    if (lake_ids.indexOf(lake_id) < 0) {
+      lake_marker.remove();
+    /* else, store id: */
+    } else {
+      active_ids.push(lake_id);
+      active_markers.push(lake_marker);
+    };
+  };
+  /* draw any new lake markers: */
+  for (let i = 0; i < lakes_data.length; i++) {
+    /* get lake id: */
+    var lake = lakes_data[i];
+    var lake_id = lake['GLO_ID'];
+    /* if this is not in the current active set, move on: */
+    if (lake_ids.indexOf(lake_id) < 0) {
+      continue;
+    };
+    /* if this is already on the map, move on: */
+    if (active_ids.indexOf(lake_id) > -1) {
+      continue;
+    };
+    /* get lake information: */
+    var lake_lat = lake['LATITUDE'];
+    var lake_lon = lake['LONGITUDE'];
+    var lake_name = lake['GLO_ID'];
+    var lake_alt_name = lake['COMMON_NAME'];
+    var lake_country = lake['COUNTRY'];
+    var lake_connectivity = lake['CONNECTIVITY'];
+    var lake_area = lake['AREA'];
+    var lake_expansion_rate = lake['EXPANSION_RATE'];
+    var lake_expansion_uncertainty = lake['EXPANSION_RATE_UNCERTAINTY'];
+    var lake_depth_max = lake['DEPTH_MAX'];
+    var lake_volume = lake['VOLUME'];
+    var lake_volume_year = lake['VOLUME_YEAR'];
+    var lake_url = window.location.href + '/lake/' + lake_name;
+    var lake_text = '<b>' + lake_name + '</b>';
+    if (lake_alt_name != null) { lake_text += '<br>• Common name: ' + lake_alt_name; };
+    if (lake_country != null) { lake_text += '<br>• Country: ' + lake_country; };
+    if (lake_connectivity != null) { lake_text += '<br>• Connectivity: ' + lake_connectivity; };
+    if (lake_area != null) { lake_text += '<br>• Area: ' + lake_area.toFixed(3) + ' km²'; };
+    if ((lake_expansion_rate != null) && (lake_expansion_uncertainty != null)) {
+      lake_text += '<br>• Expansion rate: ' + lake_expansion_rate + ' km²/year (+/-' +
+                   lake_expansion_uncertainty + ')';
+    };
+    if (lake_depth_max != null) { lake_text += '<br>• Maximum depth: ' + lake_depth_max.toFixed(0) + ' m'; };
+    if ((lake_volume != null) && (lake_volume_year != null)) {
+      lake_text += '<br>• Volume: ' + lake_volume.toFixed(0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") +
+                   ' m³ (' + lake_volume_year + ')';
+    };
+    /* get color for this polygon: */
+    var poly_color = value_to_color(lake_expansion_rate);
+    /* draw polygon: */
+    var lake_marker = new L.circleMarker([lake_lat, lake_lon],{
+      radius: 5,
+      stroke: true,
+      weight: 1,
+      opacity: 0.6,
+      color: '#39ffff',
+      fill: true,
+      fillOpacity: 0.8,
+      fillColor: poly_color
+    });
+    lake_marker.lake_id = lake_id;
+    lake_marker.url = lake_url;
+    lake_marker.bindTooltip(lake_text, {interactive: true});
+    lake_marker.on('click', function(e) { window.open(e.sourceTarget.url); });
+    lake_marker.addTo(map);
+    /* store marker and id: */
+    active_ids.push(lake_id);
+    active_markers.push(lake_marker);
+  };
+  /* store lake markers: */
+  page_data['lake_markers'] = active_markers;
+};
+
+/* update data table from active lake ids: */
 function update_lakes_table() {
   /* get active lake ids and lake table: */
   let lake_ids = page_data['lake_ids'];
@@ -549,18 +508,68 @@ function update_lakes_table() {
   if (lake_ids.length < 1) {
     /* filter table based on nonsens: */
     lakes_table.column(0).search('NULL|VOID', true).draw();
-
   } else {
     /* filter table based on ids and re-draw: */
     lakes_table.column(0).search(lake_ids.join('|'), true).draw();
   };
 };
 
+/* try to update and synchronise data sources / filters ... : */
+function update_data() {
+  /* init aray for storing new lake ids: */
+  let lake_ids = [];
+
+  /* get lake ids from table first: */
+  let lakes_table = page_data['lakes_table'];
+  /* init filtered lake ids from table: */
+  lakes_table.rows({'search': 'applied'}).data().each(function(lake) {
+    lake_ids.push(lake[0]);
+  });
+
+  /* get lake id from map, if an area is selected: */
+  let area_select = page_data['area_select'];
+  if ((area_select != null) && (area_select.isEnabled())) {
+    /* get area bounds: */
+    let area_bounds = area_select.getBounds();
+    let area_bb = L.latLngBounds(area_bounds);
+    /* store new lake ids here: */
+    let lake_ids_map = [];
+    /* loop through lakes: */
+    for (let i = 0; i < lakes_data.length; i++) {
+      /* get lake info: */
+      let lake = lakes_data[i];
+      /* check id first: */
+      let lake_id = lake['GLO_ID'];
+      if (lake_ids.indexOf(lake_id) < 0) {
+        continue;
+      };
+      /* check for lake in area: */
+      let lake_ll = {
+        'lat': lake['LATITUDE'],
+        'lng': lake['LONGITUDE']
+      };
+      /* check if selected area and table contains this lake: */
+      if (area_bb.contains(lake_ll)) {
+        /* get lake id from marker and store: */
+        lake_ids_map.push(lake_id);
+      };
+    };
+    /* update lake ids: */
+    lake_ids = lake_ids_map;
+  };
+
+  /* store lake ids information: */
+  page_data['lake_ids'] = lake_ids;
+  /* update map and data table from new ids: */
+  update_map();
+  update_lakes_table();
+};
+
 /* set up the page: */
 function load_page() {
   /* set up data table: */
   load_data_table();
-}
+};
 
 /** add listeners: **/
 
