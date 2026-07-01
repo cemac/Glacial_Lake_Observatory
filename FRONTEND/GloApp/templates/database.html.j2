@@ -96,6 +96,16 @@ var lakes_data = {{ lakes | replace('None', 'null') }};
     </div>
     <div id="filter_volume"
          class="db_filter_div db_slider_div flex_grow">
+      <div id="slider_volume_text"
+           class="db_slider_text">
+        <span id="slider_volume_title"
+              class="db_slider_title">Volume:</span>
+        <span id="slider_volume_value"
+              class="db_slider_value"></span>
+      </div>
+      <div id="slider_volume"
+           class="db_slider">
+      </div>
     </div>
   </div>
   <!-- lakes table: ________________________________________________ -->

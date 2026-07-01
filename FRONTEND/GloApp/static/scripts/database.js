@@ -415,7 +415,7 @@ function load_filters() {
     /* create slider: */
     let slider_lo = page_data['filters']['area']['lo'];
     let slider_hi = page_data['filters']['area']['hi'];
-    let slider_step = parseFloat(((slider_hi - slider_lo) / 30).toFixed(2));
+    let slider_step = parseFloat(((slider_hi - slider_lo) / 50).toFixed(2));
     noUiSlider.create(area_el, {
       'start': [slider_lo, slider_hi],
       'range': {
@@ -428,7 +428,7 @@ function load_filters() {
       'tooltips': false
     });
     /* set value: */
-    area_value_el.innerHTML = (slider_lo) + ' km² - ' + slider_hi + ' km²';
+    area_value_el.innerHTML = slider_lo + ' km² - ' + slider_hi + ' km²';
     /* add change listener: */
     area_el.noUiSlider.on('change', function() {
       /* get values: */
@@ -440,7 +440,7 @@ function load_filters() {
       /* update data: */
       update_data();
       /* display the value: */
-      area_value_el.innerHTML = (value_lo) + ' km² - ' + value_hi + ' km²';
+      area_value_el.innerHTML = value_lo + ' km² - ' + value_hi + ' km²';
     });
     /* add slide listener: */
     area_el.noUiSlider.on('slide', function() {
@@ -448,9 +448,57 @@ function load_filters() {
       let value_lo = parseFloat(area_el.noUiSlider.get()[0]);
       let value_hi = parseFloat(area_el.noUiSlider.get()[1]);
       /* display the value: */
-      area_value_el.innerHTML = (value_lo) + ' km² - ' + value_hi + ' km²';
+      area_value_el.innerHTML = value_lo + ' km² - ' + value_hi + ' km²';
     });
   };
+  /* add volume filter. get html element: */
+  let volume_el = page_data['filters']['volume']['el'];
+  let volume_value_el = page_data['filters']['volume']['value_el'];
+  if (volume_el.noUiSlider == undefined){
+    /* create slider: */
+    let slider_lo = page_data['filters']['volume']['lo'];
+    let slider_hi = page_data['filters']['volume']['hi'];
+    let slider_step = parseFloat(((slider_hi - slider_lo) / 50).toFixed(0));
+    noUiSlider.create(volume_el, {
+      'start': [slider_lo, slider_hi],
+      'range': {
+        'min': slider_lo,
+        'max': slider_hi
+      },
+      'connect': true,
+      'step': slider_step,
+      'margin': slider_step,
+      'tooltips': false
+    });
+    /* set value: */
+    volume_value_el.innerHTML = slider_lo.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' m³ - ' +
+                                slider_hi.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' m³';
+    /* add change listener: */
+    volume_el.noUiSlider.on('change', function() {
+      /* get values: */
+      let value_lo = parseFloat(volume_el.noUiSlider.get()[0]);
+      let value_hi = parseFloat(volume_el.noUiSlider.get()[1]);
+      /* store the values: */
+      page_data['filters']['volume']['lo'] = value_lo;
+      page_data['filters']['volume']['hi'] = value_hi;
+      /* update data: */
+      update_data();
+      /* display the value: */
+      volume_value_el.innerHTML = value_lo.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' m³ - ' +
+                                  value_hi.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' m³';
+    });
+    /* add slide listener: */
+    volume_el.noUiSlider.on('slide', function() {
+      /* get values: */
+      let value_lo = parseFloat(volume_el.noUiSlider.get()[0]);
+      let value_hi = parseFloat(volume_el.noUiSlider.get()[1]);
+      /* display the value: */
+      volume_value_el.innerHTML = value_lo.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' m³ - ' +
+                                  value_hi.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' m³';
+    });
+  };
+
+
 
   /* load the map: */
   load_map();
@@ -648,6 +696,39 @@ function update_data() {
     };
     /* update lake ids: */
     lake_ids = lake_ids_area;
+  };
+
+  /* volume filter: */
+  let volume_slider = page_data['filters']['volume']['el'];
+  let volume_min = page_data['filters']['volume']['min'];
+  let volume_max = page_data['filters']['volume']['max'];
+  let [volume_lo, volume_hi] = volume_slider.noUiSlider.get();
+  /* only filter by volume if slider has been set ... : */
+  if ((volume_lo != volume_min) || (volume_hi != volume_max)) {
+    /* store new lake ids here: */
+    let lake_ids_volume = [];
+    /* loop through lakes: */
+    for (let i = 0; i < lakes_data.length; i++) {
+      /* get lake info: */
+      let lake = lakes_data[i];
+      /* check id first: */
+      let lake_id = lake['GLO_ID'];
+      if (lake_ids.indexOf(lake_id) < 0) {
+        continue;
+      };
+      /* check for lake volume: */
+      let lake_volume = lake['VOLUME'];
+      if (lake_volume == null) {
+        continue;
+      };
+      /* check if lake volume is wihtin required bounds: */
+      if ((volume_lo <= lake_volume) && (lake_volume <= volume_hi)) {
+        /* store lake id: */
+        lake_ids_volume.push(lake_id);
+      };
+    };
+    /* update lake ids: */
+    lake_ids = lake_ids_volume;
   };
 
   /* get lake id from map, if an area is selected: */
