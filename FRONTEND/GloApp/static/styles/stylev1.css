@@ -291,6 +291,7 @@ footer {
 .entry-content > p
 {
     text-align:center;
+    font-size: 16px;
 }
 
 .fb-page {
@@ -301,3 +302,5 @@ footer {
   .fb-page iframe {
     width: 100% !important;
   }
+
+ 

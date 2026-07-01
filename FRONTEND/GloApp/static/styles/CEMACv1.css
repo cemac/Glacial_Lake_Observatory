@@ -1,7 +1,8 @@
 body {
 
     font-family: Helvetica, Arial, sans-serif;
-
+    font-size: 18px; /* Your base size */
+    line-height: 1.6; /* Adds readability to blocks of text */
 }
 
 
@@ -81,4 +82,9 @@ body {
   vertical-align: top;
   zoom: 1;
   *display: inline;
+}
+
+
+.navbar .nav-link {
+  font-size: 20px;
 }
