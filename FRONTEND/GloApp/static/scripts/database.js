@@ -32,6 +32,8 @@ var page_data = {
     'area': {
       'el': document.getElementById('slider_area'),
       'value_el': document.getElementById('slider_area_value'),
+      'step': 0.1,
+      'margin': 0.3,
       'min': 0,
       'max': 10,
       'lo': 0,
@@ -40,6 +42,8 @@ var page_data = {
     'volume': {
       'el': document.getElementById('slider_volume'),
       'value_el': document.getElementById('slider_volume_value'),
+      'step': 100000,
+      'margin': 5000000,
       'min': 0,
       'max': 10,
       'lo': 0,
@@ -400,22 +404,32 @@ function load_filters() {
     };
   };
   /* store mins and maxs: */
-  page_data['filters']['area']['min'] = parseFloat((Math.min.apply(null, areas)).toFixed(2));
-  page_data['filters']['area']['max'] = parseFloat((Math.max.apply(null, areas)).toFixed(2));
+  let area_step = page_data['filters']['area']['step'];
+  page_data['filters']['area']['min'] = Math.floor(
+    parseFloat((Math.min.apply(null, areas)).toFixed(2)) / area_step
+  ) * area_step;
+  page_data['filters']['area']['max'] = Math.ceil(
+    parseFloat((Math.max.apply(null, areas)).toFixed(2)) / area_step
+  ) * area_step;
   page_data['filters']['area']['lo'] = page_data['filters']['area']['min'];
   page_data['filters']['area']['hi'] = page_data['filters']['area']['max'];
-  page_data['filters']['volume']['min'] = parseFloat((Math.min.apply(null, volumes)).toFixed(0));
-  page_data['filters']['volume']['max'] = parseFloat((Math.max.apply(null, volumes)).toFixed(0));
+  let volume_step = page_data['filters']['volume']['step'];
+  page_data['filters']['volume']['min'] = Math.floor(
+    parseFloat((Math.min.apply(null, volumes)).toFixed(0)) / volume_step
+  );
+  page_data['filters']['volume']['max'] = Math.ceil(
+    parseFloat((Math.max.apply(null, volumes)).toFixed(0)) / volume_step
+  ) * volume_step;
   page_data['filters']['volume']['lo'] = page_data['filters']['volume']['min'];
   page_data['filters']['volume']['hi'] = page_data['filters']['volume']['max'];
   /* add area filter. get html element: */
   let area_el = page_data['filters']['area']['el'];
   let area_value_el = page_data['filters']['area']['value_el'];
+  let area_margin = page_data['filters']['area']['margin'];
   if (area_el.noUiSlider == undefined){
     /* create slider: */
     let slider_lo = page_data['filters']['area']['lo'];
     let slider_hi = page_data['filters']['area']['hi'];
-    let slider_step = parseFloat(((slider_hi - slider_lo) / 50).toFixed(2));
     noUiSlider.create(area_el, {
       'start': [slider_lo, slider_hi],
       'range': {
@@ -423,8 +437,8 @@ function load_filters() {
         'max': slider_hi
       },
       'connect': true,
-      'step': slider_step,
-      'margin': slider_step,
+      'step': area_step,
+      'margin': area_margin,
       'tooltips': false
     });
     /* set value: */
@@ -454,11 +468,11 @@ function load_filters() {
   /* add volume filter. get html element: */
   let volume_el = page_data['filters']['volume']['el'];
   let volume_value_el = page_data['filters']['volume']['value_el'];
+  let volume_margin = page_data['filters']['volume']['margin'];
   if (volume_el.noUiSlider == undefined){
     /* create slider: */
     let slider_lo = page_data['filters']['volume']['lo'];
     let slider_hi = page_data['filters']['volume']['hi'];
-    let slider_step = parseFloat(((slider_hi - slider_lo) / 50).toFixed(0));
     noUiSlider.create(volume_el, {
       'start': [slider_lo, slider_hi],
       'range': {
@@ -466,8 +480,8 @@ function load_filters() {
         'max': slider_hi
       },
       'connect': true,
-      'step': slider_step,
-      'margin': slider_step,
+      'step': volume_step,
+      'margin': volume_margin,
       'tooltips': false
     });
     /* set value: */
