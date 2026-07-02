@@ -528,9 +528,23 @@ function load_data_table() {
   /* init lakes table: */
   $(document).ready(function(){
     let lakes_table = $('#lakes_table').DataTable({
-      columnDefs: [{
-        'targets': [-1],
-        'orderable': false
+      'columnDefs': [{
+        'orderable': false,
+        'targets': [-1]
+      }, {
+        'type': 'num',
+        'targets': [7]
+      }, {
+        'render': function (data, type, row, meta) {
+          if (type == 'sort') {
+            return row[8];
+          };
+          return data;
+        },
+        'targets': [7]
+      }, {
+        'visible': false,
+        'targets': [8]
       }],
       'order': [[0, 'asc']],
       'pageLength': 10,

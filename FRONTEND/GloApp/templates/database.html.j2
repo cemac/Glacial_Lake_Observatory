@@ -128,6 +128,7 @@ var lakes_data = {{ lakes | replace('None', 'null') }};
             <th class="dt-left th_expansion">Expansion Rate (km²/year)</th>
             <th class="dt-left th_depth">Maximum depth (m)</th>
             <th class="dt-left th_volume">Volume (m³)</th>
+            <th class="dt-left th_volume_value"></th>
             <th></th>
           </tr>
         </thead>
@@ -160,6 +161,11 @@ var lakes_data = {{ lakes | replace('None', 'null') }};
               <td class="td_volume">{{  "{:0,.0f}".format(lake['VOLUME']) }} ({{ lake['VOLUME_YEAR'] | int() }})</td>
             {% else -%}
               <td class="td_volume"></td>
+            {% endif -%}
+            {% if lake['VOLUME'] -%}
+              <td class="td_volume_value">{{  lake['VOLUME'] }}</td>
+            {% else -%}
+              <td class="td_volume_value"></td>
             {% endif -%}
             <td><a class="lakes_table_a" href="/database/lake/{{ lake['GLO_ID'] }}" target="_blank"></a></td>
           </tr>
