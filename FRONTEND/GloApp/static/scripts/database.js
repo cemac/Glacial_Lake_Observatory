@@ -48,6 +48,16 @@ var page_data = {
       'max': 10,
       'lo': 0,
       'hi': 10
+    },
+    'expansion': {
+      'el': document.getElementById('slider_expansion'),
+      'value_el': document.getElementById('slider_expansion_value'),
+      'step': 0.001,
+      'margin': 0.005,
+      'min': 0,
+      'max': 10,
+      'lo': 0,
+      'hi': 10
     }
   }
 };
@@ -388,6 +398,7 @@ function load_filters() {
   /* loop through lake data to get required values. init these: */
   let areas = [];
   let volumes = [];
+  let expansions = [];
   /* loop through lakes: */
   for (let i = 0; i < lakes_data.length; i++) {
     /* get lake id: */
@@ -395,6 +406,7 @@ function load_filters() {
     /* get lake information: */
     var lake_area = lake['AREA'];
     var lake_volume = lake['VOLUME'];
+    var lake_expansion = lake['EXPANSION_RATE'];
     /* store numeric values: */
     if (isFinite(lake_area)) {
       areas.push(lake_area);
@@ -402,8 +414,11 @@ function load_filters() {
     if (isFinite(lake_volume)) {
       volumes.push(lake_volume);
     };
+    if (isFinite(lake_expansion)) {
+      expansions.push(lake_expansion);
+    };
   };
-  /* store mins and maxs: */
+  /* store mins and maxs ... area: */
   let area_step = page_data['filters']['area']['step'];
   page_data['filters']['area']['min'] = Math.floor(
     parseFloat((Math.min.apply(null, areas)).toFixed(2)) / area_step
@@ -413,15 +428,26 @@ function load_filters() {
   ) * area_step;
   page_data['filters']['area']['lo'] = page_data['filters']['area']['min'];
   page_data['filters']['area']['hi'] = page_data['filters']['area']['max'];
+  /* volume: */
   let volume_step = page_data['filters']['volume']['step'];
   page_data['filters']['volume']['min'] = Math.floor(
     parseFloat((Math.min.apply(null, volumes)).toFixed(0)) / volume_step
-  );
+  ) * volume_step;
   page_data['filters']['volume']['max'] = Math.ceil(
     parseFloat((Math.max.apply(null, volumes)).toFixed(0)) / volume_step
   ) * volume_step;
   page_data['filters']['volume']['lo'] = page_data['filters']['volume']['min'];
   page_data['filters']['volume']['hi'] = page_data['filters']['volume']['max'];
+  /* expansion rate: */
+  let expansion_step = page_data['filters']['expansion']['step'];
+  page_data['filters']['expansion']['min'] = Math.floor(
+    parseFloat((Math.min.apply(null, expansions)).toFixed(4)) / expansion_step
+  ) * expansion_step;
+  page_data['filters']['expansion']['max'] = Math.ceil(
+    parseFloat((Math.max.apply(null, expansions)).toFixed(4)) / expansion_step
+  ) * expansion_step;
+  page_data['filters']['expansion']['lo'] = page_data['filters']['expansion']['min'];
+  page_data['filters']['expansion']['hi'] = page_data['filters']['expansion']['max'];
   /* add area filter. get html element: */
   let area_el = page_data['filters']['area']['el'];
   let area_value_el = page_data['filters']['area']['value_el'];
@@ -442,7 +468,7 @@ function load_filters() {
       'tooltips': false
     });
     /* set value: */
-    area_value_el.innerHTML = slider_lo + ' km² - ' + slider_hi + ' km²';
+    area_value_el.innerHTML = slider_lo + ' km² to ' + slider_hi + ' km²';
     /* add change listener: */
     area_el.noUiSlider.on('change', function() {
       /* get values: */
@@ -454,7 +480,7 @@ function load_filters() {
       /* update data: */
       update_data();
       /* display the value: */
-      area_value_el.innerHTML = value_lo + ' km² - ' + value_hi + ' km²';
+      area_value_el.innerHTML = value_lo + ' km² to ' + value_hi + ' km²';
     });
     /* add slide listener: */
     area_el.noUiSlider.on('slide', function() {
@@ -462,7 +488,7 @@ function load_filters() {
       let value_lo = parseFloat(area_el.noUiSlider.get()[0]);
       let value_hi = parseFloat(area_el.noUiSlider.get()[1]);
       /* display the value: */
-      area_value_el.innerHTML = value_lo + ' km² - ' + value_hi + ' km²';
+      area_value_el.innerHTML = value_lo + ' km² to ' + value_hi + ' km²';
     });
   };
   /* add volume filter. get html element: */
@@ -485,7 +511,7 @@ function load_filters() {
       'tooltips': false
     });
     /* set value: */
-    volume_value_el.innerHTML = slider_lo.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' m³ - ' +
+    volume_value_el.innerHTML = slider_lo.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' m³ to ' +
                                 slider_hi.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' m³';
     /* add change listener: */
     volume_el.noUiSlider.on('change', function() {
@@ -498,7 +524,7 @@ function load_filters() {
       /* update data: */
       update_data();
       /* display the value: */
-      volume_value_el.innerHTML = value_lo.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' m³ - ' +
+      volume_value_el.innerHTML = value_lo.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' m³ to ' +
                                   value_hi.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' m³';
     });
     /* add slide listener: */
@@ -507,8 +533,55 @@ function load_filters() {
       let value_lo = parseFloat(volume_el.noUiSlider.get()[0]);
       let value_hi = parseFloat(volume_el.noUiSlider.get()[1]);
       /* display the value: */
-      volume_value_el.innerHTML = value_lo.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' m³ - ' +
+      volume_value_el.innerHTML = value_lo.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' m³ to ' +
                                   value_hi.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' m³';
+    });
+  };
+  /* add expansion filter. get html element: */
+  let expansion_el = page_data['filters']['expansion']['el'];
+  let expansion_value_el = page_data['filters']['expansion']['value_el'];
+  let expansion_margin = page_data['filters']['expansion']['margin'];
+  if (expansion_el.noUiSlider == undefined){
+    /* create slider: */
+    let slider_lo = page_data['filters']['expansion']['lo'];
+    let slider_hi = page_data['filters']['expansion']['hi'];
+    noUiSlider.create(expansion_el, {
+      'start': [slider_lo, slider_hi],
+      'range': {
+        'min': slider_lo,
+        'max': slider_hi
+      },
+      'format': {
+        'to': function(value) { return value.toFixed(3); },
+        'from': function(value) { return Number(parseFloat(value).toFixed(3)); }
+      },
+      'connect': true,
+      'step': expansion_step,
+      'margin': expansion_margin,
+      'tooltips': false
+    });
+    /* set value: */
+    expansion_value_el.innerHTML = slider_lo + ' km²/year to ' + slider_hi + ' km²/year';
+    /* add change listener: */
+    expansion_el.noUiSlider.on('change', function() {
+      /* get values: */
+      let value_lo = parseFloat(expansion_el.noUiSlider.get()[0]);
+      let value_hi = parseFloat(expansion_el.noUiSlider.get()[1]);
+      /* store the values: */
+      page_data['filters']['expansion']['lo'] = value_lo;
+      page_data['filters']['expansion']['hi'] = value_hi;
+      /* update data: */
+      update_data();
+      /* display the value: */
+      expansion_value_el.innerHTML = value_lo + ' km²/year to ' + value_hi + ' km²/year';
+    });
+    /* add slide listener: */
+    expansion_el.noUiSlider.on('slide', function() {
+      /* get values: */
+      let value_lo = parseFloat(expansion_el.noUiSlider.get()[0]);
+      let value_hi = parseFloat(expansion_el.noUiSlider.get()[1]);
+      /* display the value: */
+      expansion_value_el.innerHTML = value_lo + ' km²/year to ' + value_hi + ' km²/year';
     });
   };
 
@@ -547,7 +620,7 @@ function load_data_table() {
         'targets': [-1]
       }, {
         'type': 'num',
-        'targets': [7]
+        'targets': [4, 5, 6, 7]
       }, {
         'render': function (data, type, row, meta) {
           if (type == 'sort') {
@@ -757,6 +830,39 @@ function update_data() {
     };
     /* update lake ids: */
     lake_ids = lake_ids_volume;
+  };
+
+  /* expansion filter: */
+  let expansion_slider = page_data['filters']['expansion']['el'];
+  let expansion_min = page_data['filters']['expansion']['min'];
+  let expansion_max = page_data['filters']['expansion']['max'];
+  let [expansion_lo, expansion_hi] = expansion_slider.noUiSlider.get();
+  /* only filter by expansion if slider has been set ... : */
+  if ((expansion_lo != expansion_min) || (expansion_hi != expansion_max)) {
+    /* store new lake ids here: */
+    let lake_ids_expansion = [];
+    /* loop through lakes: */
+    for (let i = 0; i < lakes_data.length; i++) {
+      /* get lake info: */
+      let lake = lakes_data[i];
+      /* check id first: */
+      let lake_id = lake['GLO_ID'];
+      if (lake_ids.indexOf(lake_id) < 0) {
+        continue;
+      };
+      /* check for lake expansion: */
+      let lake_expansion = lake['EXPANSION_RATE'];
+      if (lake_expansion == null) {
+        continue;
+      };
+      /* check if lake expansion is wihtin required bounds: */
+      if ((expansion_lo <= lake_expansion) && (lake_expansion <= expansion_hi)) {
+        /* store lake id: */
+        lake_ids_expansion.push(lake_id);
+      };
+    };
+    /* update lake ids: */
+    lake_ids = lake_ids_expansion;
   };
 
   /* get lake id from map, if an area is selected: */

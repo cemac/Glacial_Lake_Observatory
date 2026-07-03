@@ -267,7 +267,14 @@ table {
 /** filters: **/
 
 .db_filter_div {
-  width: 45%;
+  max-width: 45%;
+}
+
+@media only screen and (max-width: 750px) {
+  .db_filter_div {
+    width: 90%;
+    max-width: 90%;
+  }
 }
 
 .db_slider_div {
@@ -306,7 +313,7 @@ table {
 }
 
 .noUi-handle {
-  border: 1px solid #36acca;
+  border: 1px solid #348aa6;
   box-shadow: none;
 }
 

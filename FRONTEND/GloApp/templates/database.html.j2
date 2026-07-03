@@ -79,8 +79,7 @@ var lakes_data = {{ lakes | replace('None', 'null') }};
     </div>
   </div>
   <!-- lakes filters:: _____________________________________________ -->
-  <div id="filter_row"
-       class="db_content_row db_row_wrap flex_center">
+  <div class="db_content_row db_row_wrap flex_start">
     <div id="filter_area"
          class="db_filter_div db_slider_div flex_grow">
       <div id="slider_area_text"
@@ -104,6 +103,21 @@ var lakes_data = {{ lakes | replace('None', 'null') }};
               class="db_slider_value"></span>
       </div>
       <div id="slider_volume"
+           class="db_slider">
+      </div>
+    </div>
+  </div>
+  <div class="db_content_row db_row_wrap flex_start">
+    <div id="filter_expansion"
+         class="db_filter_div db_slider_div flex_grow">
+      <div id="slider_expansion_text"
+           class="db_slider_text">
+        <span id="slider_expansion_title"
+              class="db_slider_title">Expansion Rate:</span>
+        <span id="slider_expansion_value"
+              class="db_slider_value"></span>
+      </div>
+      <div id="slider_expansion"
            class="db_slider">
       </div>
     </div>
@@ -142,27 +156,27 @@ var lakes_data = {{ lakes | replace('None', 'null') }};
             <td class="td_common_name">{{ lake['COMMON_NAME'] | replace('None', '') }}</td>
             <td class="td_country">{{ lake['COUNTRY']  }}</td>
             <td class="td_connectivity">{{ lake['CONNECTIVITY']  }}</td>
-            {% if lake['AREA'] -%}
-              <td class="td_area">{{ lake['AREA'] | round(3) }}</td>
+            {% if lake['AREA'] is not none -%}
+              <td class="td_area">{{ "{:0,.3f}".format(lake['AREA']) }}</td>
             {% else -%}
               <td class="td_area"></td>
             {% endif -%}
-            {% if lake['EXPANSION_RATE'] -%}
-              <td class="td_expansion">{{ lake['EXPANSION_RATE'] }}</td>
+            {% if lake['EXPANSION_RATE'] is not none -%}
+              <td class="td_expansion">{{ "{:0,.4f}".format(lake['EXPANSION_RATE']) }}</td>
             {% else -%}
               <td class="td_expansion"></td>
             {% endif -%}
-            {% if lake['DEPTH_MAX'] -%}
+            {% if lake['DEPTH_MAX'] is not none -%}
               <td class="td_depth">{{ lake['DEPTH_MAX'] | round(0) | int() }}</td>
             {% else -%}
               <td class="td_depth"></td>
             {% endif -%}
-            {% if lake['VOLUME'] -%}
+            {% if lake['VOLUME'] is not none -%}
               <td class="td_volume">{{  "{:0,.0f}".format(lake['VOLUME']) }} ({{ lake['VOLUME_YEAR'] | int() }})</td>
             {% else -%}
               <td class="td_volume"></td>
             {% endif -%}
-            {% if lake['VOLUME'] -%}
+            {% if lake['VOLUME'] is not none -%}
               <td class="td_volume_value">{{  lake['VOLUME'] }}</td>
             {% else -%}
               <td class="td_volume_value"></td>
