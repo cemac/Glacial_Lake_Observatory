@@ -162,7 +162,8 @@ body {
 
 .map_area_select_img {
   margin: 0;
-  width: 1.8em;
+  margin-bottom: 0.1;
+  width: 1.6em;
 }
 
 /** plots: **/
