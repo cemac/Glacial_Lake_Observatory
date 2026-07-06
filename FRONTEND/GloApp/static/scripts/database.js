@@ -320,7 +320,7 @@ function load_map() {
   /* make sure selection is initially disabled: */
   area_select.disable();
   /* add glacial velocity color map: */
-  var map_gv_colormap = L.control({position: 'bottomright'});
+  var map_gv_colormap = L.control({position: 'bottomleft'});
   map_gv_colormap.onAdd = function(map) {
     this._div = L.DomUtil.create('div', 'map_ctl map_gv_colormap');
       this.update('');

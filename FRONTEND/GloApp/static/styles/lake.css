@@ -146,6 +146,7 @@ body {
 
 .map_gv_colormap {
   background: none;
+  box-shadow: none;
 }
 
 .map_gv_colormap_img {

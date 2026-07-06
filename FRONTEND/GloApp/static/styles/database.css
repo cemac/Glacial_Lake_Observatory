@@ -168,13 +168,11 @@ body {
 
 .map_gv_colormap {
   background: none;
+  box-shadow: none;
 }
 
 .map_gv_colormap_img {
   width: 9em;
-  position: absolute;
-  right: 11em;
-  top: 6.6em;
   border-radius: 0.3em;
   box-shadow: 0 0 15px rgba(0,0,0,0.2);
 }
