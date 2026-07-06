@@ -169,6 +169,7 @@ body {
 .map_gv_colormap {
   background: none;
   box-shadow: none;
+  margin-left: 0em !important;
 }
 
 .map_gv_colormap_img {
