@@ -319,6 +319,19 @@ function load_map() {
   map_area_select_el.addEventListener('click', area_select_toggle);
   /* make sure selection is initially disabled: */
   area_select.disable();
+  /* add glacial velocity color map: */
+  var map_gv_colormap = L.control({position: 'bottomright'});
+  map_gv_colormap.onAdd = function(map) {
+    this._div = L.DomUtil.create('div', 'map_ctl map_gv_colormap');
+      this.update('');
+      return this._div;
+  };
+  map_gv_colormap.update = function(colormap_html) {
+    this._div.innerHTML = '<img class="map_gv_colormap_img" ' +
+                                   'src="' + images_url + '/map/glacial_velocity_colormap.png">';
+  };
+  gv_layer.addEventListener('add', function() { map_gv_colormap.addTo(map); });
+  gv_layer.addEventListener('remove', function() { map_gv_colormap.remove(); });
   /* store map: */
   page_data['map'] = map;
   /* update the page data: */

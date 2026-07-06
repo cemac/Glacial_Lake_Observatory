@@ -404,6 +404,19 @@ function geometry_plot(data) {
     'secondaryAreaUnit': 'sqmiles',
     'captureZIndex': 999999
   }).addTo(map);
+  /* add glacial velocity color map: */
+  var map_gv_colormap = L.control({position: 'bottomleft'});
+  map_gv_colormap.onAdd = function(map) {
+    this._div = L.DomUtil.create('div', 'map_ctl map_gv_colormap');
+      this.update('');
+      return this._div;
+  };
+  map_gv_colormap.update = function(colormap_html) {
+    this._div.innerHTML = '<img class="map_gv_colormap_img" ' +
+                                   'src="' + images_url + '/map/glacial_velocity_colormap.png">';
+  };
+  gv_layer.addEventListener('add', function() { map_gv_colormap.addTo(map); });
+  gv_layer.addEventListener('remove', function() { map_gv_colormap.remove(); });
   /* head to lake area: */
   map.flyToBounds([
       [min_lat, min_lon],
