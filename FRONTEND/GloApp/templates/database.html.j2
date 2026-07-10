@@ -54,7 +54,7 @@
 <!-- local js: -->
 <script>
 var images_url = '{{ url_for('static', filename='images') }}';
-var lakes_data = {{ lakes | replace('None', 'null') }};
+var lakes_data = {{ lakes | replace('None', 'null') | replace('True', 'true') | replace('False', 'false') }};
 </script>
 {% endblock %}
 {% block body %}
