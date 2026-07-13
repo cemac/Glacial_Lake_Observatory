@@ -121,6 +121,27 @@ var lakes_data = {{ lakes | replace('None', 'null') | replace('True', 'true') | 
            class="db_slider">
       </div>
     </div>
+    <div id="filter_expansionsig"
+         class="db_filter_div db_slider_div flex_grow">
+      <div id="filter_expansionsig_text"
+           class="db_filter_text">
+        <span id="filter_expansionsig_title"
+              class="db_filter_title">Expansion Rate Significance</span>
+      </div>
+      <div id="filter_expansionsig_check"
+           class="db_check">
+        <input id="check_expansionsig_true"
+               name="check_expansionsig_true"
+               type="checkbox"
+               value="true">
+        <label for="check_expansionsig_true">True</label>
+        <input id="check_expansionsig_false"
+               name="check_expansionsig_false"
+               type="checkbox"
+               value="false">
+        <label for="check_expansionsig_falsee">False</label>
+      </div>
+    </div>
   </div>
   <!-- lakes table: ________________________________________________ -->
   <div id="table_header_row"

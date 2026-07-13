@@ -301,6 +301,7 @@ table {
   }
 }
 
+.db_filter_div,
 .db_slider_div {
   max-height: 3em;
   margin: 0.4em;
@@ -310,6 +311,7 @@ table {
   padding-bottom: 0.2em;
 }
 
+.db_filter_title,
 .db_slider_title {
   font-weight: bold;
   margin-right: 0.5em;
@@ -344,4 +346,8 @@ table {
 .noUi-handle::after,
 .noUi-handle::before {
   display: none;
+}
+
+.db_check {
+  padding-top: 0.8em;
 }

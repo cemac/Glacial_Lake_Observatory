@@ -58,6 +58,12 @@ var page_data = {
       'max': 10,
       'lo': 0,
       'hi': 10
+    },
+    'expansionsig_true': {
+      'el': document.getElementById('check_expansionsig_true')
+    },
+    'expansionsig_false': {
+      'el': document.getElementById('check_expansionsig_false')
     }
   }
 };
@@ -597,7 +603,12 @@ function load_filters() {
       expansion_value_el.innerHTML = value_lo + ' km²/year to ' + value_hi + ' km²/year';
     });
   };
-
+  /* add expansion significance filters. get html elements: */
+  let expansionsig_true_el = page_data['filters']['expansionsig_true']['el'];
+  let expansionsig_false_el = page_data['filters']['expansionsig_false']['el'];
+  /* add listeners: */
+  expansionsig_true_el.addEventListener('click', update_data);
+  expansionsig_false_el.addEventListener('click', update_data);
 
 
   /* load the map: */
@@ -909,6 +920,56 @@ function update_data() {
     /* update lake ids: */
     lake_ids = lake_ids_map;
   };
+
+  /* add expansion significance filters. get html elements: */
+  let expansionsig_true_el = page_data['filters']['expansionsig_true']['el'];
+  let expansionsig_false_el = page_data['filters']['expansionsig_false']['el'];
+  /* get values: */
+  let expansionsig_true = expansionsig_true_el.checked;
+  let expansionsig_false = expansionsig_false_el.checked;
+  /* only do something if one of the significance boxes is checked: */
+  if ((expansionsig_true != false) || (expansionsig_false != false)){
+    /* store new lake ids here: */
+    let lake_ids_expansionsig = [];
+    /* check for trues: */
+    if (expansionsig_true == true) {
+      /* loop through lakes: */
+      for (let i = 0; i < lakes_data.length; i++) {
+        /* get lake info: */
+        let lake = lakes_data[i];
+        /* check id first: */
+        let lake_id = lake['GLO_ID'];
+        if (lake_ids.indexOf(lake_id) < 0) {
+          continue;
+        };
+        /* store id if true: */
+        if (lake['EXPANSION_RATE_SIGNIFICANCE'] == true) {
+          lake_ids_expansionsig.push(lake_id);
+        };
+      };
+    };
+    /* check for falses: */
+    if (expansionsig_false == true) {
+      /* loop through lakes: */
+      for (let i = 0; i < lakes_data.length; i++) {
+        /* get lake info: */
+        let lake = lakes_data[i];
+        /* check id first: */
+        let lake_id = lake['GLO_ID'];
+        if (lake_ids.indexOf(lake_id) < 0) {
+          continue;
+        };
+        /* store id if false: */
+        if (lake['EXPANSION_RATE_SIGNIFICANCE'] == false) {
+          lake_ids_expansionsig.push(lake_id);
+        };
+      };
+    };
+    /* update lake ids: */
+    lake_ids = lake_ids_expansionsig;
+  };
+
+
 
   /* store lake ids information: */
   page_data['lake_ids'] = lake_ids;
