@@ -241,6 +241,11 @@ table {
   margin-top: 1em;
 }
 
+table.dataTable tbody th,
+table.dataTable tbody td {
+  padding: 0.2em 0.2em;
+}
+
 .lakes_table_tr:hover {
   cursor: pointer;
 }
