@@ -70,6 +70,15 @@ var page_data = {
     },
     'connectivity_ngf': {
       'el': document.getElementById('check_connectivity_ngf')
+    },
+    'data_depth': {
+      'el': document.getElementById('check_data_depth')
+    },
+    'data_temperature': {
+      'el': document.getElementById('check_data_temperature')
+    },
+    'data_volume': {
+      'el': document.getElementById('check_data_volume')
     }
   }
 };
@@ -621,6 +630,14 @@ function load_filters() {
   /* add listeners: */
   connectivity_gf_el.addEventListener('click', update_data);
   connectivity_ngf_el.addEventListener('click', update_data);
+  /* add connectivity filters. get html elements: */
+  let data_depth_el = page_data['filters']['data_depth']['el'];
+  let data_temperature_el = page_data['filters']['data_temperature']['el'];
+  let data_volume_el = page_data['filters']['data_volume']['el'];
+  /* add listeners: */
+  data_depth_el.addEventListener('click', update_data);
+  data_temperature_el.addEventListener('click', update_data);
+  data_volume_el.addEventListener('click', update_data);
   /* load the map: */
   load_map();
 };
@@ -1025,9 +1042,98 @@ function update_data() {
     /* update lake ids: */
     lake_ids = lake_ids_connectivity;
   };
-
-
-
+  /* add data filters. get html elements: */
+  let data_depth_el = page_data['filters']['data_depth']['el'];
+  let data_temperature_el = page_data['filters']['data_temperature']['el'];
+  let data_volume_el = page_data['filters']['data_volume']['el'];
+  /* get values: */
+  let data_depth = data_depth_el.checked;
+  let data_temperature = data_temperature_el.checked;
+  let data_volume = data_volume_el.checked;
+  /* only do something if one of the significance boxes is checked: */
+  if ((data_depth != false) || (data_temperature != false) || (data_volume != false)){
+    /* store new lake ids here: */
+    let lake_ids_data = [];
+    let lake_ids_updated = false;
+    /* check for depths: */
+    if (data_depth == true) {
+      /* loop through lakes: */
+      for (let i = 0; i < lakes_data.length; i++) {
+        /* get lake info: */
+        let lake = lakes_data[i];
+        /* check id first: */
+        let lake_id = lake['GLO_ID'];
+        if (lake_ids.indexOf(lake_id) < 0) {
+          continue;
+        };
+        /* store id if has depth: */
+        if (lake['HAS_DEPTH'] == true) {
+          lake_ids_data.push(lake_id);
+        };
+      };
+      lake_ids_updated = true;
+    };
+    /* check for temperatures: */
+    if (data_temperature == true) {
+      let lake_ids_data_temperature = [];
+      /* loop through lakes: */
+      for (let i = 0; i < lakes_data.length; i++) {
+        /* get lake info: */
+        let lake = lakes_data[i];
+        /* check id first: */
+        let lake_id = lake['GLO_ID'];
+        if (lake_ids.indexOf(lake_id) < 0) {
+          continue;
+        };
+        /* store id if has temperature: */
+        if (lake_ids_updated == true) {
+          if ((lake_ids_data.indexOf(lake_id) > -1) &&
+              (lake['HAS_TEMPERATURE'] == true)) {
+            lake_ids_data_temperature.push(lake_id);
+          };
+        } else {
+          if (lake['HAS_TEMPERATURE'] == true) {
+            lake_ids_data.push(lake_id);
+          };
+        };
+      };
+      if (lake_ids_updated == true) {
+        lake_ids_data = lake_ids_data_temperature;
+      };
+      lake_ids_updated = true;
+    };
+    /* check for volumes: */
+    if (data_volume == true) {
+      let lake_ids_data_volume = [];
+      /* loop through lakes: */
+      for (let i = 0; i < lakes_data.length; i++) {
+        /* get lake info: */
+        let lake = lakes_data[i];
+        /* check id first: */
+        let lake_id = lake['GLO_ID'];
+        if (lake_ids.indexOf(lake_id) < 0) {
+          continue;
+        };
+        /* store id if has volume: */
+        if (lake_ids_updated == true) {
+          if ((lake_ids_data.indexOf(lake_id) > -1) &&
+              (lake['HAS_VOLUME'] == true)) {
+            lake_ids_data_volume.push(lake_id);
+          };
+        } else {
+          if (lake['HAS_VOLUME'] == true) {
+            lake_ids_data.push(lake_id);
+          };
+        };
+      };
+      if (lake_ids_updated == true) {
+        lake_ids_data = lake_ids_data_volume;
+      };
+      lake_ids_updated = true;
+    };
+    /* update lake ids: */
+    lake_ids = lake_ids_data;
+  };
   /* store lake ids information: */
   page_data['lake_ids'] = lake_ids;
   /* update map and data table from new ids: */

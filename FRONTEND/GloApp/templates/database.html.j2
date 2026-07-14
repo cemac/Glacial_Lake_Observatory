@@ -165,6 +165,32 @@ var lakes_data = {{ lakes | replace('None', 'null') | replace('True', 'true') | 
         <label for="check_connectivity_ngf">Non Glacier-fed</label>
       </div>
     </div>
+    <div id="filter_data"
+         class="db_filter_div db_slider_div flex_grow">
+      <div id="filter_data_text"
+           class="db_filter_text">
+        <span id="filter_data_title"
+              class="db_filter_title">Data Availability</span>
+      </div>
+      <div id="filter_data_check"
+           class="db_check">
+        <input id="check_data_depth"
+               name="check_data_depth"
+               type="checkbox"
+               value="depth">
+        <label for="check_data_depth">Depth</label>
+        <input id="check_data_temperature"
+               name="check_data_temperature"
+               type="checkbox"
+               value="temperature">
+        <label for="check_data_temperature">Temperature</label>
+        <input id="check_data_volume"
+               name="check_data_volume"
+               type="checkbox"
+               value="volume">
+        <label for="check_data_volume">Volume</label>
+      </div>
+    </div>
   </div>
   <!-- lakes table: ________________________________________________ -->
   <div id="table_header_row"
