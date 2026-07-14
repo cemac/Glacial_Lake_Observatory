@@ -213,8 +213,16 @@ table {
   max-width: 98%;
 }
 
+.page_table {
+  width: 100%;
+  background-color: #ffffff;
+  border: 0.8em solid #ffff;
+  border-radius: 0.8em;
+  padding: 0.2em;
+}
+
 .dataTables_wrapper {
-  margin-top: 1em;
+  margin-top: 0.2em;
 }
 
 .dataTables_length {
@@ -286,8 +294,7 @@ table {
 /** filters: **/
 
 .db_filter_row {
-  margin-top: 0.2em;
-  margin-bottom: 0.2em;
+  margin-bottom: 0.1em;
 }
 
 .db_filter_div {
@@ -304,7 +311,7 @@ table {
 .db_filter_div,
 .db_slider_div {
   margin: 0.4em;
-  margin-top: 0.5em;
+  margin-top: 0.1em;
   padding: 0.3em;
   padding-top: 0.2em;
   padding-bottom: 0.2em;
@@ -322,8 +329,8 @@ table {
 
 .db_slider {
   width: 90%;
-  margin-top: 1em;
-  margin-bottom: 1em;
+  margin-top: 0.5em;
+  margin-bottom: 0.2em;
   margin-left: 1.5em;
 }
 
@@ -348,5 +355,5 @@ table {
 }
 
 .db_check {
-  padding-top: 0.8em;
+  padding-top: 0.2em;
 }
