@@ -15,7 +15,7 @@ main_bp = Blueprint('main', __name__, template_folder='../templates')
 def index():
     return render_template('home.html.j2')
 
-@main_bp.route('/contact', methods=["GET", "POST"])
+@main_bp.route('/contact/', methods=["GET", "POST"])
 def contact():
     form = Contact_Form(request.form)
     form.subject.choices = [(s, s) for s in ["Bug", "Suggestion", "Help"]]  # Replace with real subject_list()
@@ -38,17 +38,29 @@ def contact():
 # Static pages mapping
 static_pages = {
     'about/project': 'about-project.html.j2',
+    'about/project/': 'about-project.html.j2',
     'about/team': 'about-team.html.j2',
+    'about/team/': 'about-team.html.j2',
     'about/whatwedo': 'about-whatwedo.html.j2',
+    'about/whatwedo/': 'about-whatwedo.html.j2',
     'about/feedback': 'about-feedback.html.j2',
+    'about/feedback/': 'about-feedback.html.j2',
     'contribute': 'contributor_guidelines.html.j2',
+    'contribute/': 'contributor_guidelines.html.j2',
     'resources/publications': 'publications.html.j2',
+    'resources/publications/': 'publications.html.j2',
     'resources/training': 'training.html.j2',
+    'resources/training/': 'training.html.j2',
     'resources/multimedia': 'multimedia.html.j2',
+    'resources/multimedia/': 'multimedia.html.j2',
     'news': 'news.html.j2',
+    'news/': 'news.html.j2',
     'glossary': 'glossary.html.j2',
+    'glossary/': 'glossary.html.j2',
     'copyright': 'copyright.html.j2',
+    'copyright/': 'copyright.html.j2',
     'privacy': 'privacy.html.j2',
+    'privacy/': 'privacy.html.j2'
 }
 
 @main_bp.route('/<path:page>')
@@ -57,7 +69,7 @@ def render_static_page(page):
         return render_template(static_pages[page])
     abort(404)
 
-@main_bp.route('/database')
+@main_bp.route('/database/')
 def database():
     try:
         lakes = GloApp.globals.LAKES
@@ -65,11 +77,7 @@ def database():
         lakes = []
     return render_template('database.html.j2', lakes=lakes)
 
-@main_bp.route('/database/search')
-def search():
-    return render_template('db-search.html.j2')
-
-@main_bp.route('/database/lake/<string:lake_id>')
+@main_bp.route('/database/lake/<string:lake_id>/')
 def lake(lake_id):
     if lake_id not in GloApp.globals.LAKES_BY_ID.keys():
         return render_template('404.html.j2'), 404
@@ -79,10 +87,6 @@ def lake(lake_id):
     except:
         lake_data = {}
     return render_template('lake.html.j2', lake_id=lake_id, lake_data=lake_data)
-
-@main_bp.route('/database/otherdata/')
-def otherdata():
-    return render_template('otherdata.html.j2')
 
 @main_bp.route('/data/<path:file_path>')
 def static_data(file_path):
