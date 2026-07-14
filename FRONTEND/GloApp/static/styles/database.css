@@ -216,8 +216,8 @@ table {
 .page_table {
   width: 100%;
   background-color: #ffffff;
-  border: 0.8em solid #ffff;
-  border-radius: 0.8em;
+  border: 0.4em solid #ffff;
+  border-radius: 0.4em;
   padding: 0.2em;
 }
 
@@ -226,11 +226,11 @@ table {
 }
 
 .dataTables_length {
-  margin-bottom: 1em;
+  margin-bottom: 0.2em;
 }
 
 .dataTables_filter {
-  margin-bottom: 1em;
+  margin-bottom: 0.4em;
 }
 
 .dataTables_info {
