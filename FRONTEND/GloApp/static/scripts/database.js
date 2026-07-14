@@ -64,6 +64,12 @@ var page_data = {
     },
     'expansionsig_false': {
       'el': document.getElementById('check_expansionsig_false')
+    },
+    'connectivity_gf': {
+      'el': document.getElementById('check_connectivity_gf')
+    },
+    'connectivity_ngf': {
+      'el': document.getElementById('check_connectivity_ngf')
     }
   }
 };
@@ -609,8 +615,12 @@ function load_filters() {
   /* add listeners: */
   expansionsig_true_el.addEventListener('click', update_data);
   expansionsig_false_el.addEventListener('click', update_data);
-
-
+  /* add expansion significance filters. get html elements: */
+  let connectivity_gf_el = page_data['filters']['connectivity_gf']['el'];
+  let connectivity_ngf_el = page_data['filters']['connectivity_ngf']['el'];
+  /* add listeners: */
+  connectivity_gf_el.addEventListener('click', update_data);
+  connectivity_ngf_el.addEventListener('click', update_data);
   /* load the map: */
   load_map();
 };
@@ -967,6 +977,53 @@ function update_data() {
     };
     /* update lake ids: */
     lake_ids = lake_ids_expansionsig;
+  };
+  /* add connectivity filters. get html elements: */
+  let connectivity_gf_el = page_data['filters']['connectivity_gf']['el'];
+  let connectivity_ngf_el = page_data['filters']['connectivity_ngf']['el'];
+  /* get values: */
+  let connectivity_gf = connectivity_gf_el.checked;
+  let connectivity_ngf = connectivity_ngf_el.checked;
+  /* only do something if one of the significance boxes is checked: */
+  if ((connectivity_gf != false) || (connectivity_ngf != false)){
+    /* store new lake ids here: */
+    let lake_ids_connectivity = [];
+    /* check for gfs: */
+    if (connectivity_gf == true) {
+      /* loop through lakes: */
+      for (let i = 0; i < lakes_data.length; i++) {
+        /* get lake info: */
+        let lake = lakes_data[i];
+        /* check id first: */
+        let lake_id = lake['GLO_ID'];
+        if (lake_ids.indexOf(lake_id) < 0) {
+          continue;
+        };
+        /* store id if gf: */
+        if (lake['CONNECTIVITY'] == 'Glacier-fed') {
+          lake_ids_connectivity.push(lake_id);
+        };
+      };
+    };
+    /* check for ngfs: */
+    if (connectivity_ngf == true) {
+      /* loop through lakes: */
+      for (let i = 0; i < lakes_data.length; i++) {
+        /* get lake info: */
+        let lake = lakes_data[i];
+        /* check id first: */
+        let lake_id = lake['GLO_ID'];
+        if (lake_ids.indexOf(lake_id) < 0) {
+          continue;
+        };
+        /* store id if ngf: */
+        if (lake['CONNECTIVITY'] == 'Non Glacier-fed') {
+          lake_ids_connectivity.push(lake_id);
+        };
+      };
+    };
+    /* update lake ids: */
+    lake_ids = lake_ids_connectivity;
   };
 
 

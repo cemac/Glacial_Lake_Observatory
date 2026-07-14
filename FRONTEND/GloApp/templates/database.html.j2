@@ -139,7 +139,30 @@ var lakes_data = {{ lakes | replace('None', 'null') | replace('True', 'true') | 
                name="check_expansionsig_false"
                type="checkbox"
                value="false">
-        <label for="check_expansionsig_falsee">False</label>
+        <label for="check_expansionsig_false">False</label>
+      </div>
+    </div>
+  </div>
+  <div class="db_content_row db_filter_row db_row_wrap flex_start">
+    <div id="filter_connectivity"
+         class="db_filter_div db_slider_div flex_grow">
+      <div id="filter_connectivity_text"
+           class="db_filter_text">
+        <span id="filter_connectivity_title"
+              class="db_filter_title">Connectivity</span>
+      </div>
+      <div id="filter_connectivity_check"
+           class="db_check">
+        <input id="check_connectivity_gf"
+               name="check_connectivity_gf"
+               type="checkbox"
+               value="gf">
+        <label for="check_connectivity_gf">Glacier-fed</label>
+        <input id="check_connectivity_ngf"
+               name="check_connectivity_ngf"
+               type="checkbox"
+               value="ngf">
+        <label for="check_connectivity_ngf">Non Glacier-fed</label>
       </div>
     </div>
   </div>
