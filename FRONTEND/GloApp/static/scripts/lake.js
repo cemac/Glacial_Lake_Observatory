@@ -42,6 +42,7 @@ var page_data = {
     document.getElementById('geometry_header_row'),
     document.getElementById('geometry_plot_row')
   ],
+  'geometry_download_el': document.getElementById('download_geometry_button'),
   /* area color map: */
   'area_colors': [
     "#4cc3adff", "#48c1adff", "#46beadff", "#43bbadff", "#41b8adff", "#3fb5adff",
@@ -245,12 +246,14 @@ async function load_geometry_data() {
     /* get data: */
     var data = page_data['geometry'];
   } catch(e) {
-    /* no data, hide temeprature plot elements: */
+    /* no data, hide geometry plot elements: */
     var geometry_plot_els = page_data['geometry_plot_els'];
     for (var i = 0 ; i < geometry_plot_els.length; i++) {
       var geometry_plot_el = geometry_plot_els[i];
       geometry_plot_el.style.display = 'none';
     };
+    var geometry_download_el = page_data['geometry_download_el'];
+    geometry_download_el.style.display = 'none';
     return;
   };
   /* draw the geometry plot: */
@@ -422,6 +425,62 @@ function geometry_plot(data) {
       [min_lat, min_lon],
       [max_lat, max_lon]
   ]);
+  /* add download button listener: */
+  var geometry_download_el = page_data['geometry_download_el'];
+  geometry_download_el.addEventListener('click', download_geometry_data);
+};
+
+/* function to download geometry data: */
+async function download_geometry_data() {
+  /* get data: */
+  let data_in = page_data['geometry'];
+  /* create zip writer object: */
+  let zip_writer = new zip.ZipWriter(
+    new zip.Data64URIWriter('application/zip')
+  );
+  /* loop through geometry polygons: */
+  for (let i in data_in['data']) {
+    /* get required lake information: */
+    let lake_properties = data_in['data'][i]['properties'];
+    let lake_geometry = data_in['data'][i]['geometry'];
+    let lake_id = lake_properties['GLO_ID'];
+    let lake_year = lake_properties['AREA_YEAR'];
+    lake_properties['name'] = lake_id + ' ' + lake_year;
+    /* init feature: */
+    let my_feature = {
+      'type': 'Feature',
+      'crs': {
+        'type': 'name',
+        'properties': {
+          'name': 'urn:ogc:def:crs:OGC:1.3:CRS84'
+        }
+      }
+    };
+    /* add properties and geometry: */
+    my_feature['properties'] = lake_properties;
+    my_feature['geometry'] = lake_geometry;
+    /* jsonify: */
+    let json_out = JSON.stringify(my_feature);
+    /* file name for output: */
+    let json_name = lake_id + '__' +
+                    my_feature['properties']['AREA_YEAR'] + '.geojson';
+    /* add data to zip file: */
+    await zip_writer.add(
+      json_name, new zip.TextReader(json_out)
+    );
+  };
+  /* close zip file and get encoded data uri: */
+  let data_uri = await zip_writer.close();
+  /* set zip file name: */
+  let zip_name = page_data['lake']['GLO_ID'] + '__geometry.zip';
+  /* create a temporary link element: */
+  let json_link = document.createElement('a');
+  json_link.setAttribute('href', data_uri);
+  json_link.setAttribute('download', zip_name);
+  json_link.style.visibility = 'hidden';
+  document.body.appendChild(json_link);
+  json_link.click();
+  document.body.removeChild(json_link);
 };
 
 /* function to load area data: */
@@ -437,7 +496,7 @@ async function load_area_data() {
     /* get data: */
     var data = page_data['area'];
   } catch(e) {
-    /* no data, hide temeprature plot elements: */
+    /* no data, hide area plot elements: */
     var area_plot_els = page_data['area_plot_els'];
     for (var i = 0 ; i < area_plot_els.length; i++) {
       var area_plot_el = area_plot_els[i];
@@ -548,7 +607,7 @@ async function load_temperature_data() {
     /* get data: */
     var data = page_data['temperature'];
   } catch(e) {
-    /* no data, hide temeprature plot elements: */
+    /* no data, hide temperature plot elements: */
     var temperature_plot_els = page_data['temperature_plot_els'];
     for (var i = 0 ; i < temperature_plot_els.length; i++) {
       var temperature_plot_el = temperature_plot_els[i];
@@ -676,7 +735,7 @@ async function load_volume_data() {
     /* get data: */
     var data = page_data['volume'];
   } catch(e) {
-    /* no data, hide temeprature plot elements: */
+    /* no data, hide volume plot elements: */
     var volume_plot_els = page_data['volume_plot_els'];
     for (var i = 0 ; i < volume_plot_els.length; i++) {
       var volume_plot_el = volume_plot_els[i];
@@ -766,7 +825,7 @@ async function load_depth_data() {
     var y = data['grid_lat'];
     var z = data['grid_depth'];
   } catch(e) {
-    /* no data, hide temeprature plot elements: */
+    /* no data, hide depth plot elements: */
     var depth_plot_els = page_data['depth_plot_els'];
     for (var i = 0 ; i < depth_plot_els.length; i++) {
       var depth_plot_el = depth_plot_els[i];
@@ -827,6 +886,11 @@ function load_page() {
 
 /* on page load: */
 window.addEventListener('load', function() {
+  /* configure zip.js: */
+  zip.configure({
+    useWebWorkers: true,
+    maxWorkers: 2,
+  });
   /* set up the page ... : */
   load_page();
 });

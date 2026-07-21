@@ -18,11 +18,15 @@
 <script src="{{ url_for('static', filename='scripts/leaflet.js') }}"
         charset="utf-8">
 </script>
-<script src=" https://cdn.jsdelivr.net/npm/leaflet-measure@3.1.0/dist/leaflet-measure.min.js "
+<script src="https://cdn.jsdelivr.net/npm/leaflet-measure@3.1.0/dist/leaflet-measure.min.js"
         charset="utf-8">
 </script>
 <!-- plotly js: -->
 <script src="{{ url_for('static', filename='scripts/plotly.js') }}"
+        charset="utf-8">
+</script>
+<!-- zip js: -->
+<script src="{{ url_for('static', filename='scripts/zip.js') }}"
         charset="utf-8">
 </script>
 <!-- local js: -->
@@ -74,6 +78,14 @@ var images_url = '{{ url_for('static', filename='images') }}';
        class="lake_container_row lake_row flex_center">
     <div id="geometry_plot_div"
          class="lake_map_div flex_grow">
+    </div>
+  </div>
+  <div id="geometry_download_row"
+       class="lake_container_row lake_row flex_center">
+    <div id="geometry_download_div"
+         class="lake_download_div flex_grow">
+      <button id="download_geometry_button"
+              class="download_button">Download Geometry Data</button>
     </div>
   </div>
   <!-- area plot: ______________________________________________ -->
