@@ -5,6 +5,8 @@
 
 <h1>News</h1>
 
+<div style="display: flex; justify-content: space-between;">
+  <div style="flex: 1; margin-right: 10px;">
 <div id="fb-root"></div>
 <script async defer crossorigin="anonymous"
 src="https://connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v23.0">
@@ -23,5 +25,19 @@ src="https://connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v23.0">
     FB.XFBML.parse();
   };
 </script>
+
+</div>
+
+
+  <div style="flex: 1; margin-left: 10px;">
+  <h3>Latest Newsletter <i>(click to download)</i></h3> 
+    <a href="https://zenodo.org/records/18671564/files/GLO%20newsletter%20-%20February2026.pdf?download=1">
+      <img src="/static/images/News/202602_newsletter.jpg" alt="Latest Newsletter thumbnail and link" title="Newsletter" style="width: 70%;">
+    </a>
+
+  </div>
+</div>
+
+
 {% endblock %}
 </html>
