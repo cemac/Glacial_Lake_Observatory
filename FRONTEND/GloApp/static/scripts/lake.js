@@ -278,12 +278,10 @@ function update_geometry_map() {
   /* get high and lo values: */
   let geometry_hi = page_data['geometry_slider']['hi'];
   let geometry_lo = page_data['geometry_slider']['lo'];
-  /* remove polygons frim map: */
+  /* remove polygons from map: */
   page_data['geometry_slider']['active'] = true;
   for (let i in geometry_polys) {
-    if ((i < geometry_lo) || (i > geometry_hi)) {
-      geometry_polys[i].removeFrom(geometry_map);
-    };
+    geometry_polys[i].removeFrom(geometry_map);
   };
   /* loop through values, and add to map: */
   for (let i = geometry_hi; i > (geometry_lo - 1); i--) {
