@@ -37,12 +37,22 @@ var page_data = {
     "#231526ff", "#211423ff", "#1e111fff", "#1b0f1bff", "#190e18ff", "#160b14ff",
     "#140910ff", "#11070cff", "#0f0609ff", "#0b0405ff"
   ],
+  /* geometry map elements: */
+  'geometry_map': null,
+  'geometry_polys': {},
   /* geometry plot elements: */
   'geometry_plot_els': [
     document.getElementById('geometry_header_row'),
     document.getElementById('geometry_plot_row')
   ],
   'geometry_download_el': document.getElementById('download_geometry_button'),
+  'geometry_slider': {
+    'el': document.getElementById('geometry_slider'),
+    'value_el': document.getElementById('geomtry_slider_value'),
+    'lo': null,
+    'hi': null,
+    'active': false
+  },
   /* area color map: */
   'area_colors': [
     "#4cc3adff", "#48c1adff", "#46beadff", "#43bbadff", "#41b8adff", "#3fb5adff",
@@ -260,6 +270,161 @@ async function load_geometry_data() {
   geometry_plot(data);
 };
 
+/* function to update geometry polygons on map from slider: */
+function update_geometry_map() {
+  /* get geometry map and polygons: */
+  let geometry_map = page_data['geometry_map'];
+  let geometry_polys = page_data['geometry_polys'];
+  /* get high and lo values: */
+  let geometry_hi = page_data['geometry_slider']['hi'];
+  let geometry_lo = page_data['geometry_slider']['lo'];
+  /* remove polygons from map: */
+  page_data['geometry_slider']['active'] = true;
+  for (let i in geometry_polys) {
+    geometry_polys[i].removeFrom(geometry_map);
+  };
+  /* loop through values, and add to map: */
+  for (let i = geometry_hi; i > (geometry_lo - 1); i--) {
+    let geometry_poly = geometry_polys[i];
+    if (geometry_poly != undefined) {
+      geometry_poly.addTo(geometry_map);
+    };
+  };
+  page_data['geometry_slider']['active'] = false;
+};
+
+/* function to add geometry slider: */
+async function add_geometry_slider() {
+  /* get slider elements: */
+  let slider_el = page_data['geometry_slider']['el'];
+  let value_el = page_data['geometry_slider']['value_el'];
+  /* create slider, if it does not exist: */
+  if (slider_el.noUiSlider == undefined){
+    /* get years for which we have geometry: */
+    let data_years = page_data['geometry']['years'];
+    let slider_years = [];
+    for (let i = 0; i < data_years.length; i++) {
+      slider_years.push(parseInt(data_years[i]));
+    };
+    slider_years.sort();
+    let slider_lo = slider_years[0];
+    let slider_hi = slider_years.slice(-1);
+    /* crate slider: */
+    noUiSlider.create(slider_el, {
+      'start': [slider_lo, slider_hi],
+      'range': {
+        'min': slider_lo,
+        'max': slider_hi
+      },
+      'connect': true,
+      'step': 1,
+      'margin': 0,
+      'tooltips': false
+    });
+    /* set value: */
+    value_el.innerHTML = slider_lo + ' to ' + slider_hi;
+    /* add change listener: */
+    slider_el.noUiSlider.on('change', function() {
+      /* update slider styles: */
+      page_data['geometry_slider']['el'].children[0].children[0].children[0].style.background = '#94d3e8';
+      page_data['geometry_slider']['value_el'].style.color = '#484848';
+      /* get values: */
+      let value_lo = parseFloat(slider_el.noUiSlider.get()[0]);
+      let value_hi = parseFloat(slider_el.noUiSlider.get()[1]);
+      /* store the values: */
+      page_data['geometry_slider']['lo'] = value_lo;
+      page_data['geometry_slider']['hi'] = value_hi;
+      /* update geometry map: */
+      update_geometry_map();
+      /* display the value: */
+      value_el.innerHTML = value_lo + ' to ' + value_hi;
+    });
+    /* add slide listener: */
+    slider_el.noUiSlider.on('slide', function() {
+      /* update slider styles: */
+      page_data['geometry_slider']['el'].children[0].children[0].children[0].style.background = '#94d3e8';
+      page_data['geometry_slider']['value_el'].style.color = '#484848';
+      /* get values: */
+      let value_lo = parseFloat(slider_el.noUiSlider.get()[0]);
+      let value_hi = parseFloat(slider_el.noUiSlider.get()[1]);
+      /* display the value: */
+      value_el.innerHTML = value_lo + ' to ' + value_hi;
+    });
+  };
+};
+
+/* function to update geometry slider when adding layers: */
+function update_geometry_slider() {
+  /* do nothing if slider does not exist: */
+  let slider_el = page_data['geometry_slider']['el'];
+  /* create slider, if it does not exist: */
+  if (slider_el.noUiSlider == undefined){
+    return;
+  };
+  /* do nothing if adding / removing via slider: */
+  if (page_data['geometry_slider']['active'] == true) {
+    return;
+  };
+  /* update slider styles: */
+  page_data['geometry_slider']['el'].children[0].children[0].children[0].style.background = '#eeeeee';
+  page_data['geometry_slider']['value_el'].style.color = '#cccccc';
+  /* adjust slider bounds: */
+
+};
+
+/* function to download geometry data: */
+async function download_geometry_data() {
+  /* get data: */
+  let data_in = page_data['geometry'];
+  /* create zip writer object: */
+  let zip_writer = new zip.ZipWriter(
+    new zip.Data64URIWriter('application/zip')
+  );
+  /* loop through geometry polygons: */
+  for (let i in data_in['data']) {
+    /* get required lake information: */
+    let lake_properties = data_in['data'][i]['properties'];
+    let lake_geometry = data_in['data'][i]['geometry'];
+    let lake_id = lake_properties['GLO_ID'];
+    let lake_year = lake_properties['AREA_YEAR'];
+    lake_properties['name'] = lake_id + ' ' + lake_year;
+    /* init feature: */
+    let my_feature = {
+      'type': 'Feature',
+      'crs': {
+        'type': 'name',
+        'properties': {
+          'name': 'urn:ogc:def:crs:OGC:1.3:CRS84'
+        }
+      }
+    };
+    /* add properties and geometry: */
+    my_feature['properties'] = lake_properties;
+    my_feature['geometry'] = lake_geometry;
+    /* jsonify: */
+    let json_out = JSON.stringify(my_feature);
+    /* file name for output: */
+    let json_name = lake_id + '__' +
+                    my_feature['properties']['AREA_YEAR'] + '.geojson';
+    /* add data to zip file: */
+    await zip_writer.add(
+      json_name, new zip.TextReader(json_out)
+    );
+  };
+  /* close zip file and get encoded data uri: */
+  let data_uri = await zip_writer.close();
+  /* set zip file name: */
+  let zip_name = page_data['lake']['GLO_ID'] + '__geometry.zip';
+  /* create a temporary link element: */
+  let json_link = document.createElement('a');
+  json_link.setAttribute('href', data_uri);
+  json_link.setAttribute('download', zip_name);
+  json_link.style.visibility = 'hidden';
+  document.body.appendChild(json_link);
+  json_link.click();
+  document.body.removeChild(json_link);
+};
+
 /* function to draw geometry plot: */
 function geometry_plot(data) {
   /* gep map element: */
@@ -342,17 +507,26 @@ function geometry_plot(data) {
     );
     var poly_area = data['data'][poly_year]['properties']['AREA'];
     poly_layer.area = poly_area;
-    poly_layer.bindTooltip('<b>' + parseInt(data['years'][i]) + '</b>' +
-                           '<br>• Area: ' + poly_area.toFixed(3) + ' km²');
+    poly_layer.bindTooltip(
+      '<b>' + parseInt(data['years'][i]) + '</b>' +
+      '<br>• Area: ' + poly_area.toFixed(3) + ' km²', {
+        'sticky': true,
+        'offset': [3, -3]
+      }
+    );
     var poly_key = ' ' + parseInt(data['years'][i]) +
                    '<span class="map_key_color" style="background-color: ' +
                    poly_color + ';"></span>';
     poly_layers[poly_key] = poly_layer;
+    page_data['geometry_polys'][parseInt(data['years'][i])] = poly_layer;
     var poly_bounds = poly_layer.getBounds();
     min_lat = Math.min(min_lat, poly_bounds.getSouth())
     max_lat = Math.max(max_lat, poly_bounds.getNorth())
     min_lon = Math.min(min_lon, poly_bounds.getWest())
     max_lon = Math.max(max_lon, poly_bounds.getEast())
+    /* add add and remove listeners: */
+    poly_layer.on('add', update_geometry_slider);
+    poly_layer.on('remove', update_geometry_slider);
     /* store first polygon for adding to map: */
     if (i == (data['years'].length - 1)) {
       default_poly = poly_layer;
@@ -383,6 +557,7 @@ function geometry_plot(data) {
     minZoom: 12,
     maxZoom: 18
   });
+  page_data['geometry_map'] = map;
   /* remove prefix from attribution control: */
   var map_atrr_control = map.attributionControl;
   map_atrr_control.setPrefix(false);
@@ -425,62 +600,11 @@ function geometry_plot(data) {
       [min_lat, min_lon],
       [max_lat, max_lon]
   ]);
+  /* add geometry slider: */
+  add_geometry_slider()
   /* add download button listener: */
   var geometry_download_el = page_data['geometry_download_el'];
   geometry_download_el.addEventListener('click', download_geometry_data);
-};
-
-/* function to download geometry data: */
-async function download_geometry_data() {
-  /* get data: */
-  let data_in = page_data['geometry'];
-  /* create zip writer object: */
-  let zip_writer = new zip.ZipWriter(
-    new zip.Data64URIWriter('application/zip')
-  );
-  /* loop through geometry polygons: */
-  for (let i in data_in['data']) {
-    /* get required lake information: */
-    let lake_properties = data_in['data'][i]['properties'];
-    let lake_geometry = data_in['data'][i]['geometry'];
-    let lake_id = lake_properties['GLO_ID'];
-    let lake_year = lake_properties['AREA_YEAR'];
-    lake_properties['name'] = lake_id + ' ' + lake_year;
-    /* init feature: */
-    let my_feature = {
-      'type': 'Feature',
-      'crs': {
-        'type': 'name',
-        'properties': {
-          'name': 'urn:ogc:def:crs:OGC:1.3:CRS84'
-        }
-      }
-    };
-    /* add properties and geometry: */
-    my_feature['properties'] = lake_properties;
-    my_feature['geometry'] = lake_geometry;
-    /* jsonify: */
-    let json_out = JSON.stringify(my_feature);
-    /* file name for output: */
-    let json_name = lake_id + '__' +
-                    my_feature['properties']['AREA_YEAR'] + '.geojson';
-    /* add data to zip file: */
-    await zip_writer.add(
-      json_name, new zip.TextReader(json_out)
-    );
-  };
-  /* close zip file and get encoded data uri: */
-  let data_uri = await zip_writer.close();
-  /* set zip file name: */
-  let zip_name = page_data['lake']['GLO_ID'] + '__geometry.zip';
-  /* create a temporary link element: */
-  let json_link = document.createElement('a');
-  json_link.setAttribute('href', data_uri);
-  json_link.setAttribute('download', zip_name);
-  json_link.style.visibility = 'hidden';
-  document.body.appendChild(json_link);
-  json_link.click();
-  document.body.removeChild(json_link);
 };
 
 /* function to load area data: */

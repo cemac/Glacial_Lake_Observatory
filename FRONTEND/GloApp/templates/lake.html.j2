@@ -9,6 +9,11 @@
       type="text/css"
       href="https://cdn.jsdelivr.net/npm/leaflet-measure@3.1.0/dist/leaflet-measure.min.css"
       media="all">
+<!-- nouislider css: -->
+<link rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static', filename='styles/nouislider.min.css') }}"
+      media="all">
 <!-- local css: -->
 <link rel="stylesheet"
       type="text/css"
@@ -19,6 +24,10 @@
         charset="utf-8">
 </script>
 <script src="https://cdn.jsdelivr.net/npm/leaflet-measure@3.1.0/dist/leaflet-measure.min.js"
+        charset="utf-8">
+</script>
+<!-- nouislider: -->
+<script src="{{ url_for('static', filename='scripts/nouislider.min.js') }}"
         charset="utf-8">
 </script>
 <!-- plotly js: -->
@@ -80,13 +89,27 @@ var images_url = '{{ url_for('static', filename='images') }}';
          class="lake_map_div flex_grow">
     </div>
   </div>
-  <div id="geometry_download_row"
-       class="lake_container_row lake_row flex_center">
-    <div id="geometry_download_div"
-         class="lake_download_div flex_grow">
-      <button id="download_geometry_button"
-              class="download_button">Download Geometry Data</button>
+  <div id="geometry_slider_row"
+       class="lake_container_row lake_row flex_start">
+    <div id="geometry_slider_container"
+         class="lake_slider_div flex_grow">
+      <div id="geometry_slider_text"
+           class="lake_slider_text">
+        <span id="geometry_slider_title"
+              class="lake_slider_title">Geometry Years:</span>
+        <span id="geomtry_slider_value"
+              class="lake_slider_value"></span>
+      </div>
+      <div id="geometry_slider"
+           class="lake_slider">
+      </div>
     </div>
+  </div>
+  <div id="geometry_download_row"
+       class="lake_container_row lake_row flex_start">
+    <button id="download_geometry_button"
+            class="download_button"
+            title="Download geometry data as GeoJSON">Download Geometry Data</button>
   </div>
   <!-- area plot: ______________________________________________ -->
   <div id="area_header_row"

@@ -195,16 +195,62 @@ body {
   text-decoration: underline;
 }
 
+/* sliders: */
+
+.lake_slider_div {
+  margin: 0.4em;
+  margin-top: 0.1em;
+  padding: 0.3em;
+  padding-top: 0.2em;
+  padding-bottom: 0.2em;
+}
+
+.lake_slider_title {
+  font-weight: bold;
+  margin-right: 0.5em;
+}
+
+.lake_slider_value {
+  color: #cccccc;
+}
+
+.lake_slider {
+  width: 90%;
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+  margin-left: 1em;
+}
+
+.noUi-target {
+  background: #cccccc;
+  border: 1px solid #cccccc;
+  box-shadow: none;
+}
+
+.noUi-connect {
+  background: #eeeeee;
+}
+
+.noUi-handle {
+  border: 1px solid #348aa6;
+  box-shadow: none;
+}
+
+.noUi-handle::after,
+.noUi-handle::before {
+  display: none;
+}
+
 /* buttons: */
 
 button {
-  font-size: 1.1em;
+  font-size: 1em;
   color: #eeeeee;
   background-color: #36a0c1;
   border: 1px solid #36a0c1;
   border-radius: 0.2em;
-  padding: 0.6em;
-  margin: 0em 0.4em 1.4em 0.4em;
+  padding: 0.4em;
+  margin: 0.4em 0.4em 1.4em 0.4em;
   cursor: pointer;
   transition-property: background-color;
   transition-duration: 0.2s;
@@ -212,7 +258,7 @@ button {
 }
 
 button:focus, button:active, button:hover {
-  color: #36a0c1;
+  color: #ffffff;
   background-color: #94d3e8;
 }
 
