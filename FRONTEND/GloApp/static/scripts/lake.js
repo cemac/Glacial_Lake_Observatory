@@ -75,6 +75,7 @@ var page_data = {
     document.getElementById('area_plot_row')
   ],
   'area_text_div': document.getElementById('area_text_div'),
+  'area_download_el': document.getElementById('download_area_button'),
   /* temperature color map: */
   'temperature_colors': [
     "#4cc3adff", "#48c1adff", "#46beadff", "#43bbadff", "#41b8adff", "#3fb5adff",
@@ -404,7 +405,7 @@ async function download_geometry_data() {
     /* jsonify: */
     let json_out = JSON.stringify(my_feature);
     /* file name for output: */
-    let json_name = lake_id + '__' +
+    let json_name = lake_id + '__geometry_' +
                     my_feature['properties']['AREA_YEAR'] + '.geojson';
     /* add data to zip file: */
     await zip_writer.add(
@@ -626,10 +627,80 @@ async function load_area_data() {
       var area_plot_el = area_plot_els[i];
       area_plot_el.style.display = 'none';
     };
+    var area_download_el = page_data['area_download_el'];
+    area_download_el.style.display = 'none';
     return;
   };
   /* draw the area plot: */
   area_plot(data);
+};
+
+/* function to download area data: */
+async function download_area_data() {
+  /* get data: */
+  let data_in = page_data['area'];
+  let data_ids = data_in['data_ids'];
+  /* create zip writer object: */
+  let zip_writer = new zip.ZipWriter(
+    new zip.Data64URIWriter('application/zip')
+  );
+  /* loop through data ids: */
+  for (let i = 0; i < data_ids.length; i++) {
+    /* get data for this id: */
+    let data_id = data_ids[i];
+    let data_url_type = data_id.split(':::');
+    let data_url = data_url_type[0];
+    let data_type = data_url_type[1];
+    let data_label = data_url.split('/').slice(-1)[0];
+    let data = data_in['data'][data_id];
+    /* get metadata: */
+    let data_doi = data['DOI'];
+    let data_method = data['METHOD'];
+    let data_source = data['DATA_SOURCE'];
+    let data_notes = data['NOTES'];
+    let data_citation = data['CITATION'];
+    /* get data values: */
+    let data_years = data['area_years'];
+    let data_starts = data['start_dates'];
+    let data_ends = data['end_dates'];
+    let data_areas = data['areas'];
+    let data_uncertaintys = data['area_uncertaintys'];
+    let data_perimeters = data['perimeters'];
+    /* init csv data: */
+    let data_csv = '';
+    /* add metadata: */
+    data_csv += 'doi,' + data_doi + '\r\n';
+    data_csv += 'method,' + data_method + '\r\n';
+    data_csv += 'source,' + data_source + '\r\n';
+    data_csv += 'notes,' + data_notes + '\r\n';
+    data_csv += 'citation,' + data_citation + '\r\n';
+    data_csv += '\r\n';
+    data_csv += 'year,start date,end date,area (km²),area uncertainty,perimiter\r\n';
+    /* loop through data values: */
+    for (let j = 0; j < data_years.length; j++) {
+      data_csv += data_years[j] + ',' + data_starts[j] + ',' +
+                  data_ends[j] + ',' + data_areas[j] + ',' +
+                  data_uncertaintys[j] + ',' + data_perimeters[j] + '\r\n';
+    };
+    /* file name for output: */
+    let csv_name = lake_id + '__area_' + data_label + '.csv';
+    /* add data to zip file: */
+    await zip_writer.add(
+      csv_name, new zip.TextReader(data_csv)
+    );
+  };
+  /* close zip file and get encoded data uri: */
+  let data_uri = await zip_writer.close();
+  /* set zip file name: */
+  let zip_name = page_data['lake']['GLO_ID'] + '__area.zip';
+  /* create a temporary link element: */
+  let csv_link = document.createElement('a');
+  csv_link.setAttribute('href', data_uri);
+  csv_link.setAttribute('download', zip_name);
+  csv_link.style.visibility = 'hidden';
+  document.body.appendChild(csv_link);
+  csv_link.click();
+  document.body.removeChild(csv_link);
 };
 
 /* function to draw area plot: */
@@ -680,7 +751,8 @@ function area_plot(data) {
       'y': y,
       'marker': {
         'color': area_color
-      }
+      },
+      'hovertemplate': '%{x}: %{y:.4f} km²'
     };
     /* plot data, in order of plotting: */
     scatter_data.push(scatter_area);
@@ -716,6 +788,9 @@ function area_plot(data) {
   );
   /* update text: */
   area_text_div.innerHTML = area_text;
+  /* add download button listener: */
+  var area_download_el = page_data['area_download_el'];
+  area_download_el.addEventListener('click', download_area_data);
 };
 
 /* function to load temperature data: */

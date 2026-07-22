@@ -166,7 +166,7 @@ body {
 
 .plot_text_div {
   flex-basis: 95%;
-  margin-bottom: 3em;
+  margin-bottom: 1em;
 }
 
 .plot_text_div label {
@@ -193,6 +193,11 @@ body {
 .plot_text_div a {
   color: #000000;
   text-decoration: underline;
+}
+
+.plot_text_div label {
+  display: inline-block;
+  width: 100%;
 }
 
 /* sliders: */
@@ -250,7 +255,7 @@ button {
   border: 1px solid #36a0c1;
   border-radius: 0.2em;
   padding: 0.4em;
-  margin: 0.4em 0.4em 1.4em 0.4em;
+  margin: 0.4em 0.4em 3em 0.4em;
   cursor: pointer;
   transition-property: background-color;
   transition-duration: 0.2s;
