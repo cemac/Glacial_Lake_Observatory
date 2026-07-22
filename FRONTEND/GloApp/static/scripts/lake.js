@@ -92,12 +92,118 @@ var page_data = {
     "#231526ff", "#211423ff", "#1e111fff", "#1b0f1bff", "#190e18ff", "#160b14ff",
     "#140910ff", "#11070cff", "#0f0609ff", "#0b0405ff"
   ],
+  'temperature_plot_colors': [
+    [0.0, 'rgb(222, 245, 229)'],
+    [0.01, 'rgb(217, 242, 224)'],
+    [0.02, 'rgb(212, 241, 220)'],
+    [0.03, 'rgb(207, 238, 215)'],
+    [0.04, 'rgb(201, 237, 211)'],
+    [0.05, 'rgb(196, 234, 207)'],
+    [0.06, 'rgb(191, 233, 203)'],
+    [0.07, 'rgb(185, 230, 199)'],
+    [0.08, 'rgb(179, 228, 195)'],
+    [0.09, 'rgb(173, 227, 192)'],
+    [0.1, 'rgb(167, 225, 188)'],
+    [0.11, 'rgb(160, 223, 185)'],
+    [0.12, 'rgb(153, 221, 182)'],
+    [0.13, 'rgb(147, 219, 181)'],
+    [0.14, 'rgb(139, 218, 178)'],
+    [0.15, 'rgb(131, 216, 176)'],
+    [0.16, 'rgb(123, 214, 175)'],
+    [0.17, 'rgb(116, 212, 173)'],
+    [0.18, 'rgb(108, 211, 173)'],
+    [0.19, 'rgb(101, 208, 173)'],
+    [0.2, 'rgb(95, 205, 173)'],
+    [0.21, 'rgb(89, 204, 173)'],
+    [0.22, 'rgb(84, 201, 173)'],
+    [0.23, 'rgb(80, 198, 173)'],
+    [0.24, 'rgb(76, 195, 173)'],
+    [0.25, 'rgb(72, 193, 173)'],
+    [0.26, 'rgb(70, 190, 173)'],
+    [0.27, 'rgb(67, 187, 173)'],
+    [0.28, 'rgb(65, 184, 173)'],
+    [0.29, 'rgb(63, 181, 173)'],
+    [0.3, 'rgb(61, 179, 173)'],
+    [0.31, 'rgb(59, 175, 173)'],
+    [0.32, 'rgb(58, 173, 172)'],
+    [0.33, 'rgb(56, 170, 172)'],
+    [0.34, 'rgb(55, 167, 172)'],
+    [0.35, 'rgb(54, 164, 171)'],
+    [0.36, 'rgb(53, 161, 171)'],
+    [0.37, 'rgb(53, 159, 171)'],
+    [0.38, 'rgb(53, 155, 170)'],
+    [0.39, 'rgb(52, 153, 170)'],
+    [0.4, 'rgb(52, 150, 169)'],
+    [0.41, 'rgb(52, 146, 168)'],
+    [0.42, 'rgb(52, 144, 168)'],
+    [0.43, 'rgb(52, 141, 167)'],
+    [0.44, 'rgb(52, 138, 166)'],
+    [0.45, 'rgb(52, 135, 166)'],
+    [0.46, 'rgb(52, 133, 165)'],
+    [0.47, 'rgb(52, 130, 164)'],
+    [0.48, 'rgb(53, 126, 164)'],
+    [0.49, 'rgb(53, 124, 163)'],
+    [0.51, 'rgb(53, 121, 162)'],
+    [0.52, 'rgb(53, 118, 162)'],
+    [0.53, 'rgb(53, 115, 161)'],
+    [0.54, 'rgb(54, 112, 160)'],
+    [0.55, 'rgb(54, 109, 160)'],
+    [0.56, 'rgb(54, 106, 159)'],
+    [0.57, 'rgb(55, 104, 159)'],
+    [0.58, 'rgb(55, 100, 158)'],
+    [0.59, 'rgb(56, 98, 157)'],
+    [0.6, 'rgb(57, 94, 156)'],
+    [0.61, 'rgb(58, 92, 155)'],
+    [0.62, 'rgb(59, 88, 154)'],
+    [0.63, 'rgb(60, 85, 152)'],
+    [0.64, 'rgb(61, 82, 150)'],
+    [0.65, 'rgb(62, 79, 148)'],
+    [0.66, 'rgb(63, 76, 145)'],
+    [0.67, 'rgb(64, 73, 142)'],
+    [0.68, 'rgb(64, 71, 138)'],
+    [0.69, 'rgb(65, 67, 135)'],
+    [0.7, 'rgb(65, 64, 131)'],
+    [0.71, 'rgb(65, 62, 126)'],
+    [0.72, 'rgb(64, 60, 121)'],
+    [0.73, 'rgb(64, 58, 117)'],
+    [0.74, 'rgb(63, 55, 112)'],
+    [0.75, 'rgb(62, 53, 108)'],
+    [0.76, 'rgb(62, 51, 103)'],
+    [0.77, 'rgb(60, 49, 98)'],
+    [0.78, 'rgb(59, 47, 94)'],
+    [0.79, 'rgb(58, 44, 89)'],
+    [0.8, 'rgb(56, 42, 85)'],
+    [0.81, 'rgb(55, 40, 81)'],
+    [0.82, 'rgb(53, 38, 76)'],
+    [0.83, 'rgb(52, 37, 72)'],
+    [0.84, 'rgb(50, 34, 67)'],
+    [0.85, 'rgb(49, 33, 63)'],
+    [0.86, 'rgb(46, 30, 59)'],
+    [0.87, 'rgb(44, 28, 55)'],
+    [0.88, 'rgb(42, 27, 51)'],
+    [0.89, 'rgb(40, 25, 47)'],
+    [0.9, 'rgb(38, 23, 42)'],
+    [0.91, 'rgb(35, 21, 38)'],
+    [0.92, 'rgb(33, 20, 35)'],
+    [0.93, 'rgb(30, 17, 31)'],
+    [0.94, 'rgb(27, 15, 27)'],
+    [0.95, 'rgb(25, 14, 24)'],
+    [0.96, 'rgb(22, 11, 20)'],
+    [0.97, 'rgb(20, 9, 16)'],
+    [0.98, 'rgb(17, 7, 12)'],
+    [0.99, 'rgb(15, 6, 9)'],
+    [1.0, 'rgb(11, 4, 5)']
+  ],
+  'temperature_plot_markers': [
+    'circle', 'square', 'diamond', 'triangle-up'
+  ],
   /* temperature plot elements: */
   'temperature_plot_els': [
     document.getElementById('temperature_header_row'),
     document.getElementById('temperature_plot_row')
   ],
   'temperature_text_div': document.getElementById('temperature_text_div'),
+  'temperature_download_el': document.getElementById('download_temperature_button'),
   /* volume plot elements: */
   'volume_plot_els': [
     document.getElementById('volume_header_row'),
@@ -784,7 +890,7 @@ function area_plot(data) {
   };
   /* create the scatter plot: */
   var scatter_plot = Plotly.newPlot(
-    area_plot_div, scatter_data, scatter_layout, scatter_conf
+    'area_plot_div', scatter_data, scatter_layout, scatter_conf
   );
   /* update text: */
   area_text_div.innerHTML = area_text;
@@ -812,16 +918,90 @@ async function load_temperature_data() {
       var temperature_plot_el = temperature_plot_els[i];
       temperature_plot_el.style.display = 'none';
     };
+    var temperature_download_el = page_data['temperature_download_el'];
+    temperature_download_el.style.display = 'none';
     return;
   };
   /* draw the temperature plot: */
   temperature_plot(data);
 };
 
+/* function to download temperature data: */
+async function download_temperature_data() {
+  /* get data: */
+  let data_in = page_data['temperature'];
+  let data_ids = data_in['data_ids'];
+  /* create zip writer object: */
+  let zip_writer = new zip.ZipWriter(
+    new zip.Data64URIWriter('application/zip')
+  );
+  /* loop through data ids: */
+  for (let i = 0; i < data_ids.length; i++) {
+    /* get data for this id: */
+    let data_id = data_ids[i];
+    let data_url_type = data_id.split(':::');
+    let data_url = data_url_type[0];
+    let data_type = data_url_type[1];
+    let data_label = data_url.split('/').slice(-1)[0];
+    let data = data_in['data'][data_id];
+    /* get metadata: */
+    let data_doi = data['DOI'];
+    let data_method = data['METHOD'];
+    let data_source = data['DATA_SOURCE'];
+    let data_notes = data['NOTES'];
+    /* get data values: */
+    let data_times = data['times'];
+    let data_time_zones = data['time_zones'];
+    let data_starts = data['start_dates'];
+    let data_ends = data['end_dates'];
+    let data_latitudes = data['latitudes'];
+    let data_longitudes = data['longitudes'];
+    let data_temperatures = data['temperatures'];
+    let data_uncertaintys = data['uncertaintys'];
+    let data_depths = data['depths'];
+    /* init csv data: */
+    let data_csv = '';
+    /* add metadata: */
+    data_csv += 'doi,' + data_doi + '\r\n';
+    data_csv += 'method,' + data_method + '\r\n';
+    data_csv += 'source,' + data_source + '\r\n';
+    data_csv += 'notes,' + data_notes + '\r\n';
+    data_csv += '\r\n';
+    data_csv += 'time,time zone,start date,end date,latitude,longitude,temperature (°C),temperature uncertainty,depth\r\n';
+    /* loop through data values: */
+    for (let j = 0; j < data_times.length; j++) {
+      data_csv += data_times[j] + ',' + data_time_zones[j] + ',' +
+                  data_starts[j] + ',' + data_ends[j] + ',' +
+                  data_latitudes[j] + ',' + data_longitudes[j] + ',' +
+                  data_temperatures[j] + ',' + data_uncertaintys[j] + ',' +
+                  data_depths[j] + '\r\n';
+    };
+    /* file name for output: */
+    let csv_name = lake_id + '__temperature_' + data_label + '_' + data_type + '.csv';
+    /* add data to zip file: */
+    await zip_writer.add(
+      csv_name, new zip.TextReader(data_csv)
+    );
+  };
+  /* close zip file and get encoded data uri: */
+  let data_uri = await zip_writer.close();
+  /* set zip file name: */
+  let zip_name = page_data['lake']['GLO_ID'] + '__temperature.zip';
+  /* create a temporary link element: */
+  let csv_link = document.createElement('a');
+  csv_link.setAttribute('href', data_uri);
+  csv_link.setAttribute('download', zip_name);
+  csv_link.style.visibility = 'hidden';
+  document.body.appendChild(csv_link);
+  csv_link.click();
+  document.body.removeChild(csv_link);
+};
+
 /* function to draw temperature plot: */
 function temperature_plot(data) {
   /* init scatter plot data: */
   var scatter_data = [];
+  var scatter_tm_data = [];
   /* plot text element: */
   var temperature_text_div = page_data['temperature_text_div'];
   var temperature_text = '<label>Temperature data sources</label>';
@@ -830,6 +1010,7 @@ function temperature_plot(data) {
   var color_count = temperature_colors.length;
   /* loop through data ids: */
   var data_ids = data['data_ids'];
+  let thermistor_count = 0;
   for (var i = 0; i < data_ids.length; i++) {
     /* get data for this id: */
     var data_id = data_ids[i];
@@ -883,10 +1064,33 @@ function temperature_plot(data) {
       'y': y,
       'marker': {
         'color': temperature_color
-      }
+      },
+      'hovertemplate': '%{x}: %{y:.2f}°C'
     };
     /* plot data, in order of plotting: */
     scatter_data.push(scatter_temperature);
+    /* if this is thermistor data ... add to thermistor data: */
+    if (data_type.toLowerCase() == 'thermistor') {
+      let scatter_colorscale = page_data['temperature_plot_colors'];
+      let scatter_marker_index = thermistor_count %
+                                 page_data['temperature_plot_markers'].length;
+      let scatter_marker = page_data['temperature_plot_markers'][scatter_marker_index];
+      var scatter_tm_temperature = {
+        'name': data_label,
+        'type': 'scatter',
+        'mode': 'markers',
+        'x': x,
+        'y': y,
+        'marker': {
+          'color': y,
+          'colorscale': scatter_colorscale,
+          'symbol': scatter_marker
+        },
+        'hovertemplate': '%{x}: %{y:.2f}°'
+      };
+      scatter_tm_data.push(scatter_tm_temperature);
+      thermistor_count += 1;
+    };
   };
   /* scatter plot layout: */
   var scatter_layout = {
@@ -913,12 +1117,27 @@ function temperature_plot(data) {
     ],
     'responsive': true
   };
+  /* add thermistor plot, if there is any thermistor data: */
+  if (scatter_tm_data.length > 0) {
+    scatter_layout['title'] = 'Thermistor Temperature Data';
+    let scatter_tm_plot = Plotly.newPlot(
+      'temperature_tm_plot_div', scatter_tm_data, scatter_layout, scatter_conf
+    );
+    scatter_layout['title'] = 'All Temperature Data';
+  } else {
+    /* remove thermistor plot element: */
+    let scatter_tm_el = document.getElementById('temperature_tm_plot_div');
+    scatter_tm_el.style.display = 'none';
+  };
   /* create the scatter plot: */
   var scatter_plot = Plotly.newPlot(
-    temperature_plot_div, scatter_data, scatter_layout, scatter_conf
+    'temperature_plot_div', scatter_data, scatter_layout, scatter_conf
   );
   /* update text: */
   temperature_text_div.innerHTML = temperature_text;
+  /* add download button listener: */
+  var temperature_download_el = page_data['temperature_download_el'];
+  temperature_download_el.addEventListener('click', download_temperature_data);
 };
 
 /* function to load volume data: */
@@ -1002,7 +1221,7 @@ function volume_plot(data) {
   };
   /* create the scatter plot: */
   var scatter_plot = Plotly.newPlot(
-    volume_plot_div, scatter_data, scatter_layout, scatter_conf
+    'volume_plot_div', scatter_data, scatter_layout, scatter_conf
   );
 };
 
@@ -1067,7 +1286,7 @@ function depth_plot(x, y, z) {
   };
   /* create the surf plot: */
   var surf_plot = Plotly.newPlot(
-    depth_plot_div, surf_data, surf_layout, surf_conf
+    'depth_plot_div', surf_data, surf_layout, surf_conf
   );
 };
 
