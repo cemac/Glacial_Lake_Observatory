@@ -42,6 +42,12 @@
       new google.translate.TranslateElement({pageLanguage: 'en'}, 'google_translate_element');
     }
   </script>
+   <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-YWLME46CGX');
+  </script>
 {% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages %}
     {% for category, message in messages %}
