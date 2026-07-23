@@ -164,6 +164,14 @@ body {
   overflow: hidden;
 }
 
+.volume_plot_div {
+  width: 18em;
+  max-width: 18em;
+  height: 10em;
+  border-radius: 0.8em;
+  overflow: hidden;
+}
+
 .plot_text_div {
   flex-basis: 95%;
   margin-bottom: 1em;
@@ -280,3 +288,33 @@ button, button:focus, button:active {
 }
 :focus {outline:none;}
 ::-moz-focus-inner {border:0;}
+
+/* volume data: */
+
+.volume_table_row {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+.volume_table_div {
+  margin: 0.5em;
+}
+
+.volume_table_div label {
+  font-weight: bold;
+  color: #3b5799;
+}
+
+.volume_table_div a {
+  color: #000000;
+}
+
+.volume_table_header {
+  font-size: 1.1em;
+  font-weight: bold;
+  color: #403c7a;
+}
+
+.volume_table_citation {
+  font-style: oblique;
+}

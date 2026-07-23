@@ -209,6 +209,7 @@ var page_data = {
     document.getElementById('volume_header_row'),
     document.getElementById('volume_plot_row')
   ],
+  'volume_table_el': document.getElementById('volume_table_row'),
   /* depth plot elements: */
   'depth_plot_els': [
     document.getElementById('depth_header_row'),
@@ -1178,6 +1179,8 @@ async function load_volume_data() {
   };
   /* draw the volume plot: */
   volume_plot(data);
+  /* add volume table: */
+  volume_table(data);
 };
 
 /* function to draw volume plot: */
@@ -1186,38 +1189,37 @@ function volume_plot(data) {
   var x = data['years'];
   /* init y values: */
   var y = [];
-  /* init hover text values: */
-  var hover_text = [];
   /* loop through years: */
   for (var i = 0; i < x.length; i++) {
     /* get data for this year: */
     var data_year = x[i];
     y.push(data['data'][data_year]['VOLUME']);
-    /* store hover text: */
-    hover_text[i] = '<b>volume:</b> ' + data['data'][data_year]['VOLUME'] + '<br>' +
-                    '<b>method:</b> ' + data['data'][data_year]['METHOD'] + '<br>' +
-                    '<b>data source:</b> ' + data['data'][data_year]['DATA_SOURCE'] + '<br>' +
-                    '<b>doi:</b> ' + data['data'][data_year]['DOI'];
   };
   /* volume plot: */
   var scatter_volume = {
+    'name': 'Volume',
     'type': 'scatter',
-    'mode': 'lines+markers',
+    'mode': 'markers',
     'x': x,
     'y': y,
-    'hoverinfo': 'text',
-    'hovertext': hover_text
+    'marker': {
+      'color': '#000000',
+      'size': 12
+    },
+    'hovertemplate': '%{x}: %{y:,} m³'
   };
   var scatter_data = [scatter_volume];
   /* scatter plot layout: */
   var scatter_layout = {
     'xaxis': {
-      'title': 'Date',
-      'type': 'date',
-      'hoverformat': '%Y'
+      'tickmode': 'array',
+      'tickvals': x
     },
-    'yaxis': {
-      'title': 'Volume (m³)'
+    'margin': {
+      'l': 25,
+      'r': 15,
+      'b': 25,
+      't': 25
     }
   };
   /* scatter plot config: */
@@ -1238,6 +1240,56 @@ function volume_plot(data) {
   var scatter_plot = Plotly.newPlot(
     'volume_plot_div', scatter_data, scatter_layout, scatter_conf
   );
+};
+
+/* function to draw volume table: */
+function volume_table(data) {
+  /* get data years: */
+  let years = data['years'];
+  /* get html element: */
+  let table_el = page_data['volume_table_el'];
+  /* init html: */
+  let table_html = '';
+  /* loop through years: */
+  for (let i = 0; i < years.length; i++) {
+    /* get data for this year: */
+    let year = years[i];
+    /* get required values: */
+    let volume = data['data'][year]['VOLUME'];
+    let uncertainty = data['data'][year]['UNCERTAINTY'] ?
+                      data['data'][year]['UNCERTAINTY'] : '-';
+    let start = data['data'][year]['START_DATE'] ?
+                data['data'][year]['START_DATE'] : '-';
+    let end = data['data'][year]['END_DATE'] ?
+              data['data'][year]['END_DATE'] : '-';
+    let method = data['data'][year]['METHOD'] ?
+                 data['data'][year]['METHOD'] : '-';
+    let source = data['data'][year]['DATA_SOURCE'] ?
+                 data['data'][year]['DATA_SOURCE'] : '-';
+    let doi = data['data'][year]['DOI'] ?
+              '<a href="' + data['data'][year]['DOI'] + '" target="_blank">' +
+              data['data'][year]['DOI'] + '</a>' : '-';
+    let citation = data['data'][year]['CITATION'] ?
+                   data['data'][year]['CITATION'] : '-';
+    let notes = data['data'][year]['NOTES'] ?
+                data['data'][year]['NOTES'] : '-';
+    /* html for this entry: */
+    let row_html = '<div class="volume_table_div flex_grow">' +
+                   '<span class="volume_table_header">' + year + '</span><br>' +
+                   '<label>Volume:</label> ' + volume.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' m³<br>' +
+                   '<label>Uncertainty:</label> ' + uncertainty + '<br>' +
+                   '<label>Start Date:</label> ' + start + '<br>' +
+                   '<label>End Date:</label> ' + end + '<br>' +
+                   '<label>Method:</label> ' + method + '<br>' +
+                   '<label>Source:</label> ' + source + '<br>' +
+                   '<label>DOI:</label> ' + doi + '<br>' +
+                   '<label>Citation:</label> <span class="volume_table_citation">' + citation + '</span><br>' +
+                   '<label>Notes:</label> ' + notes +
+                   '</div>';
+    table_html += row_html;
+  };
+  /* update html: */
+  table_el.innerHTML = table_html;
 };
 
 /* function to load depth data: */

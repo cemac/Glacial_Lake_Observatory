@@ -160,10 +160,13 @@ var images_url = '{{ url_for('static', filename='images') }}';
     <h3 class="header_lake_plot header_lake">Volume</h3>
   </div>
   <div id="volume_plot_row"
-       class="lake_container_row lake_row flex_center">
+       class="lake_container_row lake_row flex_start">
     <div id="volume_plot_div"
-         class="lake_plot_div flex_grow">
+         class="volume_plot_div flex_grow">
     </div>
+  </div>
+  <div id="volume_table_row"
+       class="volume_table_row lake_row flex_start">
   </div>
   <!-- depth plot: ____________________________________________________ -->
   <div id="depth_header_row"
