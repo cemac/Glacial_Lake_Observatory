@@ -1035,7 +1035,7 @@ function temperature_plot(data) {
                         '" target="_blank" style="color: ' + temperature_color +';">' +
                         data_label + '</a><span class="plot_text_type"> (' +
                         data_type + ')</span></span>';
-    /* get x values: */
+    /* get x and y values: */
     var x = id_data['times'];
     if (x[0] == '') {
       var x = id_data['start_dates'];
@@ -1071,6 +1071,14 @@ function temperature_plot(data) {
     scatter_data.push(scatter_temperature);
     /* if this is thermistor data ... add to thermistor data: */
     if (data_type.toLowerCase() == 'thermistor') {
+      /* get x, y and z values: */
+      x = id_data['times'];
+      if (x[0] == '') {
+        x = id_data['start_dates'];
+      };
+      var y = id_data['temperatures'];
+      var z = id_data['depths'];
+      /* set color options: */
       let scatter_colorscale = page_data['temperature_plot_colors'];
       let scatter_marker_index = thermistor_count %
                                  page_data['temperature_plot_markers'].length;
@@ -1082,11 +1090,18 @@ function temperature_plot(data) {
         'x': x,
         'y': y,
         'marker': {
-          'color': y,
+          'color': z,
           'colorscale': scatter_colorscale,
-          'symbol': scatter_marker
+          'symbol': scatter_marker,
+          'colorbar': {
+            'title': {
+              'text': 'Depth (m)',
+              'side': 'right'
+            },
+            'thickness': 20
+          }
         },
-        'hovertemplate': '%{x}: %{y:.2f}°'
+        'hovertemplate': '%{x}: %{y:.2f}°C (%{marker.color:.1f}m)'
       };
       scatter_tm_data.push(scatter_tm_temperature);
       thermistor_count += 1;
