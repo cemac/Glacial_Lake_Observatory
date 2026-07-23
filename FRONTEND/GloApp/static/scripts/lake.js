@@ -1203,7 +1203,16 @@ function volume_plot(data) {
     if (i < 1) {
       continue;
     };
-    if (data_year - tickvals[tick_count] > 2) {
+    if (i == x.length - 1) {
+      if (x.length == 2) {
+        tickvals.push(data_year);
+      } else {
+        if ((data_year - tickvals[tick_count]) <= 2) {
+          tickvals[tick_count] = data_year;
+        };
+      };
+    };
+    if ((data_year - tickvals[tick_count]) > 2) {
       tickvals.push(data_year);
       tick_count += 1;
     };
@@ -1226,7 +1235,11 @@ function volume_plot(data) {
   var scatter_layout = {
     'xaxis': {
       'tickmode': 'array',
-      'tickvals': tickvals
+      'tickvals': tickvals,
+      'zeroline': false
+    },
+    'yaxis': {
+      'zeroline': false
     },
     'margin': {
       'l': 25,
@@ -1268,7 +1281,10 @@ function volume_table(data) {
     /* get data for this year: */
     let year = years[i];
     /* get required values: */
-    let volume = data['data'][year]['VOLUME'];
+    let volume = data['data'][year]['VOLUME'] ?
+                 data['data'][year]['VOLUME'].toString().replace(
+                   /\B(?=(\d{3})+(?!\d))/g, ","
+                 ) + ' m³' : '-';
     let uncertainty = data['data'][year]['UNCERTAINTY'] ?
                       data['data'][year]['UNCERTAINTY'] : '-';
     let start = data['data'][year]['START_DATE'] ?
@@ -1289,7 +1305,7 @@ function volume_table(data) {
     /* html for this entry: */
     let row_html = '<div class="volume_table_div flex_grow">' +
                    '<span class="volume_table_header">' + year + '</span><br>' +
-                   '<label>Volume:</label> ' + volume.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' m³<br>' +
+                   '<label>Volume:</label> ' + volume + '<br>' +
                    '<label>Uncertainty:</label> ' + uncertainty + '<br>' +
                    '<label>Start Date:</label> ' + start + '<br>' +
                    '<label>End Date:</label> ' + end + '<br>' +
