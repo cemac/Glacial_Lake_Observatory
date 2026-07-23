@@ -298,6 +298,7 @@ button, button:focus, button:active {
 
 .volume_table_div {
   margin: 0.5em;
+  max-width: 22em;
 }
 
 .volume_table_div label {

@@ -1189,11 +1189,24 @@ function volume_plot(data) {
   var x = data['years'];
   /* init y values: */
   var y = [];
+  /* init tick values: */
+  var tickvals = [
+    x[0],
+  ];
+  var tick_count = 0;
   /* loop through years: */
   for (var i = 0; i < x.length; i++) {
     /* get data for this year: */
     var data_year = x[i];
     y.push(data['data'][data_year]['VOLUME']);
+    /* add to tickvals if appropriate: */
+    if (i < 1) {
+      continue;
+    };
+    if (data_year - tickvals[tick_count] > 2) {
+      tickvals.push(data_year);
+      tick_count += 1;
+    };
   };
   /* volume plot: */
   var scatter_volume = {
@@ -1213,7 +1226,7 @@ function volume_plot(data) {
   var scatter_layout = {
     'xaxis': {
       'tickmode': 'array',
-      'tickvals': x
+      'tickvals': tickvals
     },
     'margin': {
       'l': 25,
