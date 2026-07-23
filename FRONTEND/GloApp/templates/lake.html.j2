@@ -125,6 +125,12 @@ var images_url = '{{ url_for('static', filename='images') }}';
          class="plot_text_div flex_grow">
     </div>
   </div>
+  <div id="area_download_row"
+       class="lake_container_row lake_row flex_start">
+    <button id="download_area_button"
+            class="download_button"
+            title="Download area data as CSV">Download Area Data</button>
+  </div>
   <!-- temperature plot: ______________________________________________ -->
   <div id="temperature_header_row"
        class="lake_container_row lake_row flex_start">
@@ -135,9 +141,18 @@ var images_url = '{{ url_for('static', filename='images') }}';
     <div id="temperature_plot_div"
          class="lake_plot_div flex_grow">
     </div>
+    <div id="temperature_tm_plot_div"
+         class="lake_plot_div flex_grow">
+    </div>
     <div id="temperature_text_div"
          class="plot_text_div flex_grow">
     </div>
+  </div>
+  <div id="temperature_download_row"
+       class="lake_container_row lake_row flex_start">
+    <button id="download_temperature_button"
+            class="download_button"
+            title="Download temperature data as CSV">Download Temperature Data</button>
   </div>
   <!-- volume plot: ______________________________________________ -->
   <div id="volume_header_row"
