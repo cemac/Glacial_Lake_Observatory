@@ -1280,6 +1280,12 @@ function volume_table(data) {
   for (let i = 0; i < years.length; i++) {
     /* get data for this year: */
     let year = years[i];
+    /* replace 'NA' values: */
+    for (let j in data['data'][year]) {
+      if (data['data'][year][j] == 'NA') {
+        data['data'][year][j] = undefined;
+      };
+    };
     /* get required values: */
     let volume = data['data'][year]['VOLUME'] ?
                  data['data'][year]['VOLUME'].toString().replace(
