@@ -93,39 +93,3 @@ def static_data(file_path):
     data_dir = GloApp.globals.DATA_DIR
     return send_from_directory(data_dir, file_path)
 
-
-@main_bp.context_processor
-def inject_template_scope():
-    injections = dict()
-    
-    def cookies_check():
-        value = request.cookies.get('cookie_consent')
-        return value == 'true'
-    injections.update(cookies_check=cookies_check)
-
-    return injections
-
-@main_bp.context_processor
-def inject_template_scope():
-    def cookies_check():
-        exempt_paths = ['/privacy', '/copyright', '/about/project', '/about/team', '/about/whatwedo']
-        # If the user is on an exempt path, pretend they have consented so the banner doesn't show
-        if request.path in exempt_paths:
-            return True
-        
-        return request.cookies.get('cookie_consent') is not None
-
-    def get_user_consent():
-        consent_cookie = request.cookies.get('cookie_consent')
-        if not consent_cookie:
-            # Default settings if they haven't chosen yet
-            return {'functional': True, 'preferences': False, 'statistics': False, 'marketing': False}
-        try:
-            return json.loads(consent_cookie)
-        except json.JSONDecodeError:
-            return {'functional': True, 'preferences': False, 'statistics': False, 'marketing': False}
-
-    return dict(
-        cookies_check=cookies_check,
-        consent=get_user_consent() # Available in all templates as {{ consent }}
-    )
