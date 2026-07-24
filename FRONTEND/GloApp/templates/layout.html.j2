@@ -19,9 +19,88 @@
 
   <!-- Google Fonts -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" type="text/css">
-  
+
+<!-- Cookie Consent Banner -->
+
+{% if cookies_check() %}
+    {# User has already consented; hide banner #}
+{% else %}
+    <!-- Advanced Cookie Consent Banner -->
+    <div id="cmplz-cookiebanner-container" class="modal-backdrop" style="display: block; background: rgba(0,0,0,0.5);">
+      <div id="cmplz-cookiebanner-1-optin" class="cmplz-cookiebanner optin" role="dialog" style="position: fixed; bottom: 20px; right: 20px; max-width: 500px; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1050;">
+        
+        <div class="cmplz-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+          <h5 class="cmplz-title" style="margin: 0;">Manage Cookie Consent</h5>
+        </div>
+        
+        <div class="cmplz-body">
+          <p class="cmplz-message" style="font-size: 14px; color: #555;">
+            We use technologies like cookies to store and/or access device information. Some are purely functional to enable user login or the glacial lake database to be searched. Others are statistical cookies which will allow us montior how this website is used and how to improve the site. You must consent to the functional cookies in order to use this site and we hope that you allow us to collect statistics on the sight usage but this can be opted out from below.
+          </p>
+          
+          <!-- Categories Section -->
+          <div class="cmplz-categories" style="margin-bottom: 15px;">
+            <!-- Functional -->
+            <div class="cmplz-category" style="margin-bottom: 8px; font-size: 13px;">
+              <label>
+                <input type="checkbox" checked disabled /> <strong>Functional</strong> (Always active)
+              </label>
+            </div>
+            <!-- Statistics -->
+            <div class="cmplz-category" style="margin-bottom: 8px; font-size: 13px;">
+              <label>
+                <input type="checkbox" id="stats-checkbox" /> <strong>Statistics</strong>
+              </label>
+            </div>            
+          </div>
+        </div>
+
+        <!-- Buttons Footer -->
+        <div class="cmplz-buttons" style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button class="btn btn-primary btn-sm" onclick="setCookieConsent('all')">Accept All</button>
+          <button class="btn btn-secondary btn-sm" onclick="setCookieConsent('essential')">Functional Only</button>
+          
+        </div>
+
+        <center>
+           <a href="/privacy">Privacy</a>
+        </center>
+
+      </div>
+    </div>
+
+    <script>
+        function setCookieConsent(type) {
+            let consentData = {};
+            if (type === 'all') {
+                consentData = { functional: true, preferences: true, statistics: true };
+            } else if (type === 'essential') {
+                consentData = { functional: true, preferences: false, statistics: false };
+            }
+            
+            // Save as a JSON string inside the cookie, valid for 365 days
+            document.cookie = `cookie_consent=${JSON.stringify(consentData)}; path=/; max-age=31536000`;
+            document.getElementById('cmplz-cookiebanner-container').style.display = 'none';
+        }
+
+        function saveCustomPreferences() {
+            const consentData = {
+                functional: true,
+                preferences: document.getElementById('pref-checkbox').checked,
+                statistics: document.getElementById('stats-checkbox').checked
+                
+            };
+
+            document.cookie = `cookie_consent=${JSON.stringify(consentData)}; path=/; max-age=31536000`;
+            document.getElementById('cmplz-cookiebanner-container').style.display = 'none';
+        }
+    </script>
+{% endif %}
+{# Only load Statistics cookies/scripts if the user consented #}
+    {% if consent.statistics %}
   <!-- Google Analytics Script -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-YWLME46CGX"></script>
+  {% endif %}
   <!-- Block to insert additional styles -->
   {% block styles %}{% endblock %}
 </head>
@@ -42,12 +121,15 @@
       new google.translate.TranslateElement({pageLanguage: 'en'}, 'google_translate_element');
     }
   </script>
+  <!-- Google Analytics -->
+  {% if consent.statistics %}
    <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
     gtag('config', 'G-YWLME46CGX');
   </script>
+  {% endif %}
 {% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages %}
     {% for category, message in messages %}
