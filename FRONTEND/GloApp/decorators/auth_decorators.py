@@ -1,5 +1,6 @@
 from functools import wraps
 from flask import session, flash, redirect, url_for
+import json
 
 # Decorators for authentication and authorization in Flask
 def is_logged_in(f):
@@ -44,3 +45,4 @@ def is_logged_in_as_admin(f):
             flash('Unauthorised, please login as admin', 'danger')
             return redirect(url_for('index'))
     return decorated_function
+
