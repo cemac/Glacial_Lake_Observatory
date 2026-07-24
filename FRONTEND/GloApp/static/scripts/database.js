@@ -642,8 +642,8 @@ function load_filters() {
   load_map();
 };
 
-/* function to update data on lakes tale update: */
-function lakes_table_draw() {
+/* function to update data on lakes table update: */
+function lakes_table_on_update() {
   /* get the table: */
   let lakes_table = page_data['lakes_table'];
   /* don't update if already updating ... : */
@@ -685,6 +685,7 @@ function load_data_table() {
         'targets': [8]
       }],
       'order': [[0, 'asc']],
+      'paging': true,
       'pageLength': 10,
       'stateSave': false
     });
@@ -693,7 +694,7 @@ function load_data_table() {
     /* clear any id based searches ... : */
     lakes_table.column(0).search('').draw();
     /* update data when table is updated: */
-    lakes_table.on('draw', lakes_table_draw);
+    lakes_table.on('search', lakes_table_on_update);
     /* load filters: */
     load_filters();
   });
@@ -797,7 +798,7 @@ function update_lakes_table() {
   let lakes_table = page_data['lakes_table'];
   /* if no lake ids ... : */
   if (lake_ids.length < 1) {
-    /* filter table based on nonsens: */
+    /* filter table based on nonsense: */
     lakes_table.column(0).search('NULL|VOID', true).draw();
   } else {
     /* filter table based on ids and re-draw: */
