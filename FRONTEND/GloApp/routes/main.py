@@ -1,4 +1,4 @@
-import json
+#import json
 import os
 
 from flask import (
@@ -105,7 +105,7 @@ def inject_template_scope():
 
     return injections
 
-@main_bp.context_processor
+"""@main_bp.context_processor
 def inject_template_scope():
     def cookies_check():
         exempt_paths = ['/privacy', '/copyright', '/about/project', '/about/team', '/about/whatwedo']
@@ -128,4 +128,4 @@ def inject_template_scope():
     return dict(
         cookies_check=cookies_check,
         consent=get_user_consent() # Available in all templates as {{ consent }}
-    )
+    )"""
