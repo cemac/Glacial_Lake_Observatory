@@ -1229,7 +1229,7 @@ async function download_volume_data() {
     let data = data_in['data'][data_year];
     /* replace 'NA' values: */
     for (let j in data) {
-      if (data[j] == 'NA') {
+      if ((data[j] == undefined) || (data[j] == 'NA')) {
         data[j] = '';
       };
     };
