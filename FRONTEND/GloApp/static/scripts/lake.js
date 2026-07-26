@@ -210,6 +210,7 @@ var page_data = {
     document.getElementById('volume_plot_row')
   ],
   'volume_table_el': document.getElementById('volume_table_row'),
+  'volume_download_el': document.getElementById('download_volume_button'),
   /* depth plot elements: */
   'depth_plot_els': [
     document.getElementById('depth_header_row'),
@@ -760,6 +761,18 @@ async function download_area_data() {
     let data_type = data_url_type[1];
     let data_label = data_url.split('/').slice(-1)[0];
     let data = data_in['data'][data_id];
+    /* replace 'NA' values: */
+    for (let j in data) {
+      if (Array.isArray(data[j])) {
+        for (let k in data[j]) {
+          if (data[j][k] == 'NA') {
+            data[j][k] = '';
+          };
+        };
+      } else if (data[j] == 'NA') {
+        data[j] = '';
+      };
+    };
     /* get metadata: */
     let data_doi = data['DOI'];
     let data_method = data['METHOD'];
@@ -776,13 +789,13 @@ async function download_area_data() {
     /* init csv data: */
     let data_csv = '';
     /* add metadata: */
-    data_csv += 'doi,' + data_doi + '\r\n';
-    data_csv += 'method,' + data_method + '\r\n';
-    data_csv += 'source,' + data_source + '\r\n';
-    data_csv += 'notes,' + data_notes + '\r\n';
-    data_csv += 'citation,' + data_citation + '\r\n';
+    data_csv += '"doi","' + data_doi + '"\r\n';
+    data_csv += '"method","' + data_method + '"\r\n';
+    data_csv += '"source","' + data_source + '"\r\n';
+    data_csv += '"notes","' + data_notes + '"\r\n';
+    data_csv += '"citation","' + data_citation + '"\r\n';
     data_csv += '\r\n';
-    data_csv += 'year,start date,end date,area (km²),area uncertainty,perimiter\r\n';
+    data_csv += '"year","start date","end date","area (km²)","area uncertainty","perimiter"\r\n';
     /* loop through data values: */
     for (let j = 0; j < data_years.length; j++) {
       data_csv += data_years[j] + ',' + data_starts[j] + ',' +
@@ -945,6 +958,18 @@ async function download_temperature_data() {
     let data_type = data_url_type[1];
     let data_label = data_url.split('/').slice(-1)[0];
     let data = data_in['data'][data_id];
+    /* replace 'NA' values: */
+    for (let j in data) {
+      if (Array.isArray(data[j])) {
+        for (let k in data[j]) {
+          if (data[j][k] == 'NA') {
+            data[j][k] = '';
+          };
+        };
+      } else if (data[j] == 'NA') {
+        data[j] = '';
+      };
+    };
     /* get metadata: */
     let data_doi = data['DOI'];
     let data_method = data['METHOD'];
@@ -963,12 +988,12 @@ async function download_temperature_data() {
     /* init csv data: */
     let data_csv = '';
     /* add metadata: */
-    data_csv += 'doi,' + data_doi + '\r\n';
-    data_csv += 'method,' + data_method + '\r\n';
-    data_csv += 'source,' + data_source + '\r\n';
-    data_csv += 'notes,' + data_notes + '\r\n';
+    data_csv += '"doi","' + data_doi + '"\r\n';
+    data_csv += '"method","' + data_method + '"\r\n';
+    data_csv += '"source","' + data_source + '"\r\n';
+    data_csv += '"notes","' + data_notes + '"\r\n';
     data_csv += '\r\n';
-    data_csv += 'time,time zone,start date,end date,latitude,longitude,temperature (°C),temperature uncertainty,depth\r\n';
+    data_csv += '"time","time zone","start date","end date","latitude","longitude,temperature (°C)","temperature uncertainty","depth"\r\n';
     /* loop through data values: */
     for (let j = 0; j < data_times.length; j++) {
       data_csv += data_times[j] + ',' + data_time_zones[j] + ',' +
@@ -1175,12 +1200,72 @@ async function load_volume_data() {
       var volume_plot_el = volume_plot_els[i];
       volume_plot_el.style.display = 'none';
     };
+    var volume_download_el = page_data['volume_download_el'];
+    volume_download_el.style.display = 'none';
     return;
   };
   /* draw the volume plot: */
   volume_plot(data);
   /* add volume table: */
   volume_table(data);
+};
+
+/* function to download volume data: */
+async function download_volume_data() {
+  /* get data: */
+  let data_in = page_data['volume'];
+  let data_years = data_in['years'];
+  /* init csv data: */
+  let data_csv = 'data:text/csv;charset=utf-8,';
+  /* add header: */
+  data_csv += '"year","start date","end date","volume","uncertainty",';
+  data_csv += '"water elevation","water elevation uncertainty",';
+  data_csv += '"water elevation reference","water elevation method",';
+  data_csv += '"data source","doi","citation","notes"\r\n';
+  /* loop through data years: */
+  for (let i = 0; i < data_years.length; i++) {
+    /* get data for this id: */
+    let data_year = data_years[i];
+    let data = data_in['data'][data_year];
+    /* replace 'NA' values: */
+    for (let j in data) {
+      if (data[j] == 'NA') {
+        data[j] = '';
+      };
+    };
+    /* get data values: */
+    let data_start = data['START_DATE'];
+    let data_end = data['END_DATE'];
+    let data_volume = data['VOLUME'];
+    let data_uncertainty = data['UNCERTAINTYS'];
+    let data_we = data['WATER_ELEVATION'];
+    let data_we_uncertainty = data['WATER_ELEVATION_UNCERTAINTY'];
+    let data_we_reference = data['WATER_ELEVATION_REFERENCE'];
+    let data_we_method = data['WATER_ELEVATION_METHOD'];
+    let data_source = data['DATA_SOURCE'];
+    let data_doi = data['DOI'];
+    let data_citation = data['CITATION'];
+    let data_notes = data['NOTES'];
+    /* add data values: */
+    data_csv += data_year + ',' + data_start + ',' + data_end + ',' +
+                data_volume + ',' + data_volume + ',' +
+                data_we + ',' + data_we_uncertainty + ',"' +
+                data_we_reference + '","' + data_we_method + '","' +
+                data_source + '","' + data_doi + '","' + data_citation + '","' +
+                data_notes + '"\r\n';
+  };
+  /* encode csv data: */
+  let data_uri = encodeURI(data_csv);
+  /* file name for output: */
+  let csv_name = lake_id + '__volume.csv';
+  /* create a temporary link element: */
+  let csv_link = document.createElement('a');
+  csv_link.setAttribute('href', data_uri);
+  csv_link.setAttribute('download', csv_name);
+  csv_link.style.visibility = 'hidden';
+  document.body.appendChild(csv_link);
+  csv_link.click();
+  document.body.removeChild(csv_link);
 };
 
 /* function to draw volume plot: */
@@ -1266,6 +1351,9 @@ function volume_plot(data) {
   var scatter_plot = Plotly.newPlot(
     'volume_plot_div', scatter_data, scatter_layout, scatter_conf
   );
+  /* add download button listener: */
+  var volume_download_el = page_data['volume_download_el'];
+  volume_download_el.addEventListener('click', download_volume_data);
 };
 
 /* function to draw volume table: */
