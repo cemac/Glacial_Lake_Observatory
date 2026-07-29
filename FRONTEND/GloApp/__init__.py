@@ -84,11 +84,11 @@ def register_context_processors(app):
             consent_cookie = request.cookies.get('cookie_consent')
             if not consent_cookie:
                 # Default settings if they haven't chosen yet
-                return {'functional': True, 'preferences': False, 'statistics': False, 'marketing': False}
+                return {'functional': True, 'preferences': False, 'statistics': False}
             try:
                 return json.loads(consent_cookie)
             except json.JSONDecodeError:
-                return {'functional': True, 'preferences': False, 'statistics': False, 'marketing': False}
+                return {'functional': True, 'preferences': False, 'statistics': False}
 
         return dict(
             cookies_check=cookies_check,
