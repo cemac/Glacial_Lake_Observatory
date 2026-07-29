@@ -1490,6 +1490,13 @@ function depth_plot(data_id) {
         'y': y_ratio,
         'z': z_ratio
       },
+      'camera': {
+        'eye': {
+          'x': -1.25,
+          'y': -1.25,
+          'z': 1.25
+        }
+      },
       'xaxis': {
         'title': {
           'text': 'Longitude'
