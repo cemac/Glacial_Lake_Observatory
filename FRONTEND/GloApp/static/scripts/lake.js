@@ -92,7 +92,30 @@ var page_data = {
     "#231526ff", "#211423ff", "#1e111fff", "#1b0f1bff", "#190e18ff", "#160b14ff",
     "#140910ff", "#11070cff", "#0f0609ff", "#0b0405ff"
   ],
-  'temperature_plot_colors': [
+  'temperature_plot_markers': [
+    'circle', 'square', 'diamond', 'triangle-up'
+  ],
+  /* temperature plot elements: */
+  'temperature_plot_els': [
+    document.getElementById('temperature_header_row'),
+    document.getElementById('temperature_plot_row')
+  ],
+  'temperature_text_div': document.getElementById('temperature_text_div'),
+  'temperature_download_el': document.getElementById('download_temperature_button'),
+  /* volume plot elements: */
+  'volume_plot_els': [
+    document.getElementById('volume_header_row'),
+    document.getElementById('volume_plot_row')
+  ],
+  'volume_table_el': document.getElementById('volume_table_row'),
+  'volume_download_el': document.getElementById('download_volume_button'),
+  /* depth plot elements: */
+  'depth_plot_els': [
+    document.getElementById('depth_header_row'),
+    document.getElementById('depth_plot_row')
+  ],
+  /* plotting color map: */
+  'plot_colors': [
     [0.0, 'rgb(222, 245, 229)'],
     [0.01, 'rgb(217, 242, 224)'],
     [0.02, 'rgb(212, 241, 220)'],
@@ -193,28 +216,6 @@ var page_data = {
     [0.98, 'rgb(17, 7, 12)'],
     [0.99, 'rgb(15, 6, 9)'],
     [1.0, 'rgb(11, 4, 5)']
-  ],
-  'temperature_plot_markers': [
-    'circle', 'square', 'diamond', 'triangle-up'
-  ],
-  /* temperature plot elements: */
-  'temperature_plot_els': [
-    document.getElementById('temperature_header_row'),
-    document.getElementById('temperature_plot_row')
-  ],
-  'temperature_text_div': document.getElementById('temperature_text_div'),
-  'temperature_download_el': document.getElementById('download_temperature_button'),
-  /* volume plot elements: */
-  'volume_plot_els': [
-    document.getElementById('volume_header_row'),
-    document.getElementById('volume_plot_row')
-  ],
-  'volume_table_el': document.getElementById('volume_table_row'),
-  'volume_download_el': document.getElementById('download_volume_button'),
-  /* depth plot elements: */
-  'depth_plot_els': [
-    document.getElementById('depth_header_row'),
-    document.getElementById('depth_plot_row')
   ]
 };
 
@@ -1105,7 +1106,7 @@ function temperature_plot(data) {
       var y = id_data['temperatures'];
       var z = id_data['depths'];
       /* set color options: */
-      let scatter_colorscale = page_data['temperature_plot_colors'];
+      let scatter_colorscale = page_data['plot_colors'];
       let scatter_marker_index = thermistor_count %
                                  page_data['temperature_plot_markers'].length;
       let scatter_marker = page_data['temperature_plot_markers'][scatter_marker_index];
@@ -1427,11 +1428,6 @@ async function load_depth_data() {
     });
     /* get data for first data id: */
     var data_id = page_data['depth']['data_ids'][0];
-    var data = page_data['depth']['data'][data_id];
-    /* get x, y, and z data: */
-    var x = data['grid_lon'];
-    var y = data['grid_lat'];
-    var z = data['grid_depth'];
   } catch(e) {
     /* no data, hide depth plot elements: */
     var depth_plot_els = page_data['depth_plot_els'];
@@ -1442,26 +1438,88 @@ async function load_depth_data() {
     return;
   };
   /* draw the depth plot: */
-  depth_plot(x, y, z);
+  depth_plot(data_id);
 };
 
 /* function to draw depth plot: */
-function depth_plot(x, y, z) {
+function depth_plot(data_id) {
+  /* get data for this data id: */
+  let data = page_data['depth']['data'][data_id];
+  /* get x, y, and z data: */
+  let x = data['grid_lon'];
+  let y = data['grid_lat'];
+  let z = data['grid_depth'];
+  /* get distance data: */
+  let x_dist = data['grid_lon_distance'];
+  let y_dist = data['grid_lat_distance'];
+  let z_dist = data['grid_depth_distance'];
+  /* calculate aspect ratio values: */
+  let x_ratio = 1;
+  let y_ratio = y_dist / x_dist;
+  let z_ratio = z_dist / x_dist;
+  /* get color map and invert it: */
+  let plot_colors = page_data['plot_colors'];
+  plot_colors = plot_colors.reverse();
+  for (let i = 0; i < plot_colors.length; i++) {
+     plot_colors[i][0] = 1 - plot_colors[i][0];
+  };
   /* 3d depth plot: */
-  var surface_depth = {
+  let surface_depth = {
     'type': 'surface',
     'x': x,
     'y': y,
     'z': z,
-    'surfacecolor': 'Blues',
-    'colorscale': 'Blues'
+    'colorscale': plot_colors,
+    'colorbar': {
+      'title': {
+        'text': 'Depth (m)',
+        'side': 'right'
+      },
+      'len': 0.9,
+      'thickness': 20
+    },
+    'hovertemplate': 'Latitude: %{y:.2f}<br>Longitude: %{x:.2f}<br>Depth: %{z:.2f} m'
   };
   /* plot data, in order of plotting: */
-  var surf_data = [surface_depth];
+  let surf_data = [surface_depth];
   /* surface plot layout: */
-  var surf_layout = {};
+  let surf_layout = {
+    'scene': {
+      'aspectratio': {
+        'x': x_ratio,
+        'y': y_ratio,
+        'z': z_ratio
+      },
+      'xaxis': {
+        'title': {
+          'text': 'Longitude'
+        },
+        'zeroline': false
+      },
+      'yaxis': {
+        'title': {
+          'text': 'Latitude'
+        },
+        'zeroline': false
+      },
+      'zaxis': {
+        'tickmod': 'array',
+        'tickvals': [],
+        'title': {
+          'text': ''
+        },
+        'zeroline': false
+      },
+      'margin': {
+        'l': 0,
+        'r': 0,
+        'b': 15,
+        't': 25,
+      }
+    }
+  };
   /* surface plot config: */
-  var surf_conf = {
+  let surf_conf = {
     'showLink': false,
     'linkText': '',
     'displaylogo': false,
@@ -1475,7 +1533,7 @@ function depth_plot(x, y, z) {
     'responsive': true
   };
   /* create the surf plot: */
-  var surf_plot = Plotly.newPlot(
+  let surf_plot = Plotly.newPlot(
     'depth_plot_div', surf_data, surf_layout, surf_conf
   );
 };
