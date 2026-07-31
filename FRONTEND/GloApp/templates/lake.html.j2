@@ -180,10 +180,25 @@ var images_url = '{{ url_for('static', filename='images') }}';
     <h3 class="header_lake_plot header_lake">Bathymetry</h3>
   </div>
   <div id="depth_plot_row"
-       class="lake_container_row lake_row flex_center">
-    <div id="depth_plot_div"
-         class="lake_plot_div flex_grow">
+       class="lake_container_row lake_row_wrap flex_center">
+    <div id="depth_header_text_div"
+         class="depth_header_text_div flex_grow">
     </div>
+    <div id="depth_map_div"
+         class="depth_map_div flex_grow">
+    </div>
+    <div id="depth_plot_div"
+         class="depth_plot_div flex_grow">
+    </div>
+    <div id="depth_text_div"
+         class="plot_text_div flex_grow">
+    </div>
+  </div>
+  <div id="depth_download_row"
+       class="lake_container_row lake_row flex_start">
+    <button id="download_depth_button"
+            class="download_button"
+            title="Download depth data as CSV">Download Bathymetry Data</button>
   </div>
 <!-- end container: ___________________________________________________ -->
 </div>

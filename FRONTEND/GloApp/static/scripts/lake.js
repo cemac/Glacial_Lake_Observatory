@@ -114,6 +114,12 @@ var page_data = {
     document.getElementById('depth_header_row'),
     document.getElementById('depth_plot_row')
   ],
+  'depth_header_text_div': document.getElementById('depth_header_text_div'),
+  'depth_text_div': document.getElementById('depth_text_div'),
+  'depth_download_el': document.getElementById('download_depth_button'),
+  /* depth map elements: */
+  'depth_map': null,
+  'depth_colors': null,
   /* plotting color map: */
   'plot_colors': [
     [0.0, 'rgb(222, 245, 229)'],
@@ -596,7 +602,7 @@ function geometry_plot(data) {
   var color_count = geometry_colors.length;
   /* init variable for storing default ploygon: */
   var default_poly = null;
-  /* loop through yars and load polygons: */
+  /* loop through years and load polygons: */
   for (var i = (data['years'].length - 1); i > -1; i--) {
     /* get color for this polygon: */
     if (data['years'].length == 1) {
@@ -1435,10 +1441,193 @@ async function load_depth_data() {
       var depth_plot_el = depth_plot_els[i];
       depth_plot_el.style.display = 'none';
     };
+    var depth_download_el = page_data['depth_download_el'];
+    depth_download_el.style.display = 'none';
     return;
   };
-  /* draw the depth plot: */
-  depth_plot(data_id);
+  /* display the depth data: */
+  depth_display(data_id);
+};
+
+/* function to draw depth plot: */
+function depth_map(data_id) {
+  /* gep map element: */
+  let map_div = document.getElementById('depth_map_div');
+  /* check if map exists: */
+  if (map_div._leaflet_id != undefined) {
+    /* remove map if it exists: */
+    page_data['depth_map'].remove();
+  };
+  /* define sentinel-2 layer: */
+  let s2_layer = L.tileLayer(
+    'https://tiles.maps.eox.at/wmts/1.0.0/s2cloudless-2024_3857/default/g/{z}/{y}/{x}.jpg', {
+      'attribution': '<a href="https://s2maps.eu/" target="_blank">Sentinel-2 cloudless (2024)</a>'
+    }
+  );
+  /* define esri layer: */
+  let esri_layer = L.tileLayer(
+    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      'attribution': '<a href="https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer" target="_blank">ESRI World Imagery</a>'
+    }
+  );
+  /* define cartodb layer: */
+  let carto_layer = L.tileLayer(
+    'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png', {
+      'attribution': '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      'subdomains': 'abcd'
+    }
+  );
+  /* define openstreetmap layer: */
+  let osm_layer = L.tileLayer(
+    'https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+      'attribution': '&copy; <a href="https://osm.org/copyright" target="_blank">OpenStreetMap</a> contributors'
+    }
+  );
+  /* define its_live glacial velocity layer: */
+  let gv_layer = L.tileLayer(
+    'https://its-live-data.s3-us-west-2.amazonaws.com/velocity_mosaic/v2/static/v_tiles_global/{z}/{x}/{y}.png', {
+      'attribution': 'ITS_LIVE',
+      'maxNativeZoom': 11
+    }
+  );
+  /* all tile layers: */
+  let tile_layers = {
+    'Sentinel-2': s2_layer,
+    'ESRI World Imagery': esri_layer,
+    'Carto': carto_layer,
+    'Open Street Map': osm_layer,
+    'Glacial Velocity': gv_layer
+  };
+  /* get data for this data id: */
+  let data = page_data['depth']['data'][data_id];
+  let lats = data['latitudes'];
+  let lons = data['longitudes'];
+  let depths = data['depths'];
+  let max_depth = data['grid_depth_distance'];
+  let starts = data['start_dates'];
+  let ends = data['end_dates'];
+  /* store polygons here: */
+  let depth_polys = []
+  /* init min / max lat / lon: */
+  let min_lat = 90;
+  let max_lat = -90;
+  let min_lon = 180;
+  let max_lon = -180;
+  /* get depth color map: */
+  let depth_colors = page_data['geometry_colors'];
+  let color_count = depth_colors.length;
+  /* loop through depth points and create polygons: */
+  for (let i = 0; i < depths.length; i++) {
+    /* values for this polygon: */
+    let lat = lats[i];
+    let lon = lons[i];
+    let depth = depths[i];
+    let start = starts[i];
+    let end = ends[i];
+    /* ignore any values under 0: */
+    if (depth < 0) {
+      continue;
+    };
+    /* get color for this polygon: */
+    let color_index = Math.round((depth / max_depth) * color_count);
+    let poly_color = depth_colors[color_index];
+    /* create polygon: */
+    let poly = L.circle(
+      [lat, lon], {
+        'radius': 20,
+        'color': poly_color,
+        'weight': 0,
+        'fillOpacity': 0.7
+      }
+    );
+    /* create tooltip: */
+    let depth_label = depth;
+    if (depth > 1) {
+      depth_label = '-' + depth;
+    };
+    poly.bindTooltip(
+      '<b>Lat:</b> ' + lat.toFixed(3) + '<br>' +
+      '<b>Lon:</b> ' + lon.toFixed(3) + '<br>' +
+      '<b>Depth:</b> ' + depth_label + ' m<br>' +
+      '<b>Start Date:</b> ' + start + '<br>' +
+      '<b>End Date:</b> ' + end
+    );
+    /* store the polygon: */
+    depth_polys.push(poly);
+    /* update min / max lats: */
+    min_lat = Math.min(min_lat, lat)
+    max_lat = Math.max(max_lat, lat)
+    min_lon = Math.min(min_lon, lon)
+    max_lon = Math.max(max_lon, lon)
+  };
+  /* center coords: */
+  let center_lat = (max_lat + min_lat) / 2;
+  let center_lon = (max_lon + min_lon) / 2;
+  /* define map: */
+  let map = L.map(map_div, {
+    /* map layers: */
+    layers: [
+      s2_layer
+    ],
+    /* map center: */
+    center: [
+      center_lat,
+      center_lon,
+    ],
+    /* define bounds: */
+    maxBounds: [
+      [min_lat - 0.1, min_lon - 0.1],
+      [max_lat + 0.1, max_lon + 0.1],
+    ],
+    maxBoundsViscosity: 1.0,
+    /*  zoom levels: */
+    zoom:    12,
+    minZoom: 12,
+    maxZoom: 18
+  });
+  page_data['depth_map'] = map;
+  /* remove prefix from attribution control: */
+  let map_atrr_control = map.attributionControl;
+  map_atrr_control.setPrefix(false);
+  /* add mouse pointer position: */
+  L.control.mousePosition().addTo(map);
+  /* add scale: */
+  L.control.scale().addTo(map);
+  /* add layer control: */
+  L.control.layers(
+    tile_layers, {}, {collapsed: true, sortLayers: false}
+  ).addTo(map);
+  /* add measurererer: */
+  L.control.measure({
+    'position': 'topright',
+    'primaryLengthUnit': 'kilometers',
+    'secondaryLengthUnit': 'miles',
+    'primaryAreaUnit': 'sqmeters',
+    'secondaryAreaUnit': 'sqmiles',
+    'captureZIndex': 999999
+  }).addTo(map);
+  /* add glacial velocity color map: */
+  let map_gv_colormap = L.control({position: 'bottomleft'});
+  map_gv_colormap.onAdd = function(map) {
+    this._div = L.DomUtil.create('div', 'map_ctl map_gv_colormap');
+      this.update('');
+      return this._div;
+  };
+  map_gv_colormap.update = function(colormap_html) {
+    this._div.innerHTML = '<img class="map_gv_colormap_img" ' +
+                                   'src="' + images_url + '/map/glacial_velocity_colormap.png">';
+  };
+  gv_layer.addEventListener('add', function() { map_gv_colormap.addTo(map); });
+  gv_layer.addEventListener('remove', function() { map_gv_colormap.remove(); });
+  /* head to lake area: */
+  map.flyToBounds([
+      [min_lat, min_lon],
+      [max_lat, max_lon]
+  ]);
+  /* add depth polygons: */
+  for (let i = 0; i < depth_polys.length; i++) {
+    depth_polys[i].addTo(map);
+  }
 };
 
 /* function to draw depth plot: */
@@ -1458,10 +1647,14 @@ function depth_plot(data_id) {
   let y_ratio = y_dist / x_dist;
   let z_ratio = z_dist / x_dist;
   /* get color map and invert it: */
-  let plot_colors = page_data['plot_colors'];
-  plot_colors = plot_colors.reverse();
-  for (let i = 0; i < plot_colors.length; i++) {
-     plot_colors[i][0] = 1 - plot_colors[i][0];
+  let depth_colors = page_data['depth_colors'];
+  if (depth_colors == null) {
+    depth_colors = page_data['plot_colors'].slice();
+    depth_colors = depth_colors.reverse();
+    for (let i = 0; i < depth_colors.length; i++) {
+       depth_colors[i][0] = 1 - depth_colors[i][0];
+    };
+    page_data['depth_colors'] = depth_colors;
   };
   /* 3d depth plot: */
   let surface_depth = {
@@ -1469,7 +1662,7 @@ function depth_plot(data_id) {
     'x': x,
     'y': y,
     'z': z,
-    'colorscale': plot_colors,
+    'colorscale': depth_colors,
     'colorbar': {
       'title': {
         'text': 'Depth (m)',
@@ -1543,6 +1736,139 @@ function depth_plot(data_id) {
   let surf_plot = Plotly.newPlot(
     'depth_plot_div', surf_data, surf_layout, surf_conf
   );
+};
+
+/* function to download depth data: */
+async function download_depth_data() {
+  /* get data: */
+  let data_in = page_data['depth'];
+  let data_ids = data_in['data_ids'];
+  /* create zip writer object: */
+  let zip_writer = new zip.ZipWriter(
+    new zip.Data64URIWriter('application/zip')
+  );
+  /* loop through data ids: */
+  for (let i = 0; i < data_ids.length; i++) {
+    /* get data for this id: */
+    let data_id = data_ids[i];
+    let data_url_type = data_id.split(':::');
+    let data_url = data_url_type[0];
+    let data_type = data_url_type[1];
+    let data_label = data_url.split('/').slice(-1)[0];
+    let data = data_in['data'][data_id];
+    /* replace 'NA' values: */
+    for (let j in data) {
+      if (Array.isArray(data[j])) {
+        for (let k in data[j]) {
+          if (data[j][k] == 'NA') {
+            data[j][k] = '';
+          };
+        };
+      } else if (data[j] == 'NA') {
+        data[j] = '';
+      };
+    };
+    /* get metadata: */
+    let data_doi = data['DOI'];
+    let data_year = data['DEPTH_YEAR'];
+    let data_method = data['METHOD'];
+    let data_source = data['DATA_SOURCE'];
+    let data_notes = data['NOTES'];
+    /* get data values: */
+    let data_starts = data['start_dates'];
+    let data_ends = data['end_dates'];
+    let data_lats = data['latitudes'];
+    let data_lons = data['longitudes'];
+    let data_depths = data['depths'];
+    let data_uncertaintys = data['uncertaintys'];
+    let data_elevs = data['water_elevations'];
+    /* init csv data: */
+    let data_csv = '';
+    /* add metadata: */
+    data_csv += '"doi","' + data_doi + '"\r\n';
+    data_csv += '"year","' + data_year + '"\r\n';
+    data_csv += '"method","' + data_method + '"\r\n';
+    data_csv += '"source","' + data_source + '"\r\n';
+    data_csv += '"notes","' + data_notes + '"\r\n';
+    data_csv += '\r\n';
+    data_csv += '"start date","end date","latitude","longitude","depth (m)","depth uncertainty","water elevation (m)"\r\n';
+    /* loop through data values: */
+    for (let j = 0; j < data_starts.length; j++) {
+      data_csv += data_starts[j] + ',' + data_ends[j] + ',' +
+                  data_lats[j] + ',' + data_lons[j] + ',' +
+                  data_depths[j] + ',' + data_uncertaintys[j] + ',' +
+                  data_elevs[j] + '\r\n';
+    };
+    /* file name for output: */
+    let csv_name = lake_id + '__bathymetry_' + data_label + '.csv';
+    /* add data to zip file: */
+    await zip_writer.add(
+      csv_name, new zip.TextReader(data_csv)
+    );
+  };
+  /* close zip file and get encoded data uri: */
+  let data_uri = await zip_writer.close();
+  /* set zip file name: */
+  let zip_name = page_data['lake']['GLO_ID'] + '__bathymetry.zip';
+  /* create a temporary link element: */
+  let csv_link = document.createElement('a');
+  csv_link.setAttribute('href', data_uri);
+  csv_link.setAttribute('download', zip_name);
+  csv_link.style.visibility = 'hidden';
+  document.body.appendChild(csv_link);
+  csv_link.click();
+  document.body.removeChild(csv_link);
+};
+
+/* function to display depth data: */
+function depth_display(data_id) {
+  /* get html elements: */
+  let header_el = page_data['depth_header_text_div'];
+  let text_el = page_data['depth_text_div'];
+  /* display loading gif: */
+  header_el.innerHTML = '<img src="' + images_url +
+                        '/lake/loading.gif" title="Loading depth data">';
+  /* get depth data: */
+  let depth_data = page_data['depth'];
+  /* get all data ids: */
+  let data_ids = depth_data['data_ids'];
+  /* init html for text elements: */
+  let header_html = '';
+  let text_html = '<label>Depth data sources</label>';
+  /* loop through data ids: */
+  for (let i = 0; i < data_ids.length; i++) {
+    /* get values from data id: */
+    let my_data_id = data_ids[i];
+    let data_url_type = my_data_id.split(':::');
+    let data_url = data_url_type[0];
+    let data_type = data_url_type[1];
+    let data_label = data_url.split('/').slice(-1)[0];
+    /* update htmls: */
+    if (my_data_id == data_id) {
+      header_html += '<label>' + data_label + '</label>';
+    } else {
+      header_html += '<span onclick="depth_display(' + "'" + my_data_id +
+                     "'" + ');">' + data_label + '</span>';
+    };
+    /* update plot text: */
+    text_html += '<span class="plot_text_link">• <a href="' + data_url +
+                 '" target="_blank">' +
+                 data_label + '</a><span class="plot_text_type"> (' +
+                 data_type + ')</span></span>';
+  };
+  /* update: */
+  setTimeout(function() {
+    /* draw the depth map: */
+    depth_map(data_id);
+    /* draw the depth plot: */
+    depth_plot(data_id);
+    /* update html elements: */
+    header_el.innerHTML = header_html;
+    text_el.innerHTML = text_html;
+  }, 100);
+  /* add download button listener: */
+  var depth_download_el = page_data['depth_download_el'];
+  depth_download_el.addEventListener('click', download_depth_data);
 };
 
 /* set up the page: */

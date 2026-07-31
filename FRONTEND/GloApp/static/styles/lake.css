@@ -265,14 +265,12 @@ button {
   padding: 0.4em;
   margin: 0.4em 0.4em 3em 0.4em;
   cursor: pointer;
-  transition-property: background-color;
-  transition-duration: 0.2s;
-  transition-timing-function: linear;
 }
 
 button:focus, button:active, button:hover {
   color: #ffffff;
   background-color: #94d3e8;
+  border: 1px solid #94d3e8;
 }
 
 button:disabled, button[disabled] {
@@ -318,4 +316,70 @@ button, button:focus, button:active {
 
 .volume_table_citation {
   font-style: oblique;
+}
+
+/* depth data: */
+
+.depth_map_div {
+  width: 48%;
+  height: 34em;
+  border: 0.8em solid #ffffff;
+  border-radius: 0.8em;
+  overflow: hidden;
+  margin-bottom: 1em;
+}
+
+.depth_plot_div {
+  width: 48%;
+  height: 28em;
+  border-radius: 0.8em;
+  overflow: hidden;
+}
+
+@media only screen and (max-width: 900px) {
+  .depth_map_div {
+    width: 100%;
+  }
+  .depth_plot_div {
+    width: 100%;
+  }
+}
+
+.depth_header_text_div {
+  flex-basis: 95%;
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-bottom: 1em;
+  min-height: 2.5em;
+  max-height: 2.5em;
+}
+
+.depth_header_text_div label {
+  color: #eeeeee;
+  background-color: #403c7a;
+  margin-left: 1em;
+  border: 0.2em solid #403c7a;
+  border-radius: 0.2em;
+  padding: 0.2em;
+}
+
+.depth_header_text_div span {
+  color: #484848;
+  background-color: #eeeeee;
+  margin-left: 1em;
+  border: 0.2em solid #eeeeee;
+  border-radius: 0.2em;
+  padding: 0.2em;
+  cursor: pointer;
+}
+
+.depth_header_text_div span:hover {
+  color: #eeeeee;
+  background-color: #36a0c1;
+  border: 0.2em solid #36a0c1;
+}
+
+.depth_header_text_div img {
+  height: 2em;
+  margin-left: 1em;
 }
