@@ -1506,6 +1506,8 @@ function depth_map(data_id) {
   let max_depth = data['grid_depth_distance'];
   let starts = data['start_dates'];
   let ends = data['end_dates'];
+  let lat_dist = data['grid_lat_distance'];
+  let lon_dist = data['grid_lon_distance'];
   /* store polygons here: */
   let depth_polys = []
   /* init min / max lat / lon: */
@@ -1516,6 +1518,10 @@ function depth_map(data_id) {
   /* get depth color map: */
   let depth_colors = page_data['geometry_colors'];
   let color_count = depth_colors.length;
+  /* tryo to work out a suitable circle size ... : */
+  let mean_xy_dist = (lat_dist + lon_dist) / 2;
+  let circle_radius = Math.round(mean_xy_dist / 100);
+  circle_radius = Math.max(circle_radius, 5);
   /* loop through depth points and create polygons: */
   for (let i = 0; i < depths.length; i++) {
     /* values for this polygon: */
@@ -1534,7 +1540,7 @@ function depth_map(data_id) {
     /* create polygon: */
     let poly = L.circle(
       [lat, lon], {
-        'radius': 20,
+        'radius': circle_radius,
         'color': poly_color,
         'weight': 0,
         'fillOpacity': 0.7
