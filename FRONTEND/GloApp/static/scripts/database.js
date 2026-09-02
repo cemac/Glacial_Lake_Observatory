@@ -225,7 +225,7 @@ function load_map() {
   );
   /* define cartodb layer: */
   var carto_layer = L.tileLayer(
-    'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png', {
+    'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=cb1_2roh_1_d63ca49df98f4bc25f7ebd3d', {
       'attribution': '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>',
       'subdomains': 'abcd'
     }
