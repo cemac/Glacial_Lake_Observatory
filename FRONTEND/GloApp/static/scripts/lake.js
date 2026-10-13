@@ -848,7 +848,11 @@ function area_plot(data) {
     var data_url_type = data_id.split(':::');
     var data_url = data_url_type[0];
     var data_type = data_url_type[1];
-    var data_label = data_url.split('/').slice(-1)[0];
+    if (data_url == 'https://doi.org/10.5281/zenodo.17802334') {
+      var data_label = 'Glacial Lake Observatory (GLO)';
+    } else {
+      var data_label = data_url.split('/').slice(-1)[0];
+    };
     var id_data = data['data'][data_id];
     /* get color for this data source: */
     if (data_ids.length == 1) {
