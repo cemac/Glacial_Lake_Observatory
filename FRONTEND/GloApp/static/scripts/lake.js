@@ -1048,6 +1048,8 @@ function temperature_plot(data) {
   /* loop through data ids: */
   var data_ids = data['data_ids'];
   let thermistor_count = 0;
+  let cb_tickvals = [];
+  let z_max = null;
   for (var i = 0; i < data_ids.length; i++) {
     /* get data for this id: */
     var data_id = data_ids[i];
@@ -1115,6 +1117,13 @@ function temperature_plot(data) {
       };
       var y = id_data['temperatures'];
       var z = id_data['depths'];
+      if (z_max == null) {
+        z_max = Math.round(Math.max.apply(Math, z));
+      };
+      /* colorbar tick options: */
+      if (cb_tickvals.length == 0) {
+        cb_tickvals = [0, z_max];
+      };
       /* set color options: */
       let scatter_colorscale = page_data['plot_colors'];
       let scatter_marker_index = thermistor_count %
@@ -1128,14 +1137,19 @@ function temperature_plot(data) {
         'y': y,
         'marker': {
           'color': z,
+          'cmin': 0,
+          'cmax': z_max,
           'colorscale': scatter_colorscale,
           'symbol': scatter_marker,
           'colorbar': {
             'title': {
               'text': 'Depth (m)',
-              'side': 'right'
+              'side': 'right',
             },
-            'thickness': 20
+            'thickness': 20,
+            'tickvals': cb_tickvals,
+            'x': 1.001,
+            'xpad': 0
           }
         },
         'hovertemplate': '%{x}: %{y:.2f}°C (%{marker.color:.1f}m)'
@@ -1145,7 +1159,19 @@ function temperature_plot(data) {
     };
   };
   /* scatter plot layout: */
+  var scatter_tm_layout = {
+    'title': 'Thermistor Temperature Data',
+    'xaxis': {
+      'title': 'Date',
+      'type': 'date',
+      'hoverformat': '%Y-%m-%d'
+    },
+    'yaxis': {
+      'title': 'Temperature (°C)'
+    }
+  };
   var scatter_layout = {
+    'title': 'All Temperature Data',
     'xaxis': {
       'title': 'Date',
       'type': 'date',
@@ -1156,6 +1182,19 @@ function temperature_plot(data) {
     }
   };
   /* scatter plot config: */
+  var scatter_tm_conf = {
+    'showLink': false,
+    'linkText': '',
+    'displaylogo': false,
+    'modeBarButtonsToRemove': [
+      'autoScale2d',
+      'lasso2d',
+      'hoverClosestCartesian',
+      'hoverCompareCartesian',
+      'toggleSpikelines'
+    ],
+    'responsive': true
+  };
   var scatter_conf = {
     'showLink': false,
     'linkText': '',
@@ -1171,11 +1210,10 @@ function temperature_plot(data) {
   };
   /* add thermistor plot, if there is any thermistor data: */
   if (scatter_tm_data.length > 0) {
-    scatter_layout['title'] = 'Thermistor Temperature Data';
     let scatter_tm_plot = Plotly.newPlot(
-      'temperature_tm_plot_div', scatter_tm_data, scatter_layout, scatter_conf
+      'temperature_tm_plot_div', scatter_tm_data, scatter_tm_layout,
+      scatter_tm_conf
     );
-    scatter_layout['title'] = 'All Temperature Data';
   } else {
     /* remove thermistor plot element: */
     let scatter_tm_el = document.getElementById('temperature_tm_plot_div');
@@ -1659,7 +1697,13 @@ function depth_plot(data_id) {
   /* get color map and invert it: */
   let depth_colors = page_data['depth_colors'];
   if (depth_colors == null) {
-    depth_colors = page_data['plot_colors'].slice();
+    let plot_colors = page_data['plot_colors'];
+    depth_colors = [];
+    for (let i = 0; i < plot_colors.length; i++) {
+       depth_colors[i] = [];
+       depth_colors[i][0] = plot_colors[i][0];
+       depth_colors[i][1] = plot_colors[i][1];
+    };
     depth_colors = depth_colors.reverse();
     for (let i = 0; i < depth_colors.length; i++) {
        depth_colors[i][0] = 1 - depth_colors[i][0];
