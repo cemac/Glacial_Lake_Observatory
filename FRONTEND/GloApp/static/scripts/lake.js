@@ -810,7 +810,8 @@ async function download_area_data() {
                   data_uncertaintys[j] + ',' + data_perimeters[j] + '\r\n';
     };
     /* file name for output: */
-    let csv_name = lake_id + '__area_' + data_label + '.csv';
+    let csv_name = lake_id + '__area_' + data_label + '_' +
+                   data_method.replaceAll('; ', '_').replaceAll(' ', '_') + '.csv';
     /* add data to zip file: */
     await zip_writer.add(
       csv_name, new zip.TextReader(data_csv)
@@ -1014,7 +1015,8 @@ async function download_temperature_data() {
                   data_depths[j] + '\r\n';
     };
     /* file name for output: */
-    let csv_name = lake_id + '__temperature_' + data_label + '_' + data_type + '.csv';
+    let csv_name = lake_id + '__temperature_' + data_label + '_' +
+                   data_method.replaceAll('; ', '_').replaceAll(' ', '_') + '.csv';
     /* add data to zip file: */
     await zip_writer.add(
       csv_name, new zip.TextReader(data_csv)
@@ -1854,7 +1856,8 @@ async function download_depth_data() {
                   data_elevs[j] + '\r\n';
     };
     /* file name for output: */
-    let csv_name = lake_id + '__bathymetry_' + data_label + '.csv';
+    let csv_name = lake_id + '__bathymetry_' + data_label + '_' +
+                   data_method.replaceAll('; ', '_').replaceAll(' ', '_') + '.csv';
     /* add data to zip file: */
     await zip_writer.add(
       csv_name, new zip.TextReader(data_csv)
