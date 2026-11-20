@@ -11,7 +11,8 @@
 
 Repository for the Glacial Lake Observatory hosted at [https://glacial-lake-observatory.org/](https://glacial-lake-observatory.org/)
 
-[![DOI](https://zenodo.org/badge/197738447.svg)](https://zenodo.org/badge/latestdoi/197738447)
+[![DOI](https://zenodo.org/badge/951836049.svg)](https://doi.org/10.5281/zenodo.24403286)
+
 
 [![glacier](FRONTEND/GloApp/static/Photo_video_gallery/content/DJI_0515_20171030.JPG)](https://glacial-lake-observatory.org/static/Photo_video_gallery/content/DJI_0515_20171030.JPG)
 
