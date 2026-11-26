@@ -28,7 +28,7 @@ Repository for the Glacial Lake Observatory hosted at [https://glacial-lake-obse
 
 |  Version            | Release          |
 |---------------------|------------------|
-|  Beta-0.1 July 2026 | [![GitHubrelease](https://img.shields.io/badge/release-v.0.1-red.svg)](https://github.com/cemac/Glacial_Lake_Observatory/releases/tag/0.1-alpha)|
+|  1.0 Nov 2026 | [![GitHubrelease](https://img.shields.io/badge/release-v.1.0-red.svg)](https://github.com/cemac/Glacial_Lake_Observatory/releases/tag/1.0)|
 
 
 
