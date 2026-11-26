@@ -17,7 +17,7 @@ Repository for the Glacial Lake Observatory hosted at [https://glacial-lake-obse
 
 
 
-[![glacier](FRONTEND/GloApp/static/Photo_video_gallery/content/DJI_0515_20171030.JPG)](https://glacial-lake-observatory.org/static/Photo_video_gallery/content/DJI_0515_20171030.JPG)
+[![glacier](FRONTEND/GloApp/static/images/Home/DJI_0515_20171030.JPG)](https://glacial-lake-observatory.org/static/Photo_video_gallery/content/DJI_0515_20171030.JPG)
 
 <hr>
 
