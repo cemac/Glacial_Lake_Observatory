@@ -37,8 +37,11 @@ Repository for the Glacial Lake Observatory hosted at [https://glacial-lake-obse
 ## License Information
 
 The code base for the platform is under the LGPL-3.0 Licence
+
 The platform text is under the [Creative Commons Attribution-ShareAlike 4.0 International](https://creativecommons.org/licenses/by-sa/4.0/) License
+
 The core [datasets supporting the platform](https://zenodo.org/records/19370146) are under the [Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/legalcode) License
+
 Any other datasets will be subject to external licenses please refer to the citation given for individual datasets.
 
 ## Acknowledgements
