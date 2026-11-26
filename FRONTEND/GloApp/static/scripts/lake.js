@@ -1562,15 +1562,22 @@ function depth_map(data_id) {
   /* get depth color map: */
   let depth_colors = page_data['geometry_colors'];
   let color_count = depth_colors.length;
-  /* tryo to work out a suitable circle size ... : */
+  /* try to work out a suitable circle size ... : */
   let mean_xy_dist = (lat_dist + lon_dist) / 2;
   let circle_radius = Math.round(mean_xy_dist / 100);
   circle_radius = Math.max(circle_radius, 5);
+  /* check for negative depth values ... : */
+  let max_depth_value = Math.round(Math.max.apply(Math, depths));
+  let depth_multplier = 1;
+  if (max_depth_value <= 0) {
+    depth_multplier = -1;
+  };
   /* loop through depth points and create polygons: */
   for (let i = 0; i < depths.length; i++) {
     /* values for this polygon: */
     let lat = lats[i];
     let lon = lons[i];
+    depths[i] *= depth_multplier;
     let depth = depths[i];
     let start = starts[i];
     let end = ends[i];
